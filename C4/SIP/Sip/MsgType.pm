@@ -964,6 +964,21 @@ sub handle_patron_info {
     $resp = (PATRON_INFO_RESP);
     if ($patron) {
         $patron->update_lastseen();
+
+        # Bug 16694 - Limit SIP2 auth by patron attribute
+        # If login account has validate_patron_attribute set, it will check if patron has this attribute set
+        # If set to 1 or authorized value mapped to 1, allow access (charge and renewal privileges ok)
+        if ($server->{account}->{validate_patron_attribute}) {
+            my $attr = C4::Members::Attributes::GetBorrowerAttributeValue($patron->{borrowernumber}, $server->{account}->{validate_patron_attribute});
+            if ($attr && $attr == "1") {
+                $patron->{charge_ok} = "1";
+                $patron->{renew_ok} = "1";
+            } else {
+                $patron->{charge_ok} = 0;
+                $patron->{renew_ok} = 0;
+            }
+        }
+
         $resp .= patron_status_string($patron);
         $resp .= ( defined($lang) and length($lang) == 3 ) ? $lang : $patron->language;
         $resp .= timestamp();
@@ -1690,4 +1705,3 @@ sub api_auth {
 
 1;
 __END__
-
