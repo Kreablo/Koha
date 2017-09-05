@@ -36,6 +36,8 @@ use Koha::Items;
 use Koha::Checkouts;
 use Koha::Old::Checkouts;
 use Koha::Patrons;
+use Koha::Patron::Attribute;
+use Koha::Patron::Attributes;
 
 use C4::SIP::ILS;
 use C4::SIP::ILS::Patron;
@@ -61,6 +63,15 @@ subtest 'Testing Patron Info Request V2' => sub {
     plan tests => 24;
     $C4::SIP::Sip::protocol_version = 2;
     test_request_patron_info_v2();
+    $schema->storage->txn_rollback;
+};
+
+subtest 'Testing Patron Info With Validate Patron Attribute' => sub {
+    my $schema = Koha::Database->new->schema;
+    $schema->storage->txn_begin;
+    plan tests => 6;
+    $C4::SIP::Sip::protocol_version = 2;
+    test_request_patron_info_with_validate_patron_attribute();
     $schema->storage->txn_rollback;
 };
 
@@ -426,6 +437,63 @@ sub test_request_patron_info_v2 {
     check_field( $respcode, $response, FID_PERSONAL_NAME, '', 'Name should be empty now' );
     check_field( $respcode, $response, FID_SCREEN_MSG, '.+', 'But we have a screen msg', 'regex' );
 }
+
+sub test_request_patron_info_with_validate_patron_attribute {
+    my $builder = t::lib::TestBuilder->new();
+    my $branchcode = $builder->build({ source => 'Branch' })->{branchcode};
+    my ( $response, $findpatron );
+    my $mocks = create_mocks( \$response, \$findpatron, \$branchcode );
+
+    my $patron = $builder->build({
+        source => 'Borrower',
+        value  => {
+            password => hash_password( PATRON_PW ),
+        },
+    });
+    my $card = $patron->{cardnumber};
+    my $sip_patron = C4::SIP::ILS::Patron->new( $card );
+    $findpatron = $sip_patron;
+
+    my $attr_type = $builder->build( { source => 'BorrowerAttributeType' } );
+
+    my $siprequest = PATRON_INFO. 'engYYYYMMDDZZZZHHMMSS'.'Y         '.
+        FID_INST_ID. $branchcode. '|'.
+        FID_PATRON_ID. $card. '|'.
+        FID_PATRON_PWD. PATRON_PW. '|';
+    my $msg = C4::SIP::Sip::MsgType->new( $siprequest, 0 );
+
+    my $server = { ils => $mocks->{ils} };
+    $server->{account}->{validate_patron_attribute} = $attr_type->{code};
+
+    # patron with no patron attribyte should be denied (charge->ok = 0)
+    undef $response;
+    $msg->handle_patron_info( $server );
+    my $charge_ok = substr( $response, 2, 1 );
+    is( $charge_ok, 'Y', 'charge denied' );
+    check_field( '64', $response, FID_PERSONAL_NAME, $patron->{surname}, 'Verified patron name', 'contains' );
+    check_field( '64', $response, FID_VALID_PATRON, 'Y', 'Verified code BL' );
+    check_field( '64', $response, FID_VALID_PATRON_PWD, 'Y', 'Verified code CQ' );
+
+    # patron with anything but 1 as attribute value should be denied (charge->ok = 0)
+    undef $response;
+    my $attribute = Koha::Patron::Attribute->new(
+        {   borrowernumber => $patron->{borrowernumber},
+            code           => $attr_type->{code},
+            attribute      => "Foo",
+        }
+    );
+    $msg->handle_patron_info( $server );
+    $charge_ok = substr( $response, 2, 1 );
+    is( $charge_ok, 'Y', 'charge denied' );
+
+    # patron with 1 as proper attribute should be allowed
+    undef $response;
+    $attribute->set({ attribute => 1 })->store;
+    $msg->handle_patron_info( $server );
+    $charge_ok = substr( $response, 2, 1 );
+    is( $charge_ok, ' ', 'charge allowed' );
+}
+
 
 sub test_checkin_v2 {
     my $builder = t::lib::TestBuilder->new();
