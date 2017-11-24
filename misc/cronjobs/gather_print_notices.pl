@@ -295,6 +295,12 @@ sub send_files {
         Type     => 'multipart/mixed',
     );
 
+    $mail->attach(
+	Type => 'TEXT',
+	Data => "Dagens utskick finns som bilaga där varje bibliotek och filial har en egen bilaga.\n\nBilagorna öppnas i en vanlig webbläsare och kan därefter
+skrivas ut som vanligt.\n\nWebbläsaren bör vara konfigurerad att ej lägga in text i sidhuvud och\nsidfot.  (I Firefox kan man på sidan \"about:config\" redigera\nparametrarna print.print_footerleft, print.print_footerright,\nprint.print_footercenter, print.print_headerleft,\nprint.print_headerright och print.print_headercenter.)"
+	);
+    
     while ( my ( $type, $filenames ) = each %$files ) {
         for my $filename ( @$filenames ) {
             my $mimetype = $type eq 'html'
