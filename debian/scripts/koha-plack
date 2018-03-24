@@ -121,6 +121,10 @@ start_plack()
         eval cd ~$instance_user
 
         if ${STARMAN} ${STARMANOPTS}; then
+            while [[ ! -e "${PLACKSOCKET}" ]]; do
+                sleep 1
+            done
+            setfacl -m g:www-data:rwx "${PLACKSOCKET}"
             log_end_msg 0
         else
             log_end_msg 1
