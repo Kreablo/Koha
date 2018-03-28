@@ -678,7 +678,8 @@ END_SQL
                     unless @message_transport_types;
 
 
-                my $print_sent = 0; # A print notice is not yet sent for this patron
+		my $print_fallback;
+		my $no_print_fallback = 0;
                 for my $mtt ( @message_transport_types ) {
                     my $effective_mtt = $mtt;
                     if ( ($mtt eq 'email' and not scalar @emails_to_use) or ($mtt eq 'sms' and not $data->{smsalertnumber}) ) {
@@ -761,9 +762,18 @@ END_SQL
                                 }
                               );
                         }
-                        unless ( $effective_mtt eq 'print' and $print_sent == 1 ) {
-                            # Just sent a print if not already done.
+			if ( $effective_mtt eq 'print' && $mtt ne 'print') {
+			    $print_fallback = {
+				letter                 => $letter,
+				borrowernumber         => $borrowernumber,
+				message_transport_type => $effective_mtt,
+				from_address           => $admin_email_address,
+				to_address             => join(',', @emails_to_use),
+			    };
+			} else {
+			    $no_print_fallback = 1;
                             C4::Letters::EnqueueLetter(
+				
                                 {   letter                 => $letter,
                                     borrowernumber         => $borrowernumber,
                                     message_transport_type => $effective_mtt,
@@ -771,18 +781,18 @@ END_SQL
                                     to_address             => join(',', @emails_to_use),
                                 }
                             ) unless $test_mode;
-                            # A print notice should be sent only once per overdue level.
-                            # Without this check, a print could be sent twice or more if the library checks sms and email and print and the patron has no email or sms number.
-                            $print_sent = 1 if $effective_mtt eq 'print';
                         }
                     }
                 }
+	        if (!$no_print_fallback && defined($print_fallback)) {
+		    C4::Letters::EnqueueLetter($print_fallback);
+		}
             }
             $sth->finish;
         }
     }
 
-    if (@output_chunks) {
+    if (0 && @output_chunks) {
         if ( defined $csvfilename ) {
             print $csv_fh @output_chunks;        
         }
