@@ -19,7 +19,7 @@
 
 use Modern::Perl;
 
-use Test::More tests => 12;
+use Test::More tests => 6;
 use t::lib::TestBuilder;
 use DateTime;
 use File::Spec;
@@ -249,12 +249,12 @@ $sthmq->execute();
 
 my $messages = $sthmq->fetchall_hashref('message_id');
 
-is(scalar(keys %$messages), 8, 'The message queue contains 8 messages');
+is(scalar(keys %$messages), 5, 'The message queue contains 5 messages');
 
 my %expected_messagetypes = (
     $borrowers[0]->{borrowernumber} => ['sms', 'email'],
-    $borrowers[1]->{borrowernumber} => ['email', 'print'],
-    $borrowers[2]->{borrowernumber} => ['sms', 'print'],
+    $borrowers[1]->{borrowernumber} => ['email'],
+    $borrowers[2]->{borrowernumber} => ['sms'],
     $borrowers[3]->{borrowernumber} => ['print']
 );
 
