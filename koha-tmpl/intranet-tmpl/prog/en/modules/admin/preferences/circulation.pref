@@ -661,6 +661,13 @@ Circulation:
             - 'the last patron to return an item. This setting is independent of the <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=opacreadinghistory">opacreadinghistory</a> and <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AnonymousPatron">AnonymousPatron</a> system preferences.'
     Holds policy:
         -
+            - pref: SipNoAlertForAvailable
+              choices:
+                  yes: Do not set alert
+                  no: Set alert
+            - for returned books that are not issued.
+    Holds Policy:
+        -
             - In the staff interface, split the holds queue into separate tables by
             - pref: HoldsSplitQueue
               choices:
