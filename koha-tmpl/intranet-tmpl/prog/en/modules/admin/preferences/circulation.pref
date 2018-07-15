@@ -765,6 +765,18 @@ Circulation:
                   1: Store
                   0: "Don't store"
             - 'the last patron to return an item. This setting is independent of the <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=opacreadinghistory">opacreadinghistory</a> and <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AnonymousPatron">AnonymousPatron</a> system preferences.'
+        -
+            - pref: EnableItemGroups
+              choices:
+                  1: Enable
+                  0: "Don't enable"
+            - the item groups feature to allow collecting groups of items on a record together.
+        -
+            - pref: SipNoAlertForAvailable
+              choices:
+                  yes: Do not set alert
+                  no: Set alert
+            - for returned books that are not issued.
     Holds policy:
         -
             - Default the holds ratio report to
