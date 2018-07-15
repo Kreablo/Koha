@@ -12,6 +12,7 @@ use strict;
 use C4::SIP::ILS::Transaction;
 
 use C4::Circulation qw( AddReturn LostItem );
+use C4::Context;
 use C4::Items qw( ModItemTransfer );
 use C4::Reserves qw( ModReserve ModReserveAffect CheckReserves );
 use Koha::DateUtils qw( dt_from_string );
@@ -108,6 +109,10 @@ sub do_checkin {
         $return = 1 unless keys %$messages;
     }
 
+    if(C4::Context->preference('SipNoAlertForAvailable') && $messages->{NotIssued}) {
+        $self->alert(0);
+    }
+    
     # biblionumber, biblioitemnumber, itemnumber
     # borrowernumber, reservedate, branchcode
     # cancellationdate, found, reservenotes, priority, timestamp

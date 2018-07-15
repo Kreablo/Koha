@@ -662,6 +662,13 @@ Circulation:
                   0: "Don't enable"
             - the item groups feature to allow collecting groups of items on a record together.
         -
+            - pref: SipNoAlertForAvailable
+              choices:
+                  yes: Do not set alert
+                  no: Set alert
+            - for returned books that are not issued.
+    Holds Policy:
+        -
             - In the staff interface, split the holds queue into separate tables by
             - pref: HoldsSplitQueue
               choices:
