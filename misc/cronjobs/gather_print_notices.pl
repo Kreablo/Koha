@@ -95,13 +95,13 @@ my @all_messages = @{ GetPrintMessages() };
         grep { $_ eq $letter_code } @letter_codes
     ) ? $_ : ()
 } @all_messages if @letter_codes;
-exit unless @all_messages;
 
 # Filter by branchcode
 @all_messages = grep {
     my $bc = $_->{branchcode};
     grep { $bc eq $_ } @branchcodes;
 } @all_messages if @branchcodes;
+exit unless @all_messages;
 
 my ( $html_filenames, $csv_filenames, $ods_filenames );
 $csv_filenames = print_notices({
