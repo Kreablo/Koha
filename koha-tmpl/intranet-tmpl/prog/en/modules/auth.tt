@@ -65,10 +65,10 @@
     <input type="hidden" name="[% INPUT.name | html %]" value="[% INPUT.value | html %]" />
 [% END %]
 <p><label for="userid">Username:</label>
-<input type="text" name="userid" id="userid" class="input focus" value="[% userid | html %]" size="20" tabindex="1" />
+<input type="text" name="userid" id="userid" class="input[% UNLESS (userid) %] focus[% END %]" value="[% userid | html %]" size="20" tabindex="1" />
 </p>
 <p><label for="password">Password:</label>
-<input type="password" name="password" id="password" class="input" value="" size="20" tabindex="2" />
+<input type="password" name="password" id="password" class="input[% IF (userid) %] focus[% END %]" value="" size="20" tabindex="2" />
 </p>
 
 [% UNLESS IndependentBranches %]

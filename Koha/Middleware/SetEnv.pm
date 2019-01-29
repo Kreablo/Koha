@@ -69,6 +69,7 @@ my $allowed_setenvs = qr/^(
     OPAC_CSS_OVERRIDE |
     OPAC_SEARCH_LIMIT |
     OPAC_LIMIT_OVERRIDE |
+    BM_SERIALNUMBER| 
     TZ
 )\ /x;
 

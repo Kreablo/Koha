@@ -770,6 +770,21 @@ sub _timeout_syspref {
     return $timeout;
 }
 
+sub get_userid_from_serialnumber {
+    if (defined($ENV{'BM_SERIALNUMBER'})) {
+	my $sn = $ENV{'BM_SERIALNUMBER'};
+	my $dbh     = C4::Context->dbh;
+	my $sth = $dbh->prepare("SELECT IFNULL(userid, cardnumber) FROM borrowers JOIN borrower_attributes AS a USING (borrowernumber) WHERE a.code = 'PERSNUMMER' AND a.attribute = ?");
+	$sth->execute($sn);
+	if ( $sth->rows ) {
+	    my ($userid) = $sth->fetchrow;
+	    return $userid;
+	}
+    }
+
+    return undef;
+}
+
 sub checkauth {
     my $query = shift;
     $debug and warn "Checking Auth";
@@ -1301,6 +1316,11 @@ sub checkauth {
     $template->param( SCI_login => 1 ) if ( $query->param('sci_user_login') );
     $template->param( OpacPublic => C4::Context->preference("OpacPublic") );
     $template->param( loginprompt => 1 ) unless $info{'nopermission'};
+
+    if ($type ne 'opac') {
+	my $userid_from_serialnumber = get_userid_from_serialnumber();
+	$template->param( userid => $userid_from_serialnumber ) if defined($userid_from_serialnumber);
+    }
 
     if ( $type eq 'opac' ) {
         require Koha::Virtualshelves;
