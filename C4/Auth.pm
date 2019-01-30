@@ -770,12 +770,22 @@ sub _timeout_syspref {
     return $timeout;
 }
 
+sub persnumber_variants {
+    my $pnr = shift;
+
+    my $v1 = substr($pnr, 2);
+    my $v2 = substr($pnr, 0, 8) . '-' . substr($pnr, 8);
+    my $v3 = substr($v1, 0, 6) . '-' . substr($v1, 6);
+    my $v4 = substr($v1, 0, 6) . '+' . substr($v1, 6);
+    return ($pnr, $v1, $v2, $v3, $v4);
+}
+
 sub get_userid_from_serialnumber {
     if (defined($ENV{'BM_SERIALNUMBER'})) {
 	my $sn = $ENV{'BM_SERIALNUMBER'};
 	my $dbh     = C4::Context->dbh;
-	my $sth = $dbh->prepare("SELECT IFNULL(userid, cardnumber) FROM borrowers JOIN borrower_attributes AS a USING (borrowernumber) WHERE a.code = 'PERSNUMMER' AND a.attribute = ?");
-	$sth->execute($sn);
+	my $sth = $dbh->prepare("SELECT IFNULL(userid, cardnumber) FROM borrowers JOIN borrower_attributes AS a USING (borrowernumber) WHERE a.code = 'PERSNUMMER' AND a.attribute IN (?, ?, ?, ?, ?)");
+	$sth->execute(persnumber_variants($sn));
 	if ( $sth->rows ) {
 	    my ($userid) = $sth->fetchrow;
 	    return $userid;
