@@ -1853,21 +1853,32 @@ sub generate_userid {
 sub _generate_userid_internal { # as we always did
     my ($self) = @_;
     my $offset = 0;
-    my $firstname = $self->firstname // q{};
-    my $surname = $self->surname // q{};
-    #The script will "do" the following code and increment the $offset until the generated userid is unique
-    do {
-      $firstname =~ s/[[:digit:][:space:][:blank:][:punct:][:cntrl:]]//g;
-      $surname =~ s/[[:digit:][:space:][:blank:][:punct:][:cntrl:]]//g;
-      my $userid = lc(($firstname)? "$firstname.$surname" : $surname);
-      $userid = NFKD( $userid );
-      $userid =~ s/\p{NonspacingMark}//g;
-      $userid .= $offset unless $offset == 0;
-      $self->userid( $userid );
-      $offset++;
-     } while (! $self->has_valid_userid );
+    my $email = $self->first_valid_email_address;
 
-     return $self;
+    if (defined($email) && $email ne '' && length($email) <= 75 &&
+        C4::Context->preference('PatronSelfRegistrationUseridGenerationMethod') eq 'email') {
+        # Uniqueness of email as userid is verified by
+        # has_valid_userid, with fallback to the default method.
+	$self->userid( $email );
+    }
+
+    if (!$self->has_valid_userid) {
+	my $firstname = $self->firstname // q{};
+	my $surname = $self->surname // q{};
+	#The script will "do" the following code and increment the $offset until the generated userid is unique
+	do {
+	    $firstname =~ s/[[:digit:][:space:][:blank:][:punct:][:cntrl:]]//g;
+	    $surname =~ s/[[:digit:][:space:][:blank:][:punct:][:cntrl:]]//g;
+	    my $userid = lc(($firstname)? "$firstname.$surname" : $surname);
+            $userid = NFKD( $userid );
+            $userid =~ s/\p{NonspacingMark}//g;
+	    $userid .= $offset unless $offset == 0;
+	    $self->userid( $userid );
+	    $offset++;
+	} while (! $self->has_valid_userid );
+    }
+
+    return $self;
 }
 
 =head3 add_extended_attribute
