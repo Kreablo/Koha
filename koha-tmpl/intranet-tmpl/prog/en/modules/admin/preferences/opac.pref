@@ -812,6 +812,13 @@ OPAC:
                   0: "Don't require"
             - patrons to confirm their email address by entering it twice.
         -
+            - Use
+            - pref: PatronSelfRegistrationUseridGenerationMethod
+              choices:
+                  default: "firstname.surname[uniqueness number, if needed]"
+                  email: "email address"
+            - to generate the user name of a borrower when self registering in OPAC.
+        -
             - pref: OPACPatronDetails
               choices:
                   1: Allow
