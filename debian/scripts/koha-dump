@@ -63,6 +63,7 @@ dump_instance()
 
     # Dump database.
     mysqlhost="$( xmlstarlet sel -t -v 'yazgfs/config/hostname' $kohaconfig )"
+    mysqlport="$( xmlstarlet sel -t -v 'yazgfs/config/port' $kohaconfig )"
     mysqldb="$( xmlstarlet sel -t -v 'yazgfs/config/database' $kohaconfig )"
     mysqluser="$( xmlstarlet sel -t -v 'yazgfs/config/user' $kohaconfig )"
     mysqlpass="$( xmlstarlet sel -t -v 'yazgfs/config/pass' $kohaconfig )"
