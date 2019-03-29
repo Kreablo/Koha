@@ -63,6 +63,7 @@ dump_instance()
 
     # Dump database.
     mysqlhost="$( xmlstarlet sel -t -v 'yazgfs/config/hostname' $kohaconfig )"
+    mysqlport="$( xmlstarlet sel -t -v 'yazgfs/config/port' $kohaconfig )"
     mysqldb="$( xmlstarlet sel -t -v 'yazgfs/config/database' $kohaconfig )"
     mysqluser="$( xmlstarlet sel -t -v 'yazgfs/config/user' $kohaconfig )"
     mysqlpass="$( xmlstarlet sel -t -v 'yazgfs/config/pass' $kohaconfig )"
@@ -72,7 +73,7 @@ dump_instance()
     [ "$quiet" = "no" ] && echo "* DB to $dbdump"
     dbflag="--databases"
     [ "$without_db_name" = "yes" ] && dbflag=""
-    mysqldump $dbflag --host="$mysqlhost" \
+    mysqldump $dbflag --host="$mysqlhost" --port="$mysqlport" \
         --user="$mysqluser" --password="$mysqlpass" "$mysqldb" |
         gzip > "$dbdump"
     chown "root:$name-koha" "$dbdump"
