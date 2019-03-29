@@ -44,8 +44,9 @@ kohaconfig="/etc/koha/sites/$name/koha-conf.xml"
 
 mysqlhost="$( xmlstarlet sel -t -v 'yazgfs/config/hostname' $kohaconfig )"
 mysqldb="$(   xmlstarlet sel -t -v 'yazgfs/config/database' $kohaconfig )"
+mysqlport="$( xmlstarlet sel -t -v 'yazgfs/config/port'     $kohaconfig )"
 mysqluser="$( xmlstarlet sel -t -v 'yazgfs/config/user'     $kohaconfig )"
 mysqlpass="$( xmlstarlet sel -t -v 'yazgfs/config/pass'     $kohaconfig )"
 
-mysqlcheck --host="$mysqlhost" --user="$mysqluser" --password="$mysqlpass" \
+mysqlcheck --host="$mysqlhost" --port="$mysqlport" --user="$mysqluser" --password="$mysqlpass" \
     $args "$mysqldb"
