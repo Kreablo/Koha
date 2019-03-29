@@ -50,6 +50,7 @@ shift # remove instance name from argument list.
 kohaconfig="/etc/koha/sites/$name/koha-conf.xml"
 
 mysqlhost="$( xmlstarlet sel -t -v 'yazgfs/config/hostname' $kohaconfig )"
+mysqlport="$( xmlstarlet sel -t -v 'yazgfs/config/port' $kohaconfig )"
 mysqldb="$( xmlstarlet sel -t -v 'yazgfs/config/database' $kohaconfig )"
 mysqluser="$( xmlstarlet sel -t -v 'yazgfs/config/user' $kohaconfig )"
 mysqlpass="$( xmlstarlet sel -t -v 'yazgfs/config/pass' $kohaconfig )"
@@ -57,9 +58,9 @@ mysqlpass="$( xmlstarlet sel -t -v 'yazgfs/config/pass' $kohaconfig )"
 mysqltz="$( xmlstarlet sel -t -v 'yazgfs/config/timezone' $kohaconfig || true )"
 if [ "$mysqltz" != "" ]
 then
-    mysql --host="$mysqlhost" --user="$mysqluser" --password="$mysqlpass" --init-command="SET time_zone='$mysqltz'" \
+    mysql --host="$mysqlhost" --port="$mysqlport" --user="$mysqluser" --password="$mysqlpass" --init-command="SET time_zone='$mysqltz'" \
         "$mysqldb"  "${@}"
 else
-    mysql --host="$mysqlhost" --user="$mysqluser" --password="$mysqlpass" \
+    mysql --host="$mysqlhost" --port="$mysqlport" --user="$mysqluser" --password="$mysqlpass" \
         "$mysqldb"  "${@}"
 fi
