@@ -72,7 +72,7 @@ dump_instance()
     [ "$quiet" = "no" ] && echo "* DB to $dbdump"
     dbflag="--databases"
     [ "$without_db_name" = "yes" ] && dbflag=""
-    mysqldump $dbflag --host="$mysqlhost" \
+    mysqldump $dbflag --skip-triggers --host="$mysqlhost" --port="$mysqlport" \
         --user="$mysqluser" --password="$mysqlpass" "$mysqldb" |
         gzip > "$dbdump"
     chown "root:$name-koha" "$dbdump"
