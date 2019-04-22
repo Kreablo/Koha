@@ -29,6 +29,7 @@ Circulation:
                   T-prefix: Remove the first number from T-prefix style
                   libsuite8: Convert from Libsuite8 form
                   EAN13: EAN-13 or zero-padded UPC-A from
+                  truncate-plessey: Drop plessey checkcode on input
             - scanned item barcodes.
         -
             - pref: itemBarcodeFallbackSearch
