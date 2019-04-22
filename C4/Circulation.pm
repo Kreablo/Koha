@@ -206,8 +206,60 @@ sub barcodedecode {
         } else {
             warn "# [$barcode] not valid EAN-13/UPC-A\n";
         }
+	} elsif ($filter eq 'truncate-plessey') {
+	    $barcode = truncate_plessey($barcode);
 	}
     return $barcode;    # return barcode, modified or not
+}
+
+=head2 truncate_plessey
+
+   $barcode = truncate_plessey( $barcode );
+
+Remove plessey checkcode on $barcode if present and valid.  Otherwise leave $barcode unchanged.
+
+=cut
+
+sub bitrev4 {
+    my $x = shift;
+
+    no warnings;
+    $x = ((($x & 0xaaaaaaaaaaaaaaaa) >> 1) | (($x & 0x5555555555555555) << 1));
+    return ((($x & 0xcccccccccccccccc) >> 2) | (($x & 0x3333333333333333) << 2));
+    use warnings;
+}
+
+
+sub plessey {
+    my $b = shift;
+    my $verify = shift;
+
+    if ($b =~ /^([a-fA-F0-9]{11})([a-fA-F0-9]{2})?$/) {
+	no warnings;
+	my $n = bitrev4(hex($verify ? "$1$2" : $1) << ($verify ? 0 : 8));
+	use warnings;
+	my $p = 0x1e9;
+	my $m = 0x100;
+	for (my $i = 44 + 8 - 9; $i >= 0; $i--) {
+	    $n ^= ($p << $i) if ($n & ($m << $i));
+	}
+	if ($verify) {
+	    return !$n;
+	}
+	return sprintf "%x", bitrev4($n);
+    }
+
+    return undef;
+}
+
+sub truncate_plessey  {
+    my $barcode = shift;
+
+    if (plessey($barcode, 1)) {
+	$barcode = substr($barcode, 0, 11); 
+    }
+
+    return $barcode
 }
 
 =head2 decode
