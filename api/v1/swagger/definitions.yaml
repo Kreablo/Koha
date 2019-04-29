@@ -19,6 +19,8 @@ city:
   $ref: definitions/city.yaml
 error:
   $ref: definitions/error.yaml
+form_completion:
+  $ref: definitions/form_completion.yaml
 fund:
   $ref: definitions/fund.yaml
 hold:
