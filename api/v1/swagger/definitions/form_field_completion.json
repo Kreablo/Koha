@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "the field name",
+      "type": "string"
+    },
+    "value": {
+      "description": "the completed field value",
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false,
+  "required": ["name", "value"]
+}

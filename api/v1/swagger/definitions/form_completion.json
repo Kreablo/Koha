@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "properties": {
+	"form_id": {
+	    "description": "the form identity",
+	    "type": "string"
+	},
+	"form_fields": {
+	    "description": "list of field completions",
+	    "type": "array",
+	    "items": {
+		"$ref": "form_field_completion.json"
+	    }
+	}
+    },
+    "additionalProperties": false,
+    "required": ["form_id"]
+}

@@ -130,5 +130,8 @@
   },
   "/return_claims/{claim_id}": {
     "$ref": "paths/return_claims.json#/~1return_claims~1{claim_id}"
+  },
+  "/borrower_completion/{pnr}": {
+    "$ref": "paths/borrower_completion.json#/~1borrower_completion~1{pnr}"
   }
 }
