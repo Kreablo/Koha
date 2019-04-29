@@ -263,6 +263,8 @@
                                 <button class="btn btn-primary toggler" id="save_quick_add" name="save"><i class="fa fa-save"></i> Save</button>
                             [% END %]
                             <button class="btn btn-primary toggler" id="saverecord" name="save"><i class="fa fa-save"></i> Save</button>
+                            <button class="btn btn-default toggler" id="fetch-borrower-data" data-toggle="modal" data-target="#fetch-borrower-data-modal" name="fetch-borrower-data"><i class="fa fa-download"></i> Fetch borrower data</button>
+
                             [% IF op == 'add_form' %]
                                 <a class="btn btn-link toggler save_entryform" href="/cgi-bin/koha/members/member.pl"> <i class="fa fa-times"></i> Cancel </a>
                             [% ELSE %]
@@ -1987,6 +1989,8 @@
         var TalkingTechItivaPhoneNotification = [% Koha.Preference('TalkingTechItivaPhoneNotification') || 0 | html %];
         var PhoneNotification = [% Koha.Preference('PhoneNotification') || 0 | html %];
     </script>
+
+    [% INCLUDE 'borrower-completion.inc' %]
     [% Asset.js("js/members.js") | $raw %]
     [% Asset.js("js/messaging-preference-form.js") | $raw %]
     [% PROCESS 'password_check.inc' new_password => 'password', category_selector => '#categorycode_entry', minPasswordLength => patron.category.effective_min_password_length, RequireStrongPassword => patron.category.effective_require_strong_password %]
@@ -1996,5 +2000,6 @@
     [% PROCESS patron_search_modal columns => columns, modal_title => t("Add guarantor") %]
     [% PROCESS patron_search_js columns => columns, actions => ["select"], preview_on_name_click => 1 %]
 [% END %]
+
 
 [% INCLUDE 'intranet-bottom.inc' %]
