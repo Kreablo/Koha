@@ -6996,6 +6996,10 @@ msgstr "EAN-13 eller nollutfylld UPC-A från"
 
 # Circulation > Interface > itemBarcodeInputFilter
 # Circulation > Interface
+msgid "circulation.pref#itemBarcodeInputFilter# Drop plessey checkcode on input"
+msgstr "Ta bort plessey-checksumma"
+
+# Circulation > Interface
 msgid "circulation.pref#itemBarcodeInputFilter# Remove spaces from"
 msgstr "Avlägsna mellanslag från "
 
