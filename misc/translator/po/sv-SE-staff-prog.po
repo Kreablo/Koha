@@ -28440,6 +28440,18 @@ msgstr ""
 msgid "Fewer options"
 msgstr "Färre alternativ"
 
+#: koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tt:136
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:22
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:32
+#, c-format
+msgid "Fetch borrower data"
+msgstr "Hämta låntagaruppgifter"
+
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:4
+msgid "Fetching borrower data ..."
+msgstr "Hämtar låntagaruppgifter"
+
 #: koha-tmpl/intranet-tmpl/prog/en/includes/subtype_limits.inc:58
 #: koha-tmpl/intranet-tmpl/prog/en/includes/subtype_limits.inc:60
 #, c-format
@@ -47527,6 +47539,19 @@ msgstr "Endast behörig personal"
 msgid "Ph: "
 msgstr "Telefon: "
 
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:26
+#, c-format
+msgid "Personal number:"
+msgstr "Personnummer:"
+
+#. %1$s:  library.branchphone | html 
+#. %2$s:  END 
+#. %3$s:  IF library.branchfax 
+#: koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tt:219
+#, c-format
+msgid "Ph: %s%s %s "
+msgstr "Ph: %s%s %s "
+
 #: koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tt:17
 #: koha-tmpl/intranet-tmpl/prog/en/modules/tools/letter.tt:546
 #: koha-tmpl/intranet-tmpl/prog/en/modules/tools/overduerules.tt:98
@@ -64525,6 +64550,12 @@ msgstr "Under transport från %s till %s sedan %s"
 #, c-format
 msgid "Translate into other languages"
 msgstr "Översätt till andra språk"
+
+#. INPUT type=text
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:27
+#, c-format
+msgid "A valid personal number (yymmdd-xxxx, yyyymmdd-xxxx, yymmddxxxx, or yyyymmddxxxx)."
+msgstr "Ett giltigt personnummer eller samordningsnummer (ååmmdd-xxxx, ååååmmdd-xxxx, ååmmddxxxx eller ååååmmddxxxx)."
 
 #. A
 #: koha-tmpl/intranet-tmpl/prog/en/modules/admin/itemtypes.tt:187
