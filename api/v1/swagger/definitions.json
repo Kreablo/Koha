@@ -67,5 +67,8 @@
   },
   "return_claim": {
     "$ref": "definitions/return_claim.json"
+  },
+  "form_completion": {
+    "$ref": "definitions/form_completion.json"
   }
 }
