@@ -1,0 +1,15 @@
+---
+type: object
+properties:
+  form_id:
+    type: string
+    description: the form identity
+  form_fields:
+    type: array
+    description: list of field completions
+    items:
+      $ref: form_field_completion.yaml
+additionalProperties: false
+required:
+  - form_id
+
