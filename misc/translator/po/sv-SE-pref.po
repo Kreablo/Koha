@@ -4746,6 +4746,10 @@ msgid "circulation.pref#itemBarcodeInputFilter# Don't filter"
 msgstr "Filtrera inte "
 
 # Circulation > Interface
+msgid "circulation.pref#itemBarcodeInputFilter# Drop plessey checkcode on input"
+msgstr "Ta bort plessey-checksumma"
+
+# Circulation > Interface
 msgid "circulation.pref#itemBarcodeInputFilter# EAN-13 or zero-padded UPC-A from"
 msgstr "EAN-13 eller nollutfylld UPC-A från"
 
