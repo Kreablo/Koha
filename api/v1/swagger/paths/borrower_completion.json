@@ -1,0 +1,63 @@
+{
+  "/borrower_completion/{pnr}": {
+    "get": {
+      "x-mojo-to": "BorrowerCompletion#fetch",
+      "operationId": "fetchBorrowerCompletion",
+      "tags": ["patrons"],
+      "parameters": [
+        {
+          "name": "pnr",
+          "in": "path",
+          "required": true,
+          "description": "Borrowers personal number",
+          "type": "string"
+        }
+      ],
+      "produces": ["application/json"],
+      "responses": {
+        "200": {
+          "description": "Successful fetch",
+          "schema": {
+            "$ref": "../definitions.json#/form_completion"
+          }
+        },
+        "400": {
+          "description": "Bad request",
+          "schema": {
+            "$ref": "../definitions.json#/error"
+          }
+        },
+        "401": {
+          "description": "Authentication required",
+          "schema": {
+            "$ref": "../definitions.json#/error"
+          }
+        },
+        "403": {
+          "description": "Forbidden",
+          "schema": {
+            "$ref": "../definitions.json#/error"
+          }
+        },
+        "404": {
+          "description": "Hold not found",
+          "schema": {
+            "$ref": "../definitions.json#/error"
+          }
+        },
+        "500": {
+          "description": "Internal server error",
+          "schema": {
+            "$ref": "../definitions.json#/error"
+          }
+        },
+        "503": {
+          "description": "Under maintenance",
+          "schema": {
+            "$ref": "../definitions.json#/error"
+          }
+        }
+      }
+    }
+  }
+}
