@@ -28503,6 +28503,18 @@ msgstr ""
 "Hämtning av fullständiga diagramdata för rapporter med många rader kan ge "
 "prestandaproblem. Är du säker på att du vill fortsätta?"
 
+#: koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tt:136
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:22
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:32
+#, c-format
+msgid "Fetch borrower data"
+msgstr "Hämta låntagaruppgifter"
+
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:4
+msgid "Fetching borrower data ..."
+msgstr "Hämtar låntagaruppgifter"
+
 #: koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/advsearch.tt:84
 #, c-format
 msgid "Fewer options"
@@ -47597,6 +47609,19 @@ msgstr "Ta permanent bort dessa låntagare"
 msgid "Permissions (code)"
 msgstr "Rättigheter (kod)"
 
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:26
+#, c-format
+msgid "Personal number:"
+msgstr "Personnummer:"
+
+#. %1$s:  library.branchphone | html 
+#. %2$s:  END 
+#. %3$s:  IF library.branchfax 
+#: koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tt:219
+#, c-format
+msgid "Ph: %s%s %s "
+msgstr "Ph: %s%s %s "
+
 #. SCRIPT
 #: koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tt:479
 msgid "Ph: "
@@ -64496,6 +64521,12 @@ msgstr "Under transport från %s till %s sedan %s"
 #, c-format
 msgid "Translate into other languages"
 msgstr "Översätt till andra språk"
+
+#. INPUT type=text
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:27
+#, c-format
+msgid "A valid personal number (yymmdd-xxxx, yyyymmdd-xxxx, yymmddxxxx, or yyyymmddxxxx)."
+msgstr "Ett giltigt personnummer eller samordningsnummer (ååmmdd-xxxx, ååååmmdd-xxxx, ååmmddxxxx eller ååååmmddxxxx)."
 
 #. A
 #: koha-tmpl/intranet-tmpl/prog/en/modules/admin/itemtypes.tt:187
