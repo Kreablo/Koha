@@ -207,6 +207,7 @@ legend:hover {
                                     <button class="btn btn-default toggler" id="save_quick_add" name="save"><i class="fa fa-save"></i> Save</button>
                                 [% END %]
                                 <button class="btn btn-default toggler" id="saverecord" name="save" ><i class="fa fa-save"></i> Save</button>
+                                <button class="btn btn-default toggler" id="fetch-borrower-data" data-toggle="modal" data-target="#fetch-borrower-data-modal" name="fetch-borrower-data"><i class="fa fa-download"></i> Fetch borrower data</button>
                                 [% IF opadd %]
                                     <a class="btn btn-default" href="/cgi-bin/koha/members/member.pl" class="toggler save_entryform">
                                 [% ELSE %]
@@ -1744,10 +1745,13 @@ legend:hover {
         $("#guarantor_template").hide();
 
     </script>
+
+    [% INCLUDE 'borrower-completion.inc' %]
     [% Asset.js("js/members.js") | $raw %]
     [% Asset.js("js/messaging-preference-form.js") | $raw %]
     [% PROCESS 'password_check.inc' %]
     [% PROCESS 'add_password_check' new_password => 'password' %]
 [% END %]
+
 
 [% INCLUDE 'intranet-bottom.inc' %]
