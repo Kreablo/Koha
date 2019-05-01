@@ -13,32 +13,36 @@
         type: "string"
     produces:
       - application/json
-    responses":
+    responses:
       "200":
         description: Successful fetch
         schema:
-          $ref: ../definitions.json#/form_completion
+          $ref: ../definitions.yaml#/form_completion
       "400":
         description: Bad request
         schema:
-          $ref: ../definitions.json#/error
+          $ref: ../definitions.yaml#/error
       "401":
         description: Authentication required
         schema:
-          $ref: ../definitions.json#/error
+          $ref: ../definitions.yaml#/error
       "403":
         description: Forbidden
         schema:
-          $ref: ../definitions.json#/error
+          $ref: ../definitions.yaml#/error
       "404":
         description: Hold not found
         schema:
-          $ref: ../definitions.json#/error
+          $ref: ../definitions.yaml#/error
       "500":
         description: Internal server error
         schema:
-          $ref: ../definitions.json#/error
+          $ref: ../definitions.yaml#/error
       "503":
         description: Under maintenance
         schema:
-          $ref: ../definitions.json#/error
+          $ref: ../definitions.yaml#/error
+    x-koha-authorization:
+      permissions:
+        borrowers: "1"
+        
