@@ -4,6 +4,11 @@ properties:
   name:
     type: string
     description: the field name
+  attrname:
+    description: optional name of patron attribute
+    type:
+      - string
+      - "null"
   value:
     description: the completed field value
     type:

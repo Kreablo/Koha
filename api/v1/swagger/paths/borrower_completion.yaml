@@ -42,4 +42,6 @@
         description: Under maintenance
         schema:
           $ref: "../swagger.yaml#/definitions/error"
-
+    x-koha-authorization:
+      permissions:
+        borrowers: "1"

@@ -12077,7 +12077,14 @@ msgstr "Aukt.-id"
 msgid "Authenticated"
 msgstr "Autentiserad"
 
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "Authentication required, log in and try again"
+msgstr "Autenticering krävs, logga in och försök igen"
+
 #: koha-tmpl/intranet-tmpl/prog/en/modules/tools/viewlog.tt:69
+#: koha-tmpl/intranet-tmpl/prog/en/modules/tools/batch_delete_records.tt:173
+#: koha-tmpl/intranet-tmpl/prog/en/modules/tools/batch_record_modification.tt:215
 #, c-format
 msgid "Authentication"
 msgstr "Autentisering"
@@ -12880,6 +12887,12 @@ msgstr "Felaktig eller saknad avsändaradress, kontrollera din enhets e-postadre
 #, c-format
 msgid "Bankable"
 msgstr "Inlösningsbar"
+
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+#, c-format
+msgid "Bad request"
+msgstr "Felaktig begäran"
 
 #: koha-tmpl/intranet-tmpl/prog/en/includes/chart.inc:16
 #, c-format
@@ -27043,12 +27056,12 @@ msgstr "Hämtning av fullständiga diagramdata för rapporter med många rader k
 #: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:32
 #, c-format
 msgid "Fetch borrower data"
-msgstr "Hämta låntagaruppgifter"
+msgstr "Hämta folkbokföringsuppgifter"
 
 #. SCRIPT
 #: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:4
 msgid "Fetching borrower data ..."
-msgstr "Hämtar låntagaruppgifter"
+msgstr "Hämtar folkbokföringsuppgifter"
 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/advsearch.tt:84
 #, c-format
@@ -58709,6 +58722,13 @@ msgstr "Det begärda meddelandet lades i kö för leverans av %s "
 msgid "The return policy is applied based on the CircControlReturnsBranch system preference which is set to "
 msgstr "Tillämpningen av policyerna baseras på systeminställningen ReservesControlBranch som har värdet "
 
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "The resource was not found"
+msgstr "Resursen kunde inte hittas"
+
+#. %1$s:  ELSE 
+#. %2$s:  END 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tt:68
 #, c-format
 msgid "The root koha user in your KOHA_CONF file (default: kohaadmin) is not a valid tag moderator. These actions are logged by borrowernumber, so the moderator must exist in your borrowers table. Please log in as a different authorized staff user to moderate tags."
@@ -58746,15 +58766,25 @@ msgstr "Den sekundära e-postadressen är ogiltig."
 msgid "The selected template (id=%s) does not exist or no action is defined."
 msgstr "Den valda mallen (id=%s) finns inte eller så är ingen aktivitet vald."
 
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "The service is currently unavailable, try again later"
+msgstr "Tjänsten är för närvarande otillgänglig, försök igen senare"
+
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/modules/tools/marc_modification_templates.tt:337
+msgid "The source field should be filled."
+msgstr "Källfältet ska vara ifyllt."
+
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/modules/tools/marc_modification_templates.tt:337
+msgid "The source subfield should be filled for update."
+msgstr "Det underliggande källfältet ska vara ifyllt för uppdatering."
+
 #: koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-detail.tt:59
 #, c-format
 msgid "The subscription has linked issues"
 msgstr "Prenumerationen har länkade nummer"
-
-#: koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-detail.tt:60
-#, c-format
-msgid "The subscription has linked items"
-msgstr "Prenumerationen har länkade exemplar"
 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-detail.tt:58
 #, c-format
@@ -65582,6 +65612,10 @@ msgstr "Du har osparade ändringar. Är du säker på att du vill navigera bort 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/tools/inventory.tt:357
 msgid "You have uploaded a barcode file and scanned barcodes at the same time. Please choose one of the two options."
 msgstr "Du har både laddat upp en streckkodsfil och skannat streckkoder. Välj endast ett av alternativen."
+
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "You lack permissions for this operation"
+msgstr "Behörighet saknas för denna åtgärd"
 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tt:39
 #, c-format
