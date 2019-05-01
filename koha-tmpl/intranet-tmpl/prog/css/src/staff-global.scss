@@ -4326,6 +4326,11 @@ div .suggestion_note {
     }
 }
 
+.form-completer-updated {
+    outline: 2px #966b9d dotted;
+    outline-offset: 3px;
+}
+
 @media (min-width: 200px) {
 
 }
@@ -4547,3 +4552,4 @@ div .suggestion_note {
         margin-bottom: 20px;
     }
 }
+
