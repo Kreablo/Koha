@@ -22,48 +22,43 @@ use DateTime;
 use DateTime::Format::Builder;
 use DateTime::Format::Strptime;
 use Koha::DateUtils;
+use Koha::Completion::AddressServiceBorrowerCompletion;
+
 
 sub fetch {
     my $c = shift->openapi->valid_input or return;
     my $dateformat = C4::Context->preference('dateformat');
 
+    my $pnr = $c->validation->param('pnr');
+    my $completions = fetch_completions( $pnr );
+
+    if (defined ($completions->{error})) {
+	return $c->render( status => $completions->{status},
+			   openapi => { error => $completions->{error} });
+    }
     
     my $parser = DateTime::Format::Strptime->new(
 	pattern => '%F',
 	);
 
-
+    for my $compl (@{$completions->{form_fields}}) {
+	if ($compl->{'name'} eq dateofbirth) {
+	    $compl->{'value'} =  output_pref($parser->parse_datetime($compl->{'value'}));
+	}
+    }
+    
     return $c->render( status => 200,
 		       openapi => {
 			   form_id => "entryform",
-			   form_fields => [
-			       {
-				   "name" => "surname",
-				   "value" => "Enarsson"
-			       },
-			       {
-				   "name" => "firstname",
-			           "value" => "Enea"
-			       },
-			       {
-				   "name" => "dateofbirth",
-				   "value" => output_pref($parser->parse_datetime("2001-01-01"))
-			       },
-			       {
-				   "name" => "address",
-			           "value" => "Engatan 42"
-			       },
-			       {
-				   "name" => "city",
-			           "value" => "Enstad"
-			       },
-			       {
-				   "name" => "phone",
-			           "value" => "+46712345567"
-			       }
-			       ]
+			   form_fields => $completions->form_fields
 		       }
 	);
 }
+
+=head1 AUTHOR
+
+Andreas Jonsson, E<lt>andreas.jonsson@kreablo.seE<gt>
+
+=cut
 
 1;
