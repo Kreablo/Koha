@@ -14118,12 +14118,18 @@ msgstr "Streckkoder av typen %s måste vara numeriska"
 msgid "Barcodes:"
 msgstr "Streckkoder:"
 
-#: koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tt:115
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "Authentication required, log in and try again"
+msgstr "Autenticering krävs, logga in och försök igen"
+
+#: intranet-tmpl/prog/en/modules/tools/batch_delete_records.tt:173
+#: intranet-tmpl/prog/en/modules/tools/batch_record_modification.tt:215
 #, c-format
 msgid "Base-level allocated"
 msgstr "Basnivå tilldelad"
 
-#: koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tt:120
+#: koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tt:115
 #, c-format
 msgid "Base-level available"
 msgstr "Basnivå tillgänglig"
@@ -28445,12 +28451,12 @@ msgstr "Färre alternativ"
 #: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:32
 #, c-format
 msgid "Fetch borrower data"
-msgstr "Hämta låntagaruppgifter"
+msgstr "Hämta folkbokföringsuppgifter"
 
 #. SCRIPT
 #: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:4
 msgid "Fetching borrower data ..."
-msgstr "Hämtar låntagaruppgifter"
+msgstr "Hämtar folkbokföringsuppgifter"
 
 #: koha-tmpl/intranet-tmpl/prog/en/includes/subtype_limits.inc:58
 #: koha-tmpl/intranet-tmpl/prog/en/includes/subtype_limits.inc:60
@@ -61179,6 +61185,11 @@ msgstr "Beställningen har annullerats, trots att posten inte tagits bort."
 msgid "The order has been successfully canceled."
 msgstr "Beställningen har annullerats."
 
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "The resource was not found"
+msgstr "Resursen kunde inte hittas"
+
 #. %1$s:  ELSE 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/acqui/cancelorder.tt:59
 #, c-format
@@ -61516,15 +61527,25 @@ msgstr "Den sekundära e-postadressen är ogiltig."
 msgid "The selected template (id=%s) does not exist or no action is defined."
 msgstr "Den valda mallen (id=%s) finns inte eller så är ingen aktivitet vald."
 
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "The service is currently unavailable, try again later"
+msgstr "Tjänsten är för närvarande otillgänglig, försök igen senare"
+
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/modules/tools/marc_modification_templates.tt:337
+msgid "The source field should be filled."
+msgstr "Källfältet ska vara ifyllt."
+
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/modules/tools/marc_modification_templates.tt:337
+msgid "The source subfield should be filled for update."
+msgstr "Det underliggande källfältet ska vara ifyllt för uppdatering."
+
 #: koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-detail.tt:59
 #, c-format
 msgid "The subscription has linked issues"
 msgstr "Prenumerationen har länkade nummer"
-
-#: koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-detail.tt:60
-#, c-format
-msgid "The subscription has linked items"
-msgstr "Prenumerationen har länkade exemplar"
 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-detail.tt:58
 #, c-format
@@ -68916,13 +68937,22 @@ msgstr ""
 "Du har både laddat upp en streckkodsfil och skannat streckkoder. Välj endast "
 "ett av alternativen."
 
-#: koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tt:39
-#: koha-tmpl/intranet-tmpl/prog/en/modules/reports/reports-home.tt:104
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+#, c-format
+msgid "Bad request"
+msgstr "Felaktig begäran"
+
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "You lack permissions for this operation"
+msgstr "Behörighet saknas för denna åtgärd"
+
+#: koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tt:41
 #, c-format
 msgid "You haven't decided if you want to activate Mana Knowledge Base. "
 msgstr "Du har inte bestämt om du vill aktivera Mana Knowledge Base. "
 
-#: koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tt:47
+#: koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tt:39
 #, c-format
 msgid ""
 "You haven't decided if you want to activate usage statistic sharing in Koha "
