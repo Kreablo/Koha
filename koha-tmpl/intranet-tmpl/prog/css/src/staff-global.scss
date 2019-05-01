@@ -4263,6 +4263,11 @@ div .suggestion_note {
     }
 }
 
+.form-completer-updated {
+    outline: 2px #966b9d dotted;
+    outline-offset: 3px;
+}
+
 #camera, #output {
     border: 8px solid #EDF4F6;
     padding: 1em;
