@@ -16540,7 +16540,22 @@ msgstr "Ej hittade streckkoder:"
 msgid "Barcodes:"
 msgstr "Streckkoder:"
 
+<<<<<<< HEAD
 #: koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tt:124
+=======
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "Authentication required, log in and try again"
+msgstr "Autenticering krävs, logga in och försök igen"
+
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "Authentication required, log in and try again"
+msgstr "Autenticering krävs, logga in och försök igen"
+
+#: intranet-tmpl/prog/en/modules/tools/batch_delete_records.tt:173
+#: intranet-tmpl/prog/en/modules/tools/batch_record_modification.tt:215
+>>>>>>> d51d4bf9f5... Borrower-completion backend/UI adjustments
 #, c-format
 msgid "Base-level allocated"
 msgstr "Basnivå tilldelad"
@@ -16926,8 +16941,686 @@ msgstr "Satsborttagning av exemplar &rsaquo; Verktyg &rsaquo; Koha"
 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-del.tt:32
 #, c-format
+<<<<<<< HEAD
 msgid "Batch item deletion results"
 msgstr "Resultat för satsvis borttagning av exemplar"
+=======
+msgid "Available call numbers"
+msgstr "Tillgängliga hyllsignaturer"
+
+#. INPUT type=text
+#: intranet-tmpl/prog/en/modules/circ/pendingreserves.tt:196
+msgid "Available copy"
+msgstr "Tillgänglig kopia"
+
+#: intranet-tmpl/prog/en/modules/circ/pendingreserves.tt:62
+#, c-format
+msgid "Available copy numbers"
+msgstr "Tillgängliga exemplarnummer"
+
+#: intranet-tmpl/prog/en/modules/circ/pendingreserves.tt:63
+#: intranet-tmpl/prog/en/modules/circ/pendingreserves.tt:197
+#, c-format
+msgid "Available enumeration"
+msgstr "Tillgänglig numrering"
+
+#: intranet-tmpl/prog/en/modules/admin/credit_types.tt:125
+#: intranet-tmpl/prog/en/modules/admin/debit_types.tt:139
+#, c-format
+msgid "Available for"
+msgstr "Tillgänglig för"
+
+#: intranet-tmpl/prog/en/modules/members/purchase-suggestions.tt:93
+#, c-format
+msgid "Available in the library"
+msgstr "Tillgänglig på biblioteket"
+
+#: intranet-tmpl/prog/en/modules/circ/pendingreserves.tt:64
+#, c-format
+msgid "Available item types"
+msgstr "Tillgängliga exemplartyper"
+
+#: intranet-tmpl/prog/en/modules/circ/pendingreserves.tt:65
+#, c-format
+msgid "Available locations"
+msgstr "Tillgängliga platser"
+
+#: intranet-tmpl/prog/en/modules/reports/issues_avg_stats.tt:21
+#, c-format
+msgid "Average checkout period"
+msgstr "Genomsnittlig lånetid"
+
+#: intranet-tmpl/prog/en/modules/reports/issues_avg_stats.tt:66
+#, c-format
+msgid "Average checkout period statistics"
+msgstr "Statistik för genomsnittlig lånetid"
+
+#: intranet-tmpl/prog/en/includes/reports-menu.inc:56
+#: intranet-tmpl/prog/en/modules/reports/reports-home.tt:84
+#: intranet-tmpl/prog/en/modules/reports/issues_avg_stats.tt:12
+#, c-format
+msgid "Average loan time"
+msgstr "Genomsnittlig lånetid"
+
+#: intranet-tmpl/prog/en/includes/cat-toolbar.inc:90
+#, c-format
+msgid "BIBTEX"
+msgstr "BIBTEX"
+
+#: intranet-tmpl/prog/en/modules/about.tt:722
+#, c-format
+msgid "BSD 3-clause Licence"
+msgstr "BSD-licens"
+
+#: intranet-tmpl/prog/en/modules/about.tt:633
+#: intranet-tmpl/prog/en/modules/about.tt:701
+#: intranet-tmpl/prog/en/modules/about.tt:713
+#: intranet-tmpl/prog/en/modules/about.tt:728
+#, c-format
+msgid "BSD License"
+msgstr "BSD-licens"
+
+#: intranet-tmpl/prog/en/includes/authorities-search-results.inc:19
+#, c-format
+msgid "BT"
+msgstr "BT"
+
+#: intranet-tmpl/prog/en/modules/about.tt:520
+#, c-format
+msgid "BULAC"
+msgstr "BULAC"
+
+#. For the first occurrence,
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/str/tinymce_i18n.inc:2
+#: intranet-tmpl/prog/en/modules/tools/upload-images.tt:40
+#: intranet-tmpl/prog/en/modules/tools/upload.tt:135
+#: intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tt:305
+#: intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tt:308
+#: intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tt:404
+#, c-format
+msgid "Back"
+msgstr "Tillbaka"
+
+#. For the first occurrence,
+#. %1$s:  ELSE 
+#: intranet-tmpl/prog/en/modules/patroncards/edit-layout.tt:58
+#: intranet-tmpl/prog/en/modules/patroncards/edit-layout.tt:61
+#, c-format
+msgid "Back %s "
+msgstr "Tillbaka %s "
+
+#: intranet-tmpl/prog/en/modules/patroncards/print.tt:90
+#, c-format
+msgid "Back side layout not used"
+msgstr "Layout för baksidan används inte"
+
+#. INPUT type=submit
+#: intranet-tmpl/prog/en/modules/admin/systempreferences.tt:231
+msgid "Back to System Preferences"
+msgstr "Tillbaka till Systeminställningar"
+
+#: intranet-tmpl/prog/en/modules/tools/import_borrowers.tt:43
+#, c-format
+msgid "Back to Tools"
+msgstr "Tillbaka till Verktyg"
+
+#: intranet-tmpl/prog/en/modules/admin/authtypes.tt:114
+#, c-format
+msgid "Back to the list"
+msgstr "Tillbaka till listorna"
+
+#: intranet-tmpl/prog/en/includes/ill-list-table.inc:35
+#, c-format
+msgid "Backend"
+msgstr "Backend"
+
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/str/tinymce_i18n.inc:2
+msgid "Background color"
+msgstr "Bakgrundsfärg"
+
+#: intranet-tmpl/prog/en/includes/delimiter_text.inc:6
+#, c-format
+msgid "Backslash separated text (.csv)"
+msgstr "Omvänt snedstreck-separerad text (.csv)"
+
+#: intranet-tmpl/prog/en/modules/serials/claims.tt:28
+#, c-format
+msgid ""
+"Bad or missing sender address; check your branch email address or preference "
+"KohaAdminEmailAddress."
+msgstr ""
+"Felaktig eller saknad avsändaradress, kontrollera din enhets e-postadress "
+"eller inställningen KohaAdminEmailAddress."
+
+#: intranet-tmpl/prog/en/modules/pos/registers.tt:56
+#, c-format
+msgid "Bankable"
+msgstr "Inlösningsbar"
+
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+#, c-format
+msgid "Bad request"
+msgstr "Felaktig begäran"
+
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+#, c-format
+msgid "Bad request"
+msgstr "Felaktig begäran"
+
+#: intranet-tmpl/prog/en/includes/chart.inc:16
+#, c-format
+msgid "Bar"
+msgstr "Stapel"
+
+#: intranet-tmpl/prog/en/columns.def:68
+#: intranet-tmpl/prog/en/includes/search_indexes.inc:96
+#: intranet-tmpl/prog/en/includes/search_indexes.inc:98
+#: intranet-tmpl/prog/en/modules/course_reserves/course-details.tt:79
+#: intranet-tmpl/prog/en/modules/rotating_collections/addItems.tt:102
+#: intranet-tmpl/prog/en/modules/tools/inventory.tt:181
+#: intranet-tmpl/prog/en/modules/tools/batchMod-del.tt:243
+#: intranet-tmpl/prog/en/modules/tools/stockrotation.tt:401
+#: intranet-tmpl/prog/en/modules/patroncards/edit-layout.tt:277
+#: intranet-tmpl/prog/en/modules/catalogue/itemsearch.tt:8
+#: intranet-tmpl/prog/en/modules/catalogue/itemsearch.tt:240
+#: intranet-tmpl/prog/en/modules/catalogue/issuehistory.tt:38
+#: intranet-tmpl/prog/en/modules/catalogue/detail.tt:248
+#: intranet-tmpl/prog/en/modules/catalogue/stockrotation.tt:31
+#: intranet-tmpl/prog/en/modules/members/readingrec.tt:57
+#: intranet-tmpl/prog/en/modules/members/holdshistory.tt:45
+#: intranet-tmpl/prog/en/modules/members/boraccount.tt:50
+#: intranet-tmpl/prog/en/modules/members/moremember.tt:807
+#: intranet-tmpl/prog/en/modules/members/accountline-details.tt:45
+#: intranet-tmpl/prog/en/modules/members/moremember-print.tt:42
+#: intranet-tmpl/prog/en/modules/members/pay.tt:52
+#: intranet-tmpl/prog/en/modules/reserve/request.tt:533
+#: intranet-tmpl/prog/en/modules/acqui/orderreceive.tt:151
+#: intranet-tmpl/prog/en/modules/acqui/orderreceive.tt:194
+#: intranet-tmpl/prog/en/modules/acqui/neworderempty.tt:262
+#: intranet-tmpl/prog/en/modules/circ/circulation.tt:929
+#: intranet-tmpl/prog/en/modules/circ/overdue.tt:62
+#: intranet-tmpl/prog/en/modules/circ/circulation_batch_checkouts.tt:103
+#: intranet-tmpl/prog/en/modules/circ/offline.tt:110
+#: intranet-tmpl/prog/en/modules/circ/offline.tt:154
+#: intranet-tmpl/prog/en/modules/circ/offline.tt:172
+#: intranet-tmpl/prog/en/modules/circ/branchtransfers.tt:180
+#: intranet-tmpl/prog/en/modules/circ/view_holdsqueue.tt:59
+#: intranet-tmpl/prog/en/modules/circ/view_holdsqueue.tt:98
+#: intranet-tmpl/prog/en/modules/circ/returns.tt:786
+#: intranet-tmpl/prog/en/modules/circ/article-requests.tt:112
+#: intranet-tmpl/prog/en/modules/circ/article-requests.tt:217
+#: intranet-tmpl/prog/en/modules/circ/request-article.tt:157
+#: intranet-tmpl/prog/en/modules/circ/on-site_checkouts.tt:36
+#: intranet-tmpl/prog/en/modules/reports/catalogue_out.tt:64
+#: intranet-tmpl/prog/en/modules/reports/cash_register_stats.tt:140
+#: intranet-tmpl/prog/en/modules/reports/itemslost.tt:71
+#: intranet-tmpl/prog/en/modules/labels/label-edit-batch.tt:118
+#: intranet-tmpl/prog/en/modules/labels/search.tt:59
+#: intranet-tmpl/prog/en/modules/labels/search.tt:60
+#: intranet-tmpl/prog/en/modules/labels/result.tt:70
+#: intranet-tmpl/prog/en/modules/offline_circ/list.tt:35
+#, c-format
+msgid "Barcode"
+msgstr "Streckkod"
+
+#. %1$s:  barcode | html 
+#: intranet-tmpl/prog/en/modules/circ/bookcount.tt:27
+#, c-format
+msgid "Barcode %s"
+msgstr "Streckkod %s"
+
+#. %1$s:  ITEM_DAT.barcode | html 
+#. %2$s:  IF ( ITEM_DAT.notforloantext ) 
+#. %3$s:  ITEM_DAT.notforloantext | html 
+#. %4$s:  END 
+#: intranet-tmpl/prog/en/modules/catalogue/moredetail.tt:57
+#, c-format
+msgid "Barcode %s %s%s %s"
+msgstr "Streckkod %s %s%s %s"
+
+#. For the first occurrence,
+#. %1$s:  overduesloo.barcode | html 
+#: intranet-tmpl/prog/en/modules/circ/branchoverdues.tt:50
+#: intranet-tmpl/prog/en/modules/circ/branchoverdues.tt:89
+#, c-format
+msgid "Barcode : %s "
+msgstr "Streckkod : %s "
+
+#: intranet-tmpl/prog/en/modules/tools/stockrotation.tt:380
+#, c-format
+msgid "Barcode file:"
+msgstr "Streckkodfil: "
+
+#: intranet-tmpl/prog/en/modules/tools/batchMod.tt:33
+#: intranet-tmpl/prog/en/modules/tools/inventory.tt:45
+#, c-format
+msgid "Barcode file: "
+msgstr "Streckkodfil: "
+
+#: intranet-tmpl/prog/en/modules/tools/batchMod.tt:44
+#: intranet-tmpl/prog/en/modules/circ/circulation_batch_checkouts.tt:75
+#, c-format
+msgid "Barcode list (one barcode per line): "
+msgstr "Streckkodlista (en streckkod per rad): "
+
+#: intranet-tmpl/prog/en/modules/circ/circulation.tt:308
+#, c-format
+msgid "Barcode not found"
+msgstr "Streckkod ej funnen "
+
+#: intranet-tmpl/prog/en/modules/circ/circulation.tt:431
+#, c-format
+msgid "Barcode not found. The following items were found by searching:"
+msgstr "Streckkod hittades inte. Följande exemplar hittades vid sökning:"
+
+#: intranet-tmpl/prog/en/includes/labels-toolbar.inc:10
+#, c-format
+msgid "Barcode range"
+msgstr "Streckkodsintervall"
+
+#: intranet-tmpl/prog/en/modules/circ/circulation.tt:1022
+#, c-format
+msgid "Barcode submitted"
+msgstr "Streckkod skickad"
+
+#: intranet-tmpl/prog/en/modules/labels/label-manage.tt:65
+#, c-format
+msgid "Barcode type"
+msgstr "Streckkodstyp"
+
+#: intranet-tmpl/prog/en/modules/patroncards/edit-layout.tt:307
+#, c-format
+msgid "Barcode type: "
+msgstr "Streckkodstyp: "
+
+#: intranet-tmpl/prog/en/modules/course_reserves/add_items-step2.tt:35
+#: intranet-tmpl/prog/en/modules/tools/stockrotation.tt:371
+#, c-format
+msgid "Barcode:"
+msgstr "Streckkod:"
+
+#: intranet-tmpl/prog/en/modules/rotating_collections/addItems.tt:75
+#: intranet-tmpl/prog/en/modules/members/maninvoice.tt:57
+#: intranet-tmpl/prog/en/modules/members/mancredit.tt:53
+#: intranet-tmpl/prog/en/modules/reports/itemslost.tt:124
+#: intranet-tmpl/prog/en/modules/labels/spinelabel-home.tt:23
+#, c-format
+msgid "Barcode: "
+msgstr "Streckkod: "
+
+#. For the first occurrence,
+#. %1$s:  reserveloo.item.barcode | html 
+#: intranet-tmpl/prog/en/includes/waiting_holds.inc:31
+#: intranet-tmpl/prog/en/modules/circ/transferstoreceive.tt:57
+#, c-format
+msgid "Barcode: %s "
+msgstr "Streckkod: %s "
+
+#: intranet-tmpl/prog/en/modules/catalogue/itemsearch.tt:223
+#: intranet-tmpl/prog/en/modules/catalogue/itemsearch.tt:240
+#, c-format
+msgid "Barcodes file"
+msgstr "Streckkodfil"
+
+#. %1$s:  batche.from | html 
+#. %2$s:  batche.to | html 
+#: intranet-tmpl/prog/en/modules/labels/label-print.tt:46
+#, c-format
+msgid "Barcodes from %s to %s"
+msgstr "Streckkod från %s till %s"
+
+#: intranet-tmpl/prog/en/modules/tools/batchMod-del.tt:38
+#: intranet-tmpl/prog/en/modules/tools/batchMod-edit.tt:117
+#, c-format
+msgid "Barcodes not found"
+msgstr "Streckkoder ej hittade"
+
+#: intranet-tmpl/prog/en/modules/tools/stockrotation.tt:503
+#, c-format
+msgid "Barcodes not found:"
+msgstr "Ej hittade streckkoder:"
+
+#: intranet-tmpl/prog/en/modules/virtualshelves/shelves.tt:405
+#, c-format
+msgid "Barcodes:"
+msgstr "Streckkoder:"
+
+#: intranet-tmpl/prog/en/modules/admin/aqbudgets.tt:72
+#, c-format
+msgid "Base-level allocated"
+msgstr "Basnivå tilldelad"
+
+#: intranet-tmpl/prog/en/modules/admin/aqbudgets.tt:77
+#, c-format
+msgid "Base-level available"
+msgstr "Basnivå tillgänglig"
+
+#: intranet-tmpl/prog/en/modules/admin/aqbudgets.tt:73
+#, c-format
+msgid "Base-level ordered"
+msgstr "Basnivå beställd"
+
+#: intranet-tmpl/prog/en/modules/admin/aqbudgets.tt:75
+#, c-format
+msgid "Base-level spent"
+msgstr "Basnivå förbrukad"
+
+#: intranet-tmpl/prog/en/modules/admin/marc_subfields_structure.tt:66
+#, c-format
+msgid "Basic constraints"
+msgstr "Grundläggande begränsningar"
+
+#: intranet-tmpl/prog/en/modules/installer/step3.tt:189
+#, c-format
+msgid "Basic installation complete."
+msgstr "Grundläggande installation slutförd."
+
+#: intranet-tmpl/prog/en/includes/admin-menu.inc:14
+#: intranet-tmpl/prog/en/modules/admin/admin-home.tt:59
+#, c-format
+msgid "Basic parameters"
+msgstr "Grundparametrar"
+
+#: intranet-tmpl/prog/en/includes/acquisitions-toolbar.inc:18
+#: intranet-tmpl/prog/en/modules/catalogue/detail.tt:630
+#: intranet-tmpl/prog/en/modules/serials/subscription-detail.tt:390
+#: intranet-tmpl/prog/en/modules/acqui/duplicate_orders.tt:142
+#: intranet-tmpl/prog/en/modules/acqui/duplicate_orders.tt:263
+#: intranet-tmpl/prog/en/modules/acqui/parcel.tt:116
+#: intranet-tmpl/prog/en/modules/acqui/parcel.tt:228
+#: intranet-tmpl/prog/en/modules/acqui/uncertainprice.tt:78
+#: intranet-tmpl/prog/en/modules/acqui/lateorders.tt:68
+#: intranet-tmpl/prog/en/modules/acqui/histsearch.tt:40
+#: intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tt:365
+#: intranet-tmpl/prog/en/modules/reports/orders_by_budget.tt:38
+#, c-format
+msgid "Basket"
+msgstr "Korg"
+
+#. For the first occurrence,
+#. %1$s:  basket.basketno | html 
+#: intranet-tmpl/prog/en/modules/acqui/duplicate_orders.tt:29
+#: intranet-tmpl/prog/en/modules/acqui/newordersuggestion.tt:16
+#: intranet-tmpl/prog/en/modules/acqui/z3950_search.tt:22
+#: intranet-tmpl/prog/en/modules/acqui/neworderempty.tt:18
+#: intranet-tmpl/prog/en/modules/acqui/neworderempty_duplicate.tt:10
+#: intranet-tmpl/prog/en/modules/acqui/newordersubscription.tt:17
+#: intranet-tmpl/prog/en/modules/acqui/addorderiso2709.tt:26
+#, c-format
+msgid "Basket %s"
+msgstr "Korg %s"
+
+#. %1$s:  basketname | html 
+#. %2$s:  basketno | html 
+#: intranet-tmpl/prog/en/modules/acqui/modordernotes.tt:15
+#, c-format
+msgid "Basket %s (%s)"
+msgstr "Korg %s (%s)"
+
+#. %1$s:  basket.basketname | html 
+#. %2$s:  basket.basketno | html 
+#. %3$s:  basket.bookseller.name | html 
+#: intranet-tmpl/prog/en/modules/acqui/cancelorder.tt:13
+#, c-format
+msgid "Basket %s (%s) for %s"
+msgstr "Korg %s (%s) för %s"
+
+#: intranet-tmpl/prog/en/modules/acqui/transferorder.tt:43
+#, c-format
+msgid "Basket (#)"
+msgstr "Korg (#)"
+
+#: intranet-tmpl/prog/en/modules/reports/orders_by_budget.tt:40
+#, c-format
+msgid "Basket by"
+msgstr "Korg av"
+
+#: intranet-tmpl/prog/en/includes/filter-orders.inc:14
+#, c-format
+msgid "Basket created by: "
+msgstr "Korg skapad av:"
+
+#: intranet-tmpl/prog/en/modules/acqui/duplicate_orders.tt:143
+#: intranet-tmpl/prog/en/modules/acqui/duplicate_orders.tt:264
+#: intranet-tmpl/prog/en/modules/acqui/histsearch.tt:41
+#, c-format
+msgid "Basket creator"
+msgstr "Korgskapare"
+
+#: intranet-tmpl/prog/en/modules/acqui/basket.tt:168
+#, c-format
+msgid "Basket deleted"
+msgstr "Korg raderad"
+
+#: intranet-tmpl/prog/en/modules/acqui/neworderempty.tt:40
+#, c-format
+msgid "Basket details"
+msgstr "Korginformation"
+
+#: intranet-tmpl/prog/en/modules/catalogue/detail.tt:629
+#: intranet-tmpl/prog/en/modules/acqui/duplicate_orders.tt:144
+#: intranet-tmpl/prog/en/modules/acqui/duplicate_orders.tt:265
+#: intranet-tmpl/prog/en/modules/acqui/parcel.tt:117
+#: intranet-tmpl/prog/en/modules/acqui/parcel.tt:229
+#: intranet-tmpl/prog/en/modules/acqui/booksellers.tt:93
+#: intranet-tmpl/prog/en/modules/acqui/lateorders.tt:69
+#: intranet-tmpl/prog/en/modules/acqui/histsearch.tt:42
+#, c-format
+msgid "Basket group"
+msgstr "Korggrupp"
+
+#. %1$s:  name | html 
+#. %2$s:  basketgroupid | html 
+#: intranet-tmpl/prog/en/modules/acqui/basketgroup.tt:151
+#, c-format
+msgid "Basket group %s (%s) for "
+msgstr "Korggrupp %s (%s) för "
+
+#: intranet-tmpl/prog/en/modules/acqui/basket.tt:378
+#, c-format
+msgid "Basket group billing place:"
+msgstr "Budgetställe för korggrupp:"
+
+#: intranet-tmpl/prog/en/modules/acqui/basket.tt:373
+#, c-format
+msgid "Basket group delivery placename:"
+msgstr "Leveransplats för korggrupp:"
+
+#: intranet-tmpl/prog/en/modules/acqui/parcel.tt:425
+#: intranet-tmpl/prog/en/modules/acqui/basketgroup.tt:198
+#, c-format
+msgid "Basket group name:"
+msgstr "Namn på korggrupp:"
+
+#: intranet-tmpl/prog/en/modules/acqui/parcel.tt:103
+#, c-format
+msgid "Basket group search"
+msgstr "Korggruppssökning"
+
+#: intranet-tmpl/prog/en/includes/filter-orders.inc:29
+#: intranet-tmpl/prog/en/modules/acqui/basket.tt:314
+#, c-format
+msgid "Basket group:"
+msgstr "Korggrupp:"
+
+#: intranet-tmpl/prog/en/modules/acqui/basketgroup.tt:128
+#, c-format
+msgid "Basket grouping"
+msgstr "Korggruppering"
+
+#: intranet-tmpl/prog/en/modules/acqui/basketgroup.tt:295
+#, c-format
+msgid "Basket grouping for "
+msgstr "Korggruppering för "
+
+#: intranet-tmpl/prog/en/includes/vendor-menu.inc:5
+#, c-format
+msgid "Basket groups"
+msgstr "Korggrupper"
+
+#: intranet-tmpl/prog/en/modules/reports/orders_by_budget.tt:39
+#, c-format
+msgid "Basket name"
+msgstr "Korgnamn"
+
+#: intranet-tmpl/prog/en/modules/acqui/parcel.tt:421
+#, c-format
+msgid "Basket name:"
+msgstr "Korgnamn:"
+
+#: intranet-tmpl/prog/en/modules/acqui/basketheader.tt:52
+#, c-format
+msgid "Basket name: "
+msgstr "Korgnamn: "
+
+#: intranet-tmpl/prog/en/includes/blocking_errors.inc:13
+#, c-format
+msgid "Basket not found."
+msgstr "Korg hittades inte."
+
+#: intranet-tmpl/prog/en/modules/acqui/parcel.tt:102
+#, c-format
+msgid "Basket search"
+msgstr "Korgsökning"
+
+#: intranet-tmpl/prog/en/includes/filter-orders.inc:13
+#: intranet-tmpl/prog/en/includes/acquisitions-search.inc:21
+#: intranet-tmpl/prog/en/modules/acqui/transferorder.tt:16
+#, c-format
+msgid "Basket: "
+msgstr "Korg: "
+
+#. %1$s:  msg.basketno.basketno | html 
+#: intranet-tmpl/prog/en/modules/acqui/edifactmsgs.tt:58
+#, c-format
+msgid "Basket: %s "
+msgstr "Korg: %s "
+
+#: intranet-tmpl/prog/en/modules/acqui/neworderempty.tt:54
+#, c-format
+msgid "Basketgroup: "
+msgstr "Korggrupp: "
+
+#: intranet-tmpl/prog/en/includes/vendor-menu.inc:4
+#, c-format
+msgid "Baskets"
+msgstr "Korgar"
+
+#. %1$s:  booksellertoname | html 
+#: intranet-tmpl/prog/en/modules/acqui/transferorder.tt:38
+#, c-format
+msgid "Baskets for %s"
+msgstr "Korgar för %s"
+
+#: intranet-tmpl/prog/en/modules/acqui/basketgroup.tt:251
+#, c-format
+msgid "Baskets in this group:"
+msgstr "Korgar i denna grupp:"
+
+#. %1$s:  batchid | html 
+#: intranet-tmpl/prog/en/modules/tools/showdiffmarc.tt:20
+#, c-format
+msgid "Batch %s"
+msgstr "Sats %s"
+
+#. %1$s:  batch_id | html 
+#: intranet-tmpl/prog/en/modules/labels/label-edit-batch.tt:45
+#, c-format
+msgid "Batch %s not fully de-duplicated."
+msgstr "Sats %s är inte helt de-duplicerad."
+
+#. %1$s:  batch_id | html 
+#: intranet-tmpl/prog/en/modules/labels/label-edit-batch.tt:39
+#, c-format
+msgid "Batch %s was not deleted."
+msgstr "Sats %s raderades inte."
+
+#: intranet-tmpl/prog/en/modules/patroncards/manage.tt:68
+#: intranet-tmpl/prog/en/modules/labels/label-manage.tt:74
+#, c-format
+msgid "Batch ID"
+msgstr "Sats-ID"
+
+#: intranet-tmpl/prog/en/modules/course_reserves/course-details.tt:37
+#, c-format
+msgid "Batch add reserves"
+msgstr "Lägg till sats med kursböcker"
+
+#: intranet-tmpl/prog/en/includes/circ-menu.inc:90
+#: intranet-tmpl/prog/en/modules/circ/circulation_batch_checkouts.tt:25
+#, c-format
+msgid "Batch check out"
+msgstr "Satsutlåning"
+
+#. %1$s:  IF patron 
+#. %2$s:  INCLUDE 'patron-title.inc' invert_name = 1 
+#. %3$s:  END 
+#: intranet-tmpl/prog/en/modules/circ/circulation_batch_checkouts.tt:92
+#, c-format
+msgid "Batch checkout confirmation %s for %s %s"
+msgstr "Bekräftelse för satsutlåning %s för %s %s"
+
+#. %1$s:  IF patron.borrowernumber 
+#. %2$s:  INCLUDE 'patron-title.inc' invert_name = 1 
+#. %3$s:  batch | html 
+#. %4$s:  END 
+#: intranet-tmpl/prog/en/modules/circ/circulation_batch_checkouts.tt:95
+#, c-format
+msgid "Batch checkout information %s for %s |%s|%s"
+msgstr "Information för satsutlåning %s for %s |%s|%s"
+
+#: intranet-tmpl/prog/en/modules/catalogue/results.tt:174
+#: intranet-tmpl/prog/en/modules/basket/basket.tt:23
+#, c-format
+msgid "Batch delete"
+msgstr "Satsradering"
+
+#: intranet-tmpl/prog/en/modules/patron_lists/lists.tt:81
+#, c-format
+msgid "Batch delete patrons "
+msgstr "Satsvis radering av låntagare "
+
+#: intranet-tmpl/prog/en/modules/tools/tools-home.tt:57
+#, c-format
+msgid "Batch delete patrons and delete patron circulation history"
+msgstr "Satsradering av låntagare och radering av lånehistorik för låntagare"
+
+#: intranet-tmpl/prog/en/modules/patroncards/edit-batch.tt:47
+#: intranet-tmpl/prog/en/modules/labels/label-edit-batch.tt:66
+#, c-format
+msgid "Batch description: "
+msgstr "Satsbeskrivning: "
+
+#: intranet-tmpl/prog/en/modules/catalogue/results.tt:173
+#, c-format
+msgid "Batch edit"
+msgstr "Batchredigering"
+
+#: intranet-tmpl/prog/en/modules/patron_lists/lists.tt:74
+#, c-format
+msgid "Batch edit patrons "
+msgstr "Redigera låntagare satsvis "
+
+#: intranet-tmpl/prog/en/includes/tools-menu.inc:39
+#: intranet-tmpl/prog/en/modules/tools/tools-home.tt:66
+#: intranet-tmpl/prog/en/modules/tools/batch_extend_due_dates.tt:23
+#: intranet-tmpl/prog/en/modules/tools/batch_extend_due_dates.tt:31
+#, c-format
+msgid "Batch extend due dates"
+msgstr "Förläng återlämningsdatum i batch"
+
+#. %1$s:  IF ( del ) 
+#. %2$s:  ELSE 
+#. %3$s:  END 
+#: intranet-tmpl/prog/en/modules/tools/batchMod.tt:27
+#, c-format
+msgid "Batch item %sdeletion%smodification%s"
+msgstr "Satsvis %sradering%smodifiering%s av exemplar"
+>>>>>>> d51d4bf9f5... Borrower-completion backend/UI adjustments
 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tt:1029
 #: koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-edit.tt:27
@@ -29426,12 +30119,12 @@ msgstr "Färre alternativ"
 #: intranet-tmpl/prog/en/includes/borrower-completion.inc:32
 #, c-format
 msgid "Fetch borrower data"
-msgstr "Hämta låntagaruppgifter"
+msgstr "Hämta folkbokföringsuppgifter"
 
 #. SCRIPT
 #: intranet-tmpl/prog/en/includes/borrower-completion.inc:4
 msgid "Fetching borrower data ..."
-msgstr "Hämtar låntagaruppgifter"
+msgstr "Hämtar folkbokföringsuppgifter"
 
 #: intranet-tmpl/prog/en/modules/catalogue/advsearch.tt:53
 #: koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/advsearch.tt:228
@@ -58030,6 +58723,11 @@ msgstr "Beställningen har annullerats, trots att posten inte tagits bort."
 msgid "The order has been successfully canceled."
 msgstr "Beställningen har annullerats."
 
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "The resource was not found"
+msgstr "Resursen kunde inte hittas"
+
 #. %1$s:  ELSE 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/acqui/cancelorder.tt:60
 #, c-format
@@ -58284,6 +58982,7 @@ msgstr "Rapporten \"%s\" har konverterats. "
 msgid "The requested message cannot be displayed"
 msgstr "Det begärda meddelandet kan inte visas"
 
+<<<<<<< HEAD
 #. %1$s:  fail_methods.join(', ') | html 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/ill/ill-requests.tt:517
 #, c-format
@@ -58295,6 +58994,12 @@ msgstr "Det begärda meddelandet lades INTE i kö för leverans av %s "
 #, c-format
 msgid "The requested notice was queued for delivery by %s "
 msgstr "Det begärda meddelandet lades i kö för leverans av %s "
+=======
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "The resource was not found"
+msgstr "Resursen kunde inte hittas"
+>>>>>>> d51d4bf9f5... Borrower-completion backend/UI adjustments
 
 #. %1$s:  ELSE 
 #. %2$s:  END 
@@ -58331,7 +59036,31 @@ msgstr "Reglerna har klonats."
 msgid "The secondary email is invalid."
 msgstr "Den sekundära e-postadressen är ogiltig."
 
+<<<<<<< HEAD
 #: koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-detail.tt:67
+=======
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "The service is currently unavailable, try again later"
+msgstr "Tjänsten är för närvarande otillgänglig, försök igen senare"
+
+#. SCRIPT
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "The service is currently unavailable, try again later"
+msgstr "Tjänsten är för närvarande otillgänglig, försök igen senare"
+
+#. SCRIPT
+#: intranet-tmpl/prog/en/modules/tools/marc_modification_templates.tt:337
+msgid "The source field should be filled."
+msgstr "Källfältet ska vara ifyllt."
+
+#. SCRIPT
+#: intranet-tmpl/prog/en/modules/tools/marc_modification_templates.tt:337
+msgid "The source subfield should be filled for update."
+msgstr "Det underliggande källfältet ska vara ifyllt för uppdatering."
+
+#: intranet-tmpl/prog/en/modules/serials/subscription-detail.tt:48
+>>>>>>> d51d4bf9f5... Borrower-completion backend/UI adjustments
 #, c-format
 msgid "The subscription has linked issues"
 msgstr "Prenumerationen har länkade nummer"
@@ -64660,6 +65389,7 @@ msgid "You have unsaved changes are you sure you want to navigate away?"
 msgstr ""
 "Du har osparade ändringar. Är du säker på att du vill navigera bort från dem?"
 
+<<<<<<< HEAD
 #. SCRIPT
 #: koha-tmpl/intranet-tmpl/prog/en/modules/tools/inventory.tt:339
 msgid ""
@@ -64670,6 +65400,17 @@ msgstr ""
 "ett av alternativen."
 
 #: koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tt:40
+=======
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "You lack permissions for this operation"
+msgstr "Behörighet saknas för denna åtgärd"
+
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:7
+msgid "You lack permissions for this operation"
+msgstr "Behörighet saknas för denna åtgärd"
+
+#: intranet-tmpl/prog/en/modules/admin/admin-home.tt:29
+>>>>>>> d51d4bf9f5... Borrower-completion backend/UI adjustments
 #, c-format
 msgid "You haven't decided if you want to activate Mana Knowledge Base. "
 msgstr "Du har inte bestämt om du vill aktivera Mana Knowledge Base. "
