@@ -4303,6 +4303,11 @@ div .suggestion_note {
 @import "toolbar";
 @import "forms";
 
+.form-completer-updated {
+    outline: 2px #966b9d dotted;
+    outline-offset: 3px;
+}
+
 @media (min-width: 200px) {
 
 }

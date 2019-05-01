@@ -1,16 +1,28 @@
+[% USE raw %]
 [% USE Asset %]
+[% Asset.css("css/humanmsg.css") | $raw %]
+[% Asset.js("lib/jquery/plugins/humanmsg.js") | $raw %]
 [% Asset.js("js/ajax.js") %]
 [% Asset.js("js/form-completer.js") %]
 <script type="text/javascript">
     //<![CDATA[
         var MSG_FETCHING_BORROWER_DATA = _("Fetching borrower data ...");
+	var MSG_BAD_REQUEST = _("Bad request");
+	var MSG_UNAUTHORIZED = _("Authentication required, log in and try again");
+	var MSG_FORBIDDEN = _("You lack permissions for this operation");
+	var MSG_NOT_FOUND = _("The resource was not found");
+	var MSG_SERVICE_UNAVAILABLE = _("The service is currently unavailable, try again later");
     //]]>
     $(document).ready(function() {
       new FormCompleter({
 	"modal": "#fetch-borrower-data-modal",
-	"form_id": "entryform",
+	"form_id": ["entryform", "quick_add_form"],
 	"url": "/api/v1/borrower_completion",
-	"fetch_msg": MSG_FETCHING_BORROWER_DATA
+	"fetch_msg": MSG_FETCHING_BORROWER_DATA,
+	"id_field": {
+	  "name": "patron_attr_",
+	  "attrname": "PERSNUMMER"
+	}
       });
     });
 </script>
