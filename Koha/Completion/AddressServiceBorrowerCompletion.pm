@@ -51,6 +51,29 @@ sub normalize_pnr {
     return undef;
 }
 
+sub name_capitalization {
+    my $name = shift;
+
+    my $s = '';
+    my $first = 1;
+
+    while (length($name) > 0) {
+	my $c = substr($name, 0, 1);
+	$name = substr($name, 1);
+	if (!($c =~ /^\p{XPosixAlpha}+$/)) {
+	    $first = 1;
+	    $s .= $c;
+	} elsif ($first) {
+	    $first = 0;
+	    $s .= uc($c);
+	} else {
+	    $s .= lc($c);
+	}
+    }
+
+    return $s;
+}
+
 sub fetch_completions {
     my $id = shift;
     my $logger = Koha::Logger->get({ category => 'Koha.Completion.AddressServiceBorrowerCompletion'});
@@ -90,18 +113,22 @@ sub fetch_completions {
 	};
 
 	my %map = (
-	    'ENamn' => 'surname',
-	    'FNamn' => 'firstname',
-	    'PostAdress' => 'city',
-	    'GatuAdress' => 'address',
-	    'PostNr' => 'address2'
+	    'ENamn' => ['surname', 1],
+	    'FNamn' => ['firstname', 1],
+	    'PostAdress' => ['city', 1],
+	    'GatuAdress' => ['address', 1],
+	    'PostNr' => ['address2', 0]
         );
 	
 	while (my ($srcname, $targetname) = each %map) {
 	    if (defined($resp->result->{$srcname})) {
+		my $val = $resp->result->{$srcname};
+		if ($targetname->[1]) {
+		    $val = name_capitalization($val);
+		}
 		push @form_fields, {
-		    'name' => $targetname,
-		    'value' => $resp->result->{$srcname}
+		    'name' => $targetname->[0],
+		    'value' => $val
 		}
 	    }
 	}
