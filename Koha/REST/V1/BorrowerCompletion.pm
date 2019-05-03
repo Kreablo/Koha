@@ -42,15 +42,18 @@ sub fetch {
 	);
 
     for my $compl (@{$completions->{form_fields}}) {
-	if ($compl->{'name'} eq dateofbirth) {
-	    $compl->{'value'} =  output_pref($parser->parse_datetime($compl->{'value'}));
+	if ($compl->{'name'} eq 'dateofbirth') {
+	    $compl->{'value'} =  output_pref({
+		dt => $parser->parse_datetime($compl->{'value'}),
+		dateonly => 1
+		});
 	}
     }
     
     return $c->render( status => 200,
 		       openapi => {
 			   form_id => "entryform",
-			   form_fields => $completions->form_fields
+			   form_fields => $completions->{form_fields}
 		       }
 	);
 }
