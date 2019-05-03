@@ -12,6 +12,7 @@
 	var MSG_FORBIDDEN = _("You lack permissions for this operation");
 	var MSG_NOT_FOUND = _("The resource was not found");
 	var MSG_SERVICE_UNAVAILABLE = _("The service is currently unavailable, try again later");
+	var MSG_INTERNAL_SERVER_ERROR = _("Internal server error");
     //]]>
     $(document).ready(function() {
       new FormCompleter({
