@@ -11,6 +11,23 @@
     "id_field": null
   };
 
+  if (!String.prototype.startsWith) {
+    Object.defineProperty(String.prototype, 'startsWith', {
+      value: function(search, pos) {
+	pos = !pos || pos < 0 ? 0 : +pos;
+	return this.substring(pos, pos + search.length) === search;
+      }
+    });
+  }
+  if (!String.prototype.endsWith) {
+    String.prototype.endsWith = function(search, this_len) {
+      if (this_len === undefined || this_len > this.length) {
+	this_len = this.length;
+      }
+      return this.substring(this_len - search.length, this_len) === search;
+    };
+  }
+
   function FormCompleter(opts) {
 
     var keys = Object.keys(opts);
@@ -24,7 +41,9 @@
 
     this.opts = $.extend({}, defaults, opts);
 
-    for (var opt in ["modal", "form_id", "url"]) {
+    var required = ["modal", "form_id", "url"];
+    for (var i = 0; i < required.length; i += 1) {
+      var opt = required[i];
       if (this.opts[opt] === null) {
 	throw new Error("Missing required option: " + opt);
       }
@@ -50,7 +69,6 @@
       form_id = '#' + this.opts.form_id;
     }
     this.form_id = form_id;
-    console.log("form id: " + form_id);
 
     var self = this;
     var $modal_form = this.opts.modal_form_id !== null ? $("#" + this.opts.modal_form_id) : $modal.parents("form");
@@ -106,7 +124,6 @@
     $(this.opts.modal).modal('hide');
     for (var i = 0; i < data.form_fields.length; i+=1) {
       var f = data.form_fields[i];
-      console.log('[name="' + f.name + '"]');
       
       var $input = this.input_for(f);
 
@@ -127,7 +144,6 @@
       $form.each(function (index, form) {
 	var names = [];
 	$(form).find('[value="' + f.attrname + '"]').each(function (index, element) {
-	  console.log('element.name ' + element.name);
 	  if (element.name.startsWith(f.name) && element.name.endsWith('_code')) {
 	    var name = element.name.substring(0, element.name.length - '_code'.length);
 	    if (names.indexOf(name) < 0) {
@@ -135,10 +151,8 @@
 	    }
 	  }
 	});
-	console.log(JSON.stringify(names));
 	for (var i = 0; i < names.length; i+=1) {
 	  var name = names[i];
-	  console.log("setting " + '[name="' + name + '"]' + " to " + f.value);
 	  var $inputs = $(form).find('[name="' + name + '"]');
 	  for (var j = 0;  j < $inputs.length; j+=1) {
 	    inputs.push($inputs.get(j));
