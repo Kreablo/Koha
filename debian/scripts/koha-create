@@ -826,6 +826,7 @@ then
     }; then
         echo "Warning: problem enabling $name in Apache" >&2
     fi
+    sleep 2
     service apache2 restart
 
     # Start Zebra.
