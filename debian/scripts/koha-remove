@@ -17,8 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-set -e
-
 # include helper functions
 if [ -f "/usr/share/koha/bin/koha-functions.sh" ]; then
     . "/usr/share/koha/bin/koha-functions.sh"
@@ -130,6 +128,10 @@ eof
         rm -r "/var/cache/koha/$name"
     [ -d "/var/run/koha/$name" ] && \
         rm -r "/var/run/koha/$name"
+    [ -d "/etc/apache2/vhost.d/${name}-intra" ] && \
+	rm -r "/etc/apache2/vhost.d/${name}-intra"
+    [ -d "/etc/apache2/vhost.d/${name}-opac" ] && \
+	rm -r "/etc/apache2/vhost.d/${name}-opac"
     [ "$purgeall" = "1" ] && [ -d "/var/lib/koha/$name" ] && \
         rm -r "/var/lib/koha/$name"
     [ "$purgeall" = "1" ] && [ -d "/var/spool/koha/$name" ] && \
