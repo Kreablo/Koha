@@ -122,7 +122,7 @@ generate_config_file() {
 }
 
 getmysqlhost() {
-    if [ ! -f /etc/mysql/debian.cnf ]
+    if [ ! -f /etc/mysql/koha-common.cnf ]
     then
         echo localhost
         return
@@ -145,6 +145,14 @@ getinstancemysqluser() {
 
 getinstancemysqldatabase() {
     xmlstarlet sel -t -v 'yazgfs/config/database' "/etc/koha/sites/$1/koha-conf.xml"
+}
+
+getinstancemysqlport() {
+    xmlstarlet sel -t -v 'yazgfs/config/port' "/etc/koha/sites/$1/koha-conf.xml"
+}
+
+getinstancemysqlhost() {
+    xmlstarlet sel -t -v 'yazgfs/config/hostname' "/etc/koha/sites/$1/koha-conf.xml"
 }
 
 check_apache_config()
@@ -700,13 +708,15 @@ then
     # something.
     mysqluser=$(getinstancemysqluser $name)
     mysqldb=$(getinstancemysqldatabase $name)
+    mysqlhost=$(getinstancemysqlhost $name)
+    mysqlport=$(getinstancemysqlport $name)
     # Use the default database content if that exists.
     if [ -e "$DEFAULTSQL" ]
     then
         # Populate the database with default content.
         zcat -f "$DEFAULTSQL" |
         sed "s/__KOHASITE__/koha_$name/g" |
-        mysql --host="$mysqlhost" --user="$mysqluser" --password="$mysqlpwd" "$mysqldb"
+        mysql --host="$mysqlhost" --port="$mysqlport" --user="$mysqluser" --password="$mysqlpwd" "$mysqldb"
 
 
         # Change the default user's password.
@@ -715,7 +725,7 @@ then
                       perl -e '
                             use Digest::MD5 qw(md5_base64); 
                             while (<>) { print md5_base64($_), "\n"; }')
-        mysql --host="$mysqlhost" --user="$mysqluser" \
+        mysql --host="$mysqlhost" --port="$mysqlport" --user="$mysqluser" \
 --password="$mysqlpwd" <<eof
 USE \`$mysqldb\`;
 UPDATE borrowers 
