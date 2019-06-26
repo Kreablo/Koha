@@ -65,6 +65,7 @@ Options:
   --configfile cfg_file     Specify an alternate config file for reading default values.
   --passwdfile passwd       Specify an alternate passwd file.
   --dbhost host             Enforce the use of the specified DB server
+  --dbport port             Override portnumber for DB server
   --database dbname         Enforce the use of the specified DB name (64 char limit)
   --adminuser n             Explicit the admin user ID in the DB. Relevant in
                             conjunction with --defaultsql and --populate-db.
@@ -104,6 +105,7 @@ generate_config_file() {
         -e "s/__API_SECRET__/$API_SECRET/g" \
         -e "s/__DB_NAME__/$mysqldb/g" \
         -e "s/__DB_HOST__/$mysqlhost/g" \
+        -e "s/__DB_PORT__/$mysqlport/g" \
         -e "s/__DB_USER__/$mysqluser/g" \
         -e "s/__DB_PASS__/$mysqlpwd/g" \
         -e "s/__ELASTICSEARCH_SERVER__/${ELASTICSEARCH_SERVER}/g" \
@@ -387,7 +389,7 @@ fi
 
 [ $# -ge 1 ] && [ $# -le 16 ] || ( usage ; die "Error: wrong parameters" )
 
-TEMP=`getopt -o chrpm:l:d:f:b:a: -l create-db,request-db,populate-db,use-db,enable-sru,sru-port:,help,marcflavor:,auth-idx:,biblio-idx:,zebralang:,defaultsql:,configfile:,passwdfile:,dbhost:,database:,elasticsearch-server:,adminuser:,memcached-servers:,memcached-prefix:,template-cache-dir:,timezone:,upload-path:,tmp-path:,letsencrypt, \
+TEMP=`getopt -o chrpm:l:d:f:b:a: -l create-db,request-db,populate-db,use-db,enable-sru,sru-port:,help,marcflavor:,auth-idx:,biblio-idx:,zebralang:,defaultsql:,configfile:,passwdfile:,dbhost:,dbport:,database:,elasticsearch-server:,adminuser:,memcached-servers:,memcached-prefix:,template-cache-dir:,timezone:,upload-path:,tmp-path:,letsencrypt, \
      -n "$0" -- "$@"`
 
 # Note the quotes around `$TEMP': they are essential!
@@ -437,6 +439,8 @@ while true ; do
             CLO_DATABASE="$2" ; shift 2 ;;
         --dbhost)
             CLO_DBHOST="$2" ; shift 2 ;;
+        --dbport)
+            CLO_DBPORT="$2" ; shift 2 ;;
         -a|--adminuser)
             CLO_ADMINUSER="$2" ; shift 2 ;;
         --enable-sru)
@@ -589,6 +593,11 @@ fi
 if [ "$CLO_DBHOST" != "" ]
 then
     mysqlhost="$CLO_DBHOST"
+fi
+
+if [ "$CLO_DBPORT" != "" ]
+then
+    mysqlport="$CLO_DBPORT"
 fi
 
 if [ "$mysqlhost" = "" ]
