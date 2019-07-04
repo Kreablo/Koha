@@ -69,6 +69,8 @@ Options:
   --database dbname         Enforce the use of the specified DB name (64 char limit)
   --adminuser n             Explicit the admin user ID in the DB. Relevant in
                             conjunction with --defaultsql and --populate-db.
+  --defaultsql-creds src    Which source should be used for database credentials to use
+                            when populating the database with --defaultsql.  (default|instance)
   --template-cache-dir      Set a user defined template_cache_dir. It defaults to
                             /var/cache/koha/<instance>/templates
   --timezone time/zone      Specify a timezone. e.g. America/Argentina
@@ -405,7 +407,7 @@ fi
 
 [ $# -ge 1 ] && [ $# -le 16 ] || ( usage ; die "Error: wrong parameters" )
 
-TEMP=`getopt -o chrpm:l:d:f:b:a: -l create-db,request-db,populate-db,use-db,enable-sru,sru-port:,help,marcflavor:,auth-idx:,biblio-idx:,zebralang:,defaultsql:,configfile:,passwdfile:,dbhost:,dbport:,database:,elasticsearch-server:,adminuser:,memcached-servers:,memcached-prefix:,template-cache-dir:,timezone:,upload-path:,tmp-path:,letsencrypt, \
+TEMP=`getopt -o chrpm:l:d:f:b:a: -l create-db,request-db,populate-db,use-db,enable-sru,sru-port:,help,marcflavor:,auth-idx:,biblio-idx:,zebralang:,defaultsql:,defaultsql-creds:,configfile:,passwdfile:,dbhost:,dbport:,database:,elasticsearch-server:,adminuser:,memcached-servers:,memcached-prefix:,template-cache-dir:,timezone:,upload-path:,tmp-path:,letsencrypt, \
      -n "$0" -- "$@"`
 
 # Note the quotes around `$TEMP': they are essential!
@@ -424,6 +426,7 @@ CLO_TMP_PATH=""
 CLO_LETSENCRYPT=""
 CLO_TEMPLATE_CACHE_DIR=""
 CLO_TIMEZONE=""
+CLO_DEFAULTSQL_CREDS=""
 
 while true ; do
     case "$1" in
@@ -447,6 +450,8 @@ while true ; do
             CLO_ZEBRA_LANGUAGE="$2" ; shift 2 ;;
         -d|--defaultsql)
             CLO_DEFAULTSQL="$2" ; shift 2 ;;
+        --defaultsql-creds)
+            CLO_DEFAULTSQL_CREDS="$2" ; shift 2 ;;
         -f|--configfile)
             configfile="$2" ; shift 2 ;;
         -s|--passwdfile)
@@ -505,6 +510,12 @@ fi
 if [ "$CLO_DEFAULTSQL" != "" ]
 then
     DEFAULTSQL="$CLO_DEFAULTSQL"
+fi
+if [ "$CLO_DEFAULTSQL_CREDS" != "" ]
+then
+    DEFAULTSQL_CREDS="$CLO_DEFAULTSQL_CREDS"
+else
+    DEFAULTSQL_CREDS="default"
 fi
 if [ "$CLO_ADMINUSER" != "" ]
 then
@@ -587,6 +598,7 @@ then
     mysqlpwd=`echo $passwdline | cut -d ":" -f 3`
     mysqldb=`echo $passwdline | cut -d ":" -f 4`
     mysqlhost=`echo $passwdline | cut -d ":" -f 5`
+    mysqlport=`echo $passwdline | cut -d ":" -f 6`
 fi
 
 # The order of precedence for MySQL database name is:
@@ -743,10 +755,15 @@ then
     # Use the default database content if that exists.
     if [ -e "$DEFAULTSQL" ]
     then
+	if [ "$DEFAULTSQL_CREDS" = "instance" ] ; then
+	    mysqlcmd="koha-mysql $(printf %q $name)"
+	else
+	    mysqlcmd="mysql --host=$(printf %q $mysqlhost) --user=$(printf %q $mysqluser) --port=$(printf %q $mysqlport) --password=$(printf %q $mysqlpwd) $(printf %q $mysqldb)"
+	fi
         # Populate the database with default content.
         zcat -f "$DEFAULTSQL" |
         sed "s/__KOHASITE__/koha_$name/g" |
-        mysql --host="$mysqlhost" --port="$mysqlport" --user="$mysqluser" --password="$mysqlpwd" "$mysqldb"
+	$mysqlcmd
 
 
         # Change the default user's password.
@@ -755,8 +772,7 @@ then
                       perl -e '
                             use Digest::MD5 qw(md5_base64); 
                             while (<>) { print md5_base64($_), "\n"; }')
-        mysql --host="$mysqlhost" --port="$mysqlport" --user="$mysqluser" \
---password="$mysqlpwd" <<eof
+	$mysqlcmd <<eof
 USE \`$mysqldb\`;
 UPDATE borrowers 
 SET password = '$staffdigest' 
