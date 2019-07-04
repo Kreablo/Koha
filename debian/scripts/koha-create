@@ -137,6 +137,22 @@ getmysqlhost() {
         /etc/mysql/koha-common.cnf
 }
 
+getmysqlport() {
+    if [ -e /etc/mysql/koha-common.cnf ]
+    then
+        port=$(awk '
+            BEGIN { FS="=" }
+            $1 ~/\[/ { inclient=0 }
+            $1 ~/\[client\]/ { inclient=1; next }
+            inclient==1 && $1 ~/port/ { gsub(/ /, "", $2); print $2 }' \
+            /etc/mysql/koha-common.cnf)
+    else
+        port=3306
+    fi
+
+    echo $port
+}
+
 getinstancemysqlpassword() {
     xmlstarlet sel -t -v 'yazgfs/config/pass' "/etc/koha/sites/$1/koha-conf.xml"
 }
@@ -605,6 +621,11 @@ then
     mysqlhost="$(getmysqlhost)"
 fi
 
+if [ "$mysqlport" = "" ]
+then
+    mysqlport="$(getmysqlport)"
+fi
+
 if [ "$op" = create ] || [ "$op" = request ] || [ "$op" = use ]
 then
     if [ "$mysqlpwd" = "" ]
@@ -693,7 +714,7 @@ eof
         touch "$name-db-request.txt"
         chmod 0600 "$name-db-request.txt"
         cat > "$name-db-request.txt" << eof
-Please create a MySQL database and user on $mysqlhost as follows:
+Please create a MySQL database and user on $mysqlhost port $mysqlport as follows:
 
 database name: $mysqldb
 database user: $mysqluser
