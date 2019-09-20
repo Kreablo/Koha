@@ -46,7 +46,7 @@ sub normalize_pnr {
 	    }
 	}
 
-	return ("$y$m$d-$n", "$y$m$d$n", "$y-$m-$d");
+	return (sprintf('%04d%02d%02d-%04d', $y, $m, $d, $n), sprintf('%04d%02d%02d%04d', $y, $m, $d, $n), sprintf('%04d-%02d-%02d', $y, $m, $d));
     }
     return undef;
 }
@@ -95,7 +95,11 @@ sub fetch_completions {
 	my $resp = $soap->call('GetAddress', SOAP::Data->name('pnr')->value($pnrn));
 
 	if ($resp->fault) {
-	    my $msg = $resp->faultcode . ' ' . $resp->faultstring;
+	    my $detail = '';
+	    for my $k (keys %{$resp->faultdetail->{error}}) {
+		$detail .= "$k: " . $resp->faultdetail->{error}->{$k} . "\n"
+	    }
+	    my $msg = $resp->faultcode . ' ' . $resp->faultstring . ":\n" . $detail;
 	    $logger->error($msg);
 	    return { error => $msg, status => 500 };
 	}
