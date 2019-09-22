@@ -212,7 +212,16 @@ is_plack_enabled_opac()
             "$instancefile" ; then
         return 0
     else
-        return 1
+        (
+            cd /etc/apache2
+            shopt -s nullglob
+            for i in $(perl -lne '/^\s*Include(?:Optional)?\s+"?([^"]*)"?/ and print $1' "$instancefile"); do
+                if is_plack_enabled_opac $i; then
+                    return 0
+                fi
+            done
+            return 1
+        )
     fi
 }
 
@@ -229,7 +238,16 @@ is_plack_enabled_intranet()
             "$instancefile" ; then
         return 0
     else
-        return 1
+        (
+            cd /etc/apache2
+            shopt -s nullglob
+            for i in $(perl -nle '/^\s*Include(?:Optional)?\s+"?([^"]*)"?/ and print $1' "$instancefile"); do
+                if is_plack_enabled_intranet $i; then
+                    return 0
+                fi
+            done
+            return 1
+        )
     fi
 }
 
