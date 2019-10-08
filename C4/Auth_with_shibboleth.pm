@@ -27,6 +27,7 @@ use C4::Letters qw( GetPreparedLetter EnqueueLetter SendQueuedMessages );
 use C4::Members::Messaging;
 use Carp            qw( carp );
 use List::MoreUtils qw( any );
+use HKR::SAML;
 
 use Koha::Logger;
 
@@ -57,6 +58,8 @@ sub logout_shib {
     my $return  = _get_return($query);
     print $query->redirect( $uri . "/Shibboleth.sso/Logout?return=$return" );
 }
+
+our $login_shib;
 
 # Returns Shibboleth login URL with callback to the requesting URL
 sub login_shib_url {
@@ -140,6 +143,8 @@ sub _autocreate {
 
     my $patron = Koha::Patron->new( \%borrower )->store;
     $patron->discard_changes;
+
+    HKR::SAML::mark_patron( $patron );
 
     C4::Members::Messaging::SetMessagingPreferencesFromDefaults(
         {

@@ -25,6 +25,7 @@ use C4::Output      qw( output_html_with_http_headers );
 use Koha::DateUtils qw( dt_from_string );
 use Koha::Exceptions::Patron;
 use Koha::Patrons;
+use HKR::SAML;
 
 my $query = CGI->new;
 my $op    = $query->param('op') // q{};
@@ -41,6 +42,9 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 my $patron = Koha::Patrons->find($borrowernumber)
     or Koha::Exceptions::Patron->throw("Patron id $borrowernumber not found");
 
+
+my $patron_is_marked = HKR::SAML::patron_is_marked($patron);
+
 # Get consent types and values
 my @consents;
 my $consent_types = Koha::Patron::Consents->available_types;
@@ -48,10 +52,9 @@ foreach my $consent_type ( sort keys %$consent_types ) {
     push @consents, $patron->consent($consent_type);
 }
 
-my $needs_redirect;
-
-# Handle saves here
-if ( $op && $op eq 'cud-save' ) {
+if ( uc $query->request_method eq 'POST' )  {
+    # Handle saves here
+    my $needs_redirect;
     foreach my $consent (@consents) {
         my $check = $vars->{ "check_" . $consent->type };
         next if !defined($check);    # no choice made
@@ -69,14 +72,18 @@ if ( $op && $op eq 'cud-save' ) {
             }
         )->store;
     }
+
+    if ( !HKR::SAML::check_and_store_consent( $patron, $vars ) ) {
+        $needs_redirect = 1;
+    }
+
+    # If user refused GDPR consent and we enforce GDPR, logout (when saving)
+    if ($needs_redirect) {
+        print $query->redirect('/cgi-bin/koha/opac-main.pl?logout.x=1');
+        exit;
+    }
 }
 
-# If user refused GDPR consent and we enforce GDPR, logout (when saving)
-if ($needs_redirect) {
-    print $query->redirect('/cgi-bin/koha/opac-main.pl?logout.x=1');
-    exit;
-}
-
-$template->param( patron => $patron, consents => \@consents, consent_types => $consent_types );
+$template->param( patron => $patron, consents => \@consents, consent_types => $consent_types, patron_is_marked => $patron_is_marked );
 
 output_html_with_http_headers $query, $cookie, $template->output, undef, { force_no_caching => 1 };

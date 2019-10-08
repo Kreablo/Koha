@@ -57,6 +57,8 @@ use Koha::Token;
 use Koha::Exceptions::Token;
 use Koha::Session;
 
+use HKR::SAML;
+
 # use utf8;
 
 use vars qw($ldap $cas $caslogout);
@@ -248,13 +250,19 @@ sub get_template_and_user {
         && $in->{'template_name'} !~ /^(opac-page|opac-patron-consent|sc[io]\/)/
         && C4::Context->preference('PrivacyPolicyConsent') eq 'Enforced' )
     {
+        my $borrowernumber = getborrowernumber($user);
         my $consent = Koha::Patron::Consents->search(
             {
-                borrowernumber => getborrowernumber($user),
+                borrowernumber => $borrowernumber,
                 type           => 'GDPR_PROCESSING',
                 given_on       => { '!=', undef },
             }
         )->next;
+        if ( $consent ) {
+            if (!HKR::SAML::check_user_completion( $borrowernumber )) {
+                $consent = 0;
+            }
+        }
         if ( !$consent ) {
             print $in->{query}->redirect( -uri => '/cgi-bin/koha/opac-patron-consent.pl', -cookie => $cookie );
             safe_exit;
@@ -2068,7 +2076,7 @@ Missing POD for checkpw.
 =cut
 
 sub checkpw {
-    my ( $userid, $password, $query, $type, $no_set_userenv ) = @_;
+    my ( $userid, $password, $query, $type, $no_set_userenv, $api_auth ) = @_;
     $type = 'opac' unless $type;
 
     # Get shibboleth login attribute
@@ -2078,9 +2086,18 @@ sub checkpw {
     my $anonymous_patron = C4::Context->preference('AnonymousPatron');
 
     my @return;
-    my $check_internal_as_fallback = 0;
-    my $passwd_ok                  = 0;
     my $patron;
+    my $internal = 0;
+    if ( defined $userid ) {
+        $patron = Koha::Patrons->find( { userid     => $userid } );
+        $patron = Koha::Patrons->find( { cardnumber => $userid } ) unless $patron;
+        # INTERNAL CHECK: users blocked login with
+        # password (ie., shibboleth only) is disabled from SIP and
+        # ILS-DI.  We rely on $no_set_userenv for this, note above.
+        $internal = $api_auth || !HKR::SAML::userid_is_marked( $userid );
+    }
+    my $check_internal_as_fallback = $internal;
+    my $passwd_ok                  = 0;
 
     # Note: checkpw_* routines returns:
     # 1 if auth is ok

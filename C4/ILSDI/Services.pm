@@ -407,7 +407,7 @@ sub AuthenticatePatron {
     my ($cgi)    = @_;
     my $username = $cgi->param('username');
     my $password = $cgi->param('password');
-    my ( $status, $cardnumber, $userid, $patron ) = C4::Auth::checkpw( $username, $password );
+    my ( $status, $cardnumber, $userid, $patron ) = C4::Auth::checkpw( $username, $password, undef, undef, 1, 1 );
     if ( defined $status && $status == 1 ) {
 
         # Track the login
