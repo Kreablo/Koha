@@ -23,41 +23,67 @@
             </div>
             <div class="span10">
                 [% IF Koha.Preference( 'EnhancedMessagingPreferencesOPAC' )  %]
-                <div id="usermessaging" class="maincontent">
-                    <h3>Your messaging settings</h3>
-                    [% IF ( settings_updated ) %]
-                        <div class="alert alert-success"><h4>Settings updated</h4></div>
-                    [% END %]
-                    <form action="/cgi-bin/koha/opac-messaging.pl" method="post" name="opacmessaging">
-                        <input type="hidden" name="csrf_token" value="[% csrf_token | html %]" />
-                        <input type="hidden" name="modify" value="yes" />
+                    <div id="usermessaging" class="maincontent">
+                        <h3>Your messaging settings</h3>
+                        [% IF ( settings_updated ) %]
+                            <div class="alert alert-success"><h4>Settings updated</h4></div>
+                        [% END %]
+                        <form action="/cgi-bin/koha/opac-messaging.pl" method="post" name="opacmessaging">
+                            <input type="hidden" name="csrf_token" value="[% csrf_token | html %]" />
+                            <input type="hidden" name="modify" value="yes" />
 
-                            <table class="table table-bordered table-condensed table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>&nbsp;</th>
-                                        <th>Days in advance</th>
-                                        [% IF ( SMSSendDriver ) %]<th>SMS</th>[% END %]
-                                        [% IF ( TalkingTechItivaPhone ) %]<th>Phone</th>[% END %]
-                                        <th>Email</th>
-                                        <th>Digests only <i id="info_digests" data-toggle="tooltip" title="You can ask for a digest to reduce the number of messages. Messages will be saved and sent as a single message." data-placement="right" class="fa fa-info-circle"></i></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                [% FOREACH messaging_preference IN messaging_preferences %]
-                                    <tr>
-                                        <td>[% IF ( messaging_preference.Item_Due ) %]Item due
-                                              [% ELSIF ( messaging_preference.Advance_Notice ) %]Advance notice
-                                              [% ELSIF ( messaging_preference.Upcoming_Events ) %]Upcoming events
-                                              [% ELSIF ( messaging_preference.Hold_Filled ) %]Hold filled
-                                              [% ELSIF ( messaging_preference.Item_Check_in ) %]Item check-in
-                                              [% ELSIF ( messaging_preference.Item_Checkout ) %]Item checkout
-                                              [% ELSE %]Unknown [% END %]</td>
-                                        [% IF ( messaging_preference.takes_days ) %]
-                                            <td><select class="input-mini" name="[% messaging_preference.message_attribute_id | html %]-DAYS">
-                                            [% FOREACH select_day IN messaging_preference.select_days %]
-                                                [% IF ( select_day.selected ) %]
-                                                    <option value="[% select_day.day | html %]" selected="selected">[% select_day.day | html %]</option>
+                                <table class="table table-bordered table-condensed table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>&nbsp;</th>
+                                            <th>Days in advance</th>
+                                            [% IF ( SMSSendDriver ) %]<th>SMS</th>[% END %]
+                                            [% IF ( TalkingTechItivaPhone ) %]<th>Phone</th>[% END %]
+                                            [% IF Koha.Preference('PhoneNotification') %]<th>Phone</th>[% END %]
+                                            <th>Email</th>
+                                            <th>Digests only <i id="info_digests" data-toggle="tooltip" title="You can ask for a digest to reduce the number of messages. Messages will be saved and sent as a single message." data-placement="right" class="fa fa-info-circle"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    [% FOREACH messaging_preference IN messaging_preferences %]
+                                        [% NEXT IF !Koha.Preference( 'ILLModule' ) && messaging_preference.message_name.match('^Ill_') %]
+                                        <tr>
+                                            <td>[% IF ( messaging_preference.Item_Due ) %]Item due
+                                                [% ELSIF ( messaging_preference.Advance_Notice ) %]Advance notice
+                                                [% ELSIF ( messaging_preference.Hold_Filled ) %]Hold filled
+                                                [% ELSIF ( messaging_preference.Item_Check_in ) %]Item check-in
+                                                [% ELSIF ( messaging_preference.Item_Checkout ) %]
+                                                    [% IF Koha.Preference( 'RenewalSendNotice' ) %]
+                                                        Item checkout and renewal
+                                                    [% ELSE %]
+                                                        Item checkout
+                                                    [% END %]
+                                                [% ELSIF ( messaging_preference.Ill_ready ) %]Interlibrary loan ready
+                                                [% ELSIF ( messaging_preference.Ill_unavailable ) %]Interlibrary loan unavailable
+                                                [% ELSIF ( messaging_preference.Auto_Renewals ) %]Auto renewals
+                                                [% ELSE %]Unknown [% END %]</td>
+                                            [% IF ( messaging_preference.takes_days ) %]
+                                                <td><select class="input-mini" name="[% messaging_preference.message_attribute_id | html %]-DAYS">
+                                                [% FOREACH select_day IN messaging_preference.select_days %]
+                                                    [% IF ( select_day.selected ) %]
+                                                        <option value="[% select_day.day | html %]" selected="selected">[% select_day.day | html %]</option>
+                                                    [% ELSE %]
+                                                        <option value="[% select_day.day | html %]">[% select_day.day | html %]</option>
+                                                    [% END %]
+                                                [% END %]
+                                                </select></td>
+                                            [% ELSE %]
+                                                <td>-</td>
+                                            [% END %]
+                                            [% IF ( SMSSendDriver ) %]
+                                                [% IF ( messaging_preference.transport_sms ) %]
+                                                    <td>
+                                                        [% IF ( messaging_preference.transports_sms ) %]
+                                                        <input type="checkbox" id="sms[% messaging_preference.message_attribute_id | html %]" name="[% messaging_preference.message_attribute_id | html %]" value="sms" checked="checked" />
+                                                        [% ELSE %]
+                                                            <input type="checkbox" id="sms[% messaging_preference.message_attribute_id | html %]" name="[% messaging_preference.message_attribute_id | html %]" value="sms" />
+                                                        [% END %]
+                                                    </td>
                                                 [% ELSE %]
                                                     <option value="[% select_day.day | html %]">[% select_day.day | html %]</option>
                                                 [% END %]
