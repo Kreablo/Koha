@@ -224,6 +224,13 @@ if ( $verbose_logging ) {
 my $tester = XML::LibXML->new();
 my $dbh;
 
+sub reinitialize_database {
+    if (defined $dbh) {
+	$dbh->disconnect;
+    }
+    $dbh = C4::Context->dbh({new => 1});
+}
+
 # The main work is done here by calling do_one_pass().  We have added locking
 # avoid race conditions between full rebuilds and incremental updates either from
 # daemon mode or periodic invocation from cron.  The race can lead to an updated
@@ -495,66 +502,81 @@ sub export_marc_records_from_sth {
     print {$fh} $marcxml_open;
 
     my $i = 0;
-    my ( $itemtag, $itemsubfield ) = C4::Biblio::GetMarcFromKohaField( "items.itemnumber" );
-    while (my ($record_number) = $sth->fetchrow_array) {
-        print "." if ( $verbose_logging );
-        print "\r$i" unless ($i++ %100 or !$verbose_logging);
-        if ( $nosanitize ) {
-            my $marcxml = $record_type eq 'biblio'
-                          ? GetXmlBiblio( $record_number )
-                          : GetAuthorityXML( $record_number );
-            if ($record_type eq 'biblio'){
-                my @items = GetItemsInfo($record_number);
-                if (@items){
-                    my $record = MARC::Record->new;
-                    $record->encoding('UTF-8');
-                    my @itemsrecord;
-                    foreach my $item (@items){
-                        my $record = Item2Marc($item, $record_number);
-                        push @itemsrecord, $record->field($itemtag);
-                    }
-                    $record->insert_fields_ordered(@itemsrecord);
-                    my $itemsxml = $record->as_xml_record();
-                    $marcxml =
-                        substr($marcxml, 0, length($marcxml)-10) .
-                        substr($itemsxml, index($itemsxml, "</leader>\n", 0) + 10);
-                }
-            }
-            # extra test to ensure that result is valid XML; otherwise
-            # Zebra won't parse it in DOM mode
-            eval {
-                my $doc = $tester->parse_string($marcxml);
-            };
-            if ($@) {
-                warn "Error exporting record $record_number ($record_type): $@\n";
-                next;
-            }
-            if ( $marcxml ) {
-                $marcxml =~ s!<\?xml version="1.0" encoding="UTF-8"\?>\n!!;
-                print {$fh} $marcxml;
-                $num_exported++;
-            }
-            next;
-        }
-        my ($marc) = get_corrected_marc_record($record_type, $record_number);
-        if (defined $marc) {
-            eval {
-                my $rec = $marc->as_xml_record(C4::Context->preference('marcflavour'));
-                eval {
-                    my $doc = $tester->parse_string($rec);
-                };
-                if ($@) {
-                    die "invalid XML: $@";
-                }
-                $rec =~ s!<\?xml version="1.0" encoding="UTF-8"\?>\n!!;
-                print {$fh} $rec;
-                $num_exported++;
-            };
-            if ($@) {
-                warn "Error exporting record $record_number ($record_type) XML";
-                warn "... specific error is $@" if $verbose_logging;
-            }
-        }
+    my ( $itemtag, $itemsubfield ) = C4::Biblio::GetMarcFromKohaField("items.itemnumber",'');
+    RECORD: while (my ($record_number) = $sth->fetchrow_array) {
+	my $retries = 0;
+      RETRY: while ($retries < 5) {
+	  $retries++;
+	  eval {
+	      print "." if ( $verbose_logging );
+	      print "\r$i" unless ($i++ %100 or !$verbose_logging);
+	      if ( $nosanitize ) {
+		  my $marcxml = $record_type eq 'biblio'
+		      ? GetXmlBiblio( $record_number )
+		      : GetAuthorityXML( $record_number );
+		  if ($record_type eq 'biblio'){
+		      my @items = GetItemsInfo($record_number);
+		      if (@items){
+			  my $record = MARC::Record->new;
+			  $record->encoding('UTF-8');
+			  my @itemsrecord;
+			  foreach my $item (@items){
+			      my $record = Item2Marc($item, $record_number);
+			      push @itemsrecord, $record->field($itemtag);
+			  }
+			  $record->insert_fields_ordered(@itemsrecord);
+			  my $itemsxml = $record->as_xml_record();
+			  $marcxml =
+			      substr($marcxml, 0, length($marcxml)-10) .
+			      substr($itemsxml, index($itemsxml, "</leader>\n", 0) + 10);
+		      }
+		  }
+		  # extra test to ensure that result is valid XML; otherwise
+		  # Zebra won't parse it in DOM mode
+		  eval {
+		      my $doc = $tester->parse_string($marcxml);
+		  };
+		  if ($@) {
+		      warn "Error exporting record $record_number ($record_type): $@\n";
+		      next;
+		  }
+		  if ( $marcxml ) {
+		      $marcxml =~ s!<\?xml version="1.0" encoding="UTF-8"\?>\n!!;
+		      print {$fh} $marcxml;
+		      $num_exported++;
+		  }
+		  next;
+	      }
+	      my ($marc) = get_corrected_marc_record($record_type, $record_number);
+	      if (defined $marc) {
+		  eval {
+		      my $rec = $marc->as_xml_record(C4::Context->preference('marcflavour'));
+		      eval {
+			  my $doc = $tester->parse_string($rec);
+		      };
+		      if ($@) {
+			  die "invalid XML: $@";
+		      }
+		      $rec =~ s!<\?xml version="1.0" encoding="UTF-8"\?>\n!!;
+		      print {$fh} $rec;
+		      $num_exported++;
+		  };
+		  if ($@) {
+		      warn "Error exporting record $record_number ($record_type) XML";
+		      warn "... specific error is $@" if $verbose_logging;
+		  }
+	      }
+	  };
+	  if ($@) {
+	      if ($retries >= 5) {
+		  die "Failed to export record $record_type $record_number in 5 attempts!";
+	      }
+	      reinitialize_database();
+	      next RETRY;
+	  } else {
+	      next RECORD;
+	  }
+      }
     }
     print "\nRecords exported: $num_exported\n" if ( $verbose_logging );
     print {$fh} $marcxml_close;
