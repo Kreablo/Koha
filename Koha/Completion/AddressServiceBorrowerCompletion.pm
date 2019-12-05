@@ -121,7 +121,7 @@ sub fetch_completions {
 	    'FNamn' => ['firstname', 1],
 	    'PostAdress' => ['city', 1],
 	    'GatuAdress' => ['address', 1],
-	    'PostNr' => ['address2', 0]
+	    'PostNr' => ['zipcode', 0]
         );
 	
 	while (my ($srcname, $targetname) = each %map) {
