@@ -39,6 +39,13 @@ use Koha::DateUtils;
 use Koha::Logger;
 
 use Log::Log4perl;
+use KohaLibrisServices;
+use Plack::Middleware::SetEnvFromQueryString;
+
+use RedirectBibitem;
+use RedirectReserve;
+use LoanStatus;
+
 use CGI qw(-utf8 ); # we will loose -utf8 under plack, otherwise
 {
     no warnings 'redefine';
@@ -69,6 +76,11 @@ my $apiv1  = builder {
 
 Koha::Logger->_init;
 
+my $redirect_bibitem = Plack::Middleware::SetEnvFromQueryString->wrap(\&redirect_bibitem_app, 'query_parameters' => [ 'libris_bibid', 'libris_99', 'isbn' ]);
+my $redirect_reserve = Plack::Middleware::SetEnvFromQueryString->wrap(\&redirect_reserve_app, 'query_parameters' => [ 'libris_bibid', 'libris_99', 'isbn' ]);
+my $loan_status      = Plack::Middleware::SetEnvFromQueryString->wrap(\&loan_status_app,      'query_parameters' => [ 'libris_bibid', 'libris_99', 'isbn' ]);
+
+
 builder {
     enable "ReverseProxy";
     enable "Plack::Middleware::Static";
@@ -97,5 +109,27 @@ builder {
             enable 'LogWarn';
         }
         $apiv1;
+    };
+
+    mount '/redirect-bibitem' => builder {
+        if ( Log::Log4perl->get_logger('libris-services')->has_appenders ){
+            enable 'Log4perl', category => 'plack-api';
+            enable 'LogWarn';
+        }
+	$redirect_bibitem;
+    };
+    mount '/loan-status'      => builder {
+        if ( Log::Log4perl->get_logger('libris-services')->has_appenders ){
+            enable 'Log4perl', category => 'plack-api';
+            enable 'LogWarn';
+        }
+        $loan_status;
+    };
+    mount '/redirect-reserve' => builder {
+        if ( Log::Log4perl->get_logger('libris-services')->has_appenders ){
+            enable 'Log4perl', category => 'plack-api';
+            enable 'LogWarn';
+        }
+        $redirect_reserve;
     };
 };
