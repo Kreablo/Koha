@@ -196,6 +196,8 @@ sub XSLTParse4Display {
     $xslfilename ||= C4::Context->preference($xslsyspref);
     $lang ||= C4::Languages::getlanguage();
 
+    my $is_results = 0;
+
     if ( $xslfilename =~ /^\s*"?default"?\s*$/i ) {
         my $htdocs;
         my $theme;
@@ -210,28 +212,33 @@ sub XSLTParse4Display {
             $theme   = C4::Context->preference("template");
             $xslfile = C4::Context->preference('marcflavour') .
                         "slim2intranetResults.xsl";
+	    $is_results = 1;
         } elsif ($xslsyspref eq "OPACXSLTDetailsDisplay") {
             $htdocs  = C4::Context->config('opachtdocs');
             $theme   = C4::Context->preference("opacthemes");
             $xslfile = C4::Context->preference('marcflavour') .
-                       "slim2OPACDetail.xsl";
+           
+            "slim2OPACDetail.xsl";
         } elsif ($xslsyspref eq "OPACXSLTResultsDisplay") {
             $htdocs  = C4::Context->config('opachtdocs');
             $theme   = C4::Context->preference("opacthemes");
             $xslfile = C4::Context->preference('marcflavour') .
                        "slim2OPACResults.xsl";
+	    $is_results = 1;
         } elsif ($xslsyspref eq 'XSLTListsDisplay') {
             # Lists default to *Results.xslt
             $htdocs  = C4::Context->config('intrahtdocs');
             $theme   = C4::Context->preference("template");
             $xslfile = C4::Context->preference('marcflavour') .
                         "slim2intranetResults.xsl";
+	    $is_results = 1;
         } elsif ($xslsyspref eq 'OPACXSLTListsDisplay') {
             # Lists default to *Results.xslt
             $htdocs  = C4::Context->config('opachtdocs');
             $theme   = C4::Context->preference("opacthemes");
             $xslfile = C4::Context->preference('marcflavour') .
                        "slim2OPACResults.xsl";
+	    $is_results = 1;
         }
         $xslfilename = _get_best_default_xslt_filename($htdocs, $theme, $lang, $xslfile);
     }
@@ -241,13 +248,7 @@ sub XSLTParse4Display {
     }
 
     # grab the XML, run it through our stylesheet, push it out to the browser
-    my $record = transformMARCXML4XSLT($biblionumber, $orig_record);
-    my $itemsxml;
-    if ( $xslsyspref eq "OPACXSLTDetailsDisplay" || $xslsyspref eq "XSLTDetailsDisplay" || $xslsyspref eq "XSLTResultsDisplay" ) {
-        $itemsxml = ""; #We don't use XSLT for items display on these pages
-    } else {
-        $itemsxml = buildKohaItemsNamespace($biblionumber, $hidden_items);
-    }
+    my $record = $is_results ? $orig_record : transformMARCXML4XSLT($biblionumber, $orig_record);
     my $xmlrecord = $record->as_xml(C4::Context->preference('marcflavour'));
 
     $variables ||= {};
@@ -272,7 +273,7 @@ sub XSLTParse4Display {
     }
     $varxml .= "</variables>\n";
 
-    $xmlrecord =~ s/\<\/record\>/$itemsxml$sysxml$varxml\<\/record\>/;
+    $xmlrecord =~ s/\<\/record\>/$sysxml$varxml\<\/record\>/;
     if ($fixamps) { # We need to correct the ampersand entities that Zebra outputs
         $xmlrecord =~ s/\&amp;amp;/\&amp;/g;
         $xmlrecord =~ s/\&amp\;lt\;/\&lt\;/g;
