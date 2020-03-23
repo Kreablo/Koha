@@ -82,13 +82,13 @@ dump_instance()
     then
         schemadump="$backupdir/$name-schema-$date.sql"
         [ "$quiet" = "no" ] && echo "* schema to $schemadump"
-        mysqldump $dbflag -d --skip-triggers --host="$mysqlhost" --port="$mysqlport" --single-transaction \
+        mysqldump $dbflag -d --skip-triggers --master-data=2 --host="$mysqlhost" --port="$mysqlport" --single-transaction \
             --user="$mysqluser" --password="$mysqlpass" "$mysqldb" | sed --expression='s/ AUTO_INCREMENT=[0-9]\+//' > "$schemadump"
         chown "root:$name-koha" "$schemadump"
         chmod g+r "$schemadump"
     else
         [ "$quiet" = "no" ] && echo "* DB to $dbdump"
-        mysqldump $dbflag --skip-triggers --host="$mysqlhost" --port="$mysqlport" --single-transaction \
+        mysqldump $dbflag --skip-triggers --master-data=2 --host="$mysqlhost" --port="$mysqlport" --single-transaction \
             --user="$mysqluser" --password="$mysqlpass" "$mysqldb" |
             gzip > "$dbdump"
         chown "root:$name-koha" "$dbdump"
