@@ -38,6 +38,7 @@ use Koha::Database;
 use Koha::DateUtils;
 use Koha::Logger;
 
+<<<<<<< HEAD
 use Log::Log4perl;
 use KohaLibrisServices;
 use Plack::Middleware::SetEnvFromQueryString;
@@ -45,6 +46,11 @@ use Plack::Middleware::SetEnvFromQueryString;
 use RedirectBibitem;
 use RedirectReserve;
 use LoanStatus;
+=======
+use KohaServices::RedirectBibitem;
+use KohaServices::RedirectReserve;
+use KohaServices::LoanStatus;
+>>>>>>> e87688a59c... Libris rtac
 
 use CGI qw(-utf8 ); # we will loose -utf8 under plack, otherwise
 {
@@ -76,10 +82,19 @@ my $apiv1  = builder {
 
 Koha::Logger->_init;
 
-my $redirect_bibitem = Plack::Middleware::SetEnvFromQueryString->wrap(\&redirect_bibitem_app, 'query_parameters' => [ 'libris_bibid', 'libris_99', 'isbn' ]);
-my $redirect_reserve = Plack::Middleware::SetEnvFromQueryString->wrap(\&redirect_reserve_app, 'query_parameters' => [ 'libris_bibid', 'libris_99', 'isbn' ]);
-my $loan_status      = Plack::Middleware::SetEnvFromQueryString->wrap(\&loan_status_app,      'query_parameters' => [ 'libris_bibid', 'libris_99', 'isbn' ]);
 
+my $loan_status = new KohaServices::LoanStatus({
+                record_matcher => 'KohaServices::RecordMatcher::KBiblioId',
+                output_format => 'KohaServices::OutputFormat::LibrisXml'
+        });
+
+my $redirect_bibitem = new KohaServices::RedirectBibitem({
+                record_matcher => 'KohaServices::RecordMatcher::KBiblioId',
+        });
+
+my $redirect_reserve = new KohaServices::RedirectReserve({
+                record_matcher => 'KohaServices::RecordMatcher::KBiblioId',
+        });
 
 builder {
     enable "ReverseProxy";
@@ -116,20 +131,20 @@ builder {
             enable 'Log4perl', category => 'plack-api';
             enable 'LogWarn';
         }
-	$redirect_bibitem;
+	$redirect_bibitem->app;
     };
     mount '/loan-status'      => builder {
         if ( Log::Log4perl->get_logger('libris-services')->has_appenders ){
             enable 'Log4perl', category => 'plack-api';
             enable 'LogWarn';
         }
-        $loan_status;
+        $loan_status->app;
     };
     mount '/redirect-reserve' => builder {
         if ( Log::Log4perl->get_logger('libris-services')->has_appenders ){
             enable 'Log4perl', category => 'plack-api';
             enable 'LogWarn';
         }
-        $redirect_reserve;
+        $redirect_reserve->app;
     };
 };
