@@ -891,9 +891,10 @@ END_SQL
                     }
                 }
                 $already_queued{"$borrowernumber$i"} = 1;
-                if (!$no_print_fallback && defined($print_fallback)) {
-                    C4::Letters::EnqueueLetter($print_fallback);
-                }
+
+	        if ( !$no_print_fallback && defined($print_fallback) ) {
+		    C4::Letters::EnqueueLetter($print_fallback) unless $test_mode;
+		}
             }
             $sth->finish;
         }
