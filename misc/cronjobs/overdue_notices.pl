@@ -785,7 +785,7 @@ END_SQL
                     }
                 }
 	        if (!$no_print_fallback && defined($print_fallback)) {
-		    C4::Letters::EnqueueLetter($print_fallback);
+		    C4::Letters::EnqueueLetter($print_fallback) unless $test_mode;
 		}
             }
             $sth->finish;
