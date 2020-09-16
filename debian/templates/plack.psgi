@@ -40,9 +40,9 @@ use Koha::Logger;
 
 use Log::Log4perl;
 
-use RedirectBibitem;
-use RedirectReserve;
-use LoanStatus;
+use KohaServices::LoanStatus;
+use KohaServices::RedirectBibitem;
+use KohaServices::RedirectReserve;
 
 use CGI qw(-utf8 ); # we will loose -utf8 under plack, otherwise
 {
@@ -73,10 +73,18 @@ my $apiv1  = builder {
 };
 
 Koha::Logger->_init;
-=======
-my $redirect_bibitem = Plack::Middleware::SetEnvFromQueryString->wrap(\&redirect_bibitem_app, 'query_parameters' => [ 'libris_bibid', 'libris_99', 'isbn' ]);
-my $redirect_reserve = Plack::Middleware::SetEnvFromQueryString->wrap(\&redirect_reserve_app, 'query_parameters' => [ 'libris_bibid', 'libris_99', 'isbn' ]);
-my $loan_status      = Plack::Middleware::SetEnvFromQueryString->wrap(\&loan_status_app,      'query_parameters' => [ 'libris_bibid', 'libris_99', 'isbn' ]);
+my $loan_status_app = new KohaServices::LoanStatus({
+		record_matcher => 'KohaServices::RecordMatcher::KBiblioId',
+ 		output_format => 'KohaServices::OutputFormat::LibrisXml'
+	});
+
+my $redirect_app = new KohaServices::RedirectBibitem({
+		record_matcher => 'KohaServices::RecordMatcher::KBiblioId',
+	});
+
+my $redirect_reserve_app = new KohaServices::RedirectReserve({
+		record_matcher => 'KohaServices::RecordMatcher::KBiblioId',
+	});
 
 builder {
     enable "ReverseProxy";
@@ -112,20 +120,20 @@ builder {
             enable 'Log4perl', category => 'plack-api';
             enable 'LogWarn';
         }
-	$redirect_bibitem;
+	$redirect_app->app;
     };
     mount '/loan-status'      => builder {
         if ( Log::Log4perl->get_logger('koha-services')->has_appenders ){
             enable 'Log4perl', category => 'plack-api';
             enable 'LogWarn';
         }
-        loan_status;
+        loan_status_app->app;
     };
     mount '/redirect-reserve' => builder {
         if ( Log::Log4perl->get_logger('koha-services')->has_appenders ){
             enable 'Log4perl', category => 'plack-api';
             enable 'LogWarn';
         }
-        $redirect_reserve;
+        $redirect_reserve_app->app;
     };
 };
