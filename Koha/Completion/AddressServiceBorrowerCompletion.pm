@@ -121,7 +121,8 @@ sub fetch_completions {
 	    'FNamn' => ['firstname', 1],
 	    'PostAdress' => ['city', 1],
 	    'GatuAdress' => ['address', 1],
-	    'PostNr' => ['zipcode', 0]
+	    'PostNr' => ['zipcode', 0],
+	    'Avliden' => ['patron_attr_', 0, 'AVLIDEN'],
         );
 	
 	while (my ($srcname, $targetname) = each %map) {
@@ -130,10 +131,14 @@ sub fetch_completions {
 		if ($targetname->[1]) {
 		    $val = name_capitalization($val);
 		}
-		push @form_fields, {
+		my $record = {
 		    'name' => $targetname->[0],
 		    'value' => $val
+		};
+		if ($targetname->[0] eq 'patron_attr_') {
+		    $record->{attrname} = $targetname->[2];
 		}
+		push @form_fields, $record;
 	    }
 	}
 
