@@ -28,6 +28,8 @@ BEGIN {
 use Koha::Script -cron;
 use Getopt::Long;
 use Koha::Patrons;
+use Koha::Patron::Attribute;
+use Koha::Patron::Attributes;
 use Koha::Completion::AddressServiceBorrowerCompletion;
 use Koha::Logger;
 use C4::Context;
@@ -92,93 +94,118 @@ $verbose and print(($doit ? "Updating " : "Would update " . $target_patrons->cou
 C4::Context->interface('cron');
 my $logger = Koha::Logger->get({ category => 'intranet.adresservice-update-borrowers.pl'});
 
+my $dbh = C4::Context->dbh;
+my $update_attr_sth = $dbh->prepare("UPDATE borrower_attributes SET attribute = ? WHERE id = ?");
+
 BORROWERS: while ( my $target_patron = $target_patrons->next() ) {
      usleep($usleep);
     my $attrs = Koha::Patron::Attributes->search({
         borrowernumber => $target_patron->borrowernumber,
-	code => $code
+        code => $code
     });
 
     if ($verbose && $attrs->count == 0) {
-	print "No personal number for " . $target_patron->borrowernumber . "\n";
+        print "No personal number for " . $target_patron->borrowernumber . "\n";
     } else {
-	my $pnrattr = $attrs->next;
-	if ($attrs->count > 1) {
- 	    $logger->warn("Multiple personal numbers for " . $target_patron->borrowernumber);
-	    while (my $pnr0 = $attrs->next) {
-		$logger->debug("Deleting extra personal number.");
-		$pnr0->delete if $doit;
-	    }
-	}
+        my $pnrattr = $attrs->next;
+        if ($attrs->count > 1) {
+            $logger->warn("Multiple personal numbers for " . $target_patron->borrowernumber);
+            while (my $pnr0 = $attrs->next) {
+                $logger->debug("Deleting extra personal number.");
+                $pnr0->delete if $doit;
+            }
+        }
 
-	my $pnr = $pnrattr->attribute;
+        my $pnr = $pnrattr->attribute;
+        my $dat = fetch_completions( $pnr );
 
-	print $pnr . "\n" if $verbose;
+        if ($dat->{error}) {
+            $logger->error($dat->{error});
+            next;
+        }
 
-	my $dat = fetch_completions( $pnr );
+        my $dirty = 0;
+        for my $p (@{$dat->{form_fields}}) {
+            my $n = $p->{name};
+            my $v = $p->{value};
+            my $t = $target_patron;
 
-	print Dumper($dat);
+            if ($n eq 'patron_attr_') {
+                if ($p->{attrname} eq $code) {
+                    if ($v ne $pnrattr->attribute) {
+                        $logger->debug($n  . ' update: "' . $v . '" ne "' . $pnrattr->attribute . '"');
+                        $pnrattr->attribute($v);
+                        $dirty = 1;
+                    }
+                }
 
-	if ($dat->{error}) {
-	    $logger->error($dat->{error});
-	    next;
-	}
+                my $attrs = Koha::Patron::Attributes->search({
+                    borrowernumber => $target_patron->borrowernumber,
+                    code => $p->{attrname}
+                });
 
-	my $dirty = 0;
-	for my $p (@{$dat->{form_fields}}) {
-	    my $n = $p->{name};
-	    my $v = $p->{value};
-	    my $t = $target_patron;
-	    if ($n eq 'patron_attr_' && $p->{attrname} eq $code) {
-		if ($v ne $pnrattr->attribute) {
-		    $logger->debug($n  . ' update: "' . $v . '" ne "' . $pnrattr->attribute . '"');
-		    $pnrattr->attribute($v);
-		    $dirty = 1;
-		}
-	    } elsif ($n eq 'dateofbirth') {
-		if ($t->dateofbirth ne $v) {
-		    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->dateofbirth . '"');
-		    $t->dateofbirth($v);
-		    $dirty = 1;
-		}
-	    } elsif ($n eq 'address') {
-		if ($t->address ne $v) {
-		    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->address . '"');
-		    $t->address($v);
-		    $dirty = 1;
-		}
-	    } elsif ($n eq 'surname') {
-		if ($t->surname ne $v) {
-		    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->surname . '"');
-		    $t->surname($v);
-		    $dirty = 1;
-		}
-	    } elsif ($n eq 'city') {
-		if ($t->city ne $v) {
-		    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->city . '"');
-		    $t->city($v);
-		    $dirty = 1;
-		}
-	    } elsif ($n eq 'firstname') {
-		if ($t->firstname ne $v) {
-		    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->firstname . '"');
-		    $t->firstname($v);
-		    $dirty = 1;
-		}
-	    } elsif ($n eq 'zipcode') {
-		if ($t->zipcode ne $v) {
-		    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->zipcode . '"');
-		    $t->zipcode($v);
-		    $dirty = 1;
-		}
-	    } else {
-		$logger->debug("Unexpected field in form fields: '" . $n . "'");
-	    }
-	}
+                if ($attrs->count > 0) {
+                    if ($attrs->count > 1) {
+                        $logger->warn("Borrower " . $target_patron->borrowernumber . " have more than one attribute of type " . $p->{attrname});
+                    }
+                    my $a = $attrs->next;
+                    $logger->debug("Updating attribute " . $p->{attrname} . " '" . $p->{value} . "' for patron " . $target_patron->borrowernumber);
 
-	if ($dirty) {
-	    $logger->info("Updating borrower " . $target_patron->borrowernumber);
-	    $target_patron->store if $doit;
-	}
-    }	
+                    $update_attr_sth->execute($p->{value}, $a->id) if $doit;
+                } else {
+                    $logger->debug("New attribute " . $p->{attrname} . " '" . $p->{value} . "' for patron " . $target_patron->borrowernumber);
+                    my $a = Koha::Patron::Attribute->new({
+                        borrowernumber => $target_patron->borrowernumber,
+                        code => $p->{attrname},
+                        attribute => $p->{value}
+                    });
+                    $a->store if $doit;
+                }
+                
+            } elsif ($n eq 'dateofbirth') {
+                if ($t->dateofbirth ne $v) {
+                    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->dateofbirth . '"');
+                    $t->dateofbirth($v);
+                    $dirty = 1;
+                }
+            } elsif ($n eq 'address') {
+                if ($t->address ne $v) {
+                    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->address . '"');
+                    $t->address($v);
+                    $dirty = 1;
+                }
+            } elsif ($n eq 'surname') {
+                if ($t->surname ne $v) {
+                    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->surname . '"');
+                    $t->surname($v);
+                    $dirty = 1;
+                }
+            } elsif ($n eq 'city') {
+                if ($t->city ne $v) {
+                    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->city . '"');
+                    $t->city($v);
+                    $dirty = 1;
+                }
+            } elsif ($n eq 'firstname') {
+                if ($t->firstname ne $v) {
+                    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->firstname . '"');
+                    $t->firstname($v);
+                    $dirty = 1;
+                }
+            } elsif ($n eq 'zipcode') {
+                if ($t->zipcode ne $v) {
+                    $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->zipcode . '"');
+                    $t->zipcode($v);
+                    $dirty = 1;
+                }
+            } else {
+                $logger->debug("Unexpected field in form fields: '" . $n . "'");
+            }
+        }
+
+        if ($dirty) {
+            $logger->info("Updating borrower " . $target_patron->borrowernumber);
+            $target_patron->store if $doit;
+        }
+    }
 }
