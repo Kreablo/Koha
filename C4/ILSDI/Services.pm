@@ -371,6 +371,7 @@ sub AuthenticatePatron {
     if ( $status ) {
         # Get the borrower
         my $patron = Koha::Patrons->find( { userid => $userid } );
+        C4::Auth::track_login_daily( $userid );
         return { id => $patron->borrowernumber };
     }
     else {
