@@ -763,7 +763,7 @@ then
         # Populate the database with default content.
         zcat -f "$DEFAULTSQL" |
         sed "s/__KOHASITE__/koha_$name/g" |
-	$mysqlcmd
+	$mysqlcmd --init-command='SET foreign_key_checks = 0;'
 
 
         # Change the default user's password.
