@@ -702,6 +702,7 @@ eof
         "/etc/apache2/sites-available/$name.conf"
     mkdir "/var/log/koha/$name"
     chown "$username:$username" "/var/log/koha/$name"
+    chmod g+ws "/var/log/koha/$name"
 
 
     # Generate and install main Koha config file.
