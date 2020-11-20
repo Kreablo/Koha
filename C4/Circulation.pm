@@ -2951,7 +2951,7 @@ sub CanBookBeRenewed {
                 for my $borrowernumber (@borrowernumbers) {
                     my $patron = $patrons{$borrowernumber} //= Koha::Patrons->find( $borrowernumber );
                     next unless IsAvailableForItemLevelRequest($item, $patron);
-                    next unless CanItemBeReserved($borrowernumber,$itemnumber);
+                    next unless CanItemBeReserved($borrowernumber,$itemnumber)->{status} eq 'OK';
 
                     push @reservable, $itemnumber;
                     if (@reservable >= @borrowernumbers) {
