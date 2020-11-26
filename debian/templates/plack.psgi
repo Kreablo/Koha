@@ -38,19 +38,13 @@ use Koha::Database;
 use Koha::DateUtils;
 use Koha::Logger;
 
-<<<<<<< HEAD
 use Log::Log4perl;
 use KohaLibrisServices;
 use Plack::Middleware::SetEnvFromQueryString;
 
-use RedirectBibitem;
-use RedirectReserve;
-use LoanStatus;
-=======
 use KohaServices::RedirectBibitem;
 use KohaServices::RedirectReserve;
 use KohaServices::LoanStatus;
->>>>>>> e87688a59c... Libris rtac
 
 use CGI qw(-utf8 ); # we will loose -utf8 under plack, otherwise
 {
