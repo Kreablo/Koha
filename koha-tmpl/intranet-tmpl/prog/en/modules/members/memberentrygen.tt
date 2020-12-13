@@ -838,7 +838,7 @@ legend:hover {
                                             <li>
                                                 <label for="libraries" class="required">Library:</label>
                                                 <select name="branchcode" size="1" id="libraries">
-                                                    [% PROCESS options_for_libraries libraries => Branches.all( selected => userbranch, only_from_group => 1 ) %]
+                                                    [% PROCESS options_for_libraries params => { selected => userbranch, only_from_group => 1 } %]
                                                 </select>
                                                 <span class="required">Required</span>
                                             </li>

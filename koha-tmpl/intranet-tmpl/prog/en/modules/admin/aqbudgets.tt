@@ -2,6 +2,7 @@
 [% USE Asset %]
 [% USE AuthorisedValues %]
 [% USE Branches %]
+[% USE Koha %]
 [% USE Price %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
@@ -293,7 +294,7 @@
     <label for="budget_branchcode">Library: </label>
     <select name="budget_branchcode" id="budget_branchcode">
         <option value=""></option>
-        [% PROCESS options_for_libraries libraries => Branches.all( selected => budget_branchcode, unfiltered => 1 ) %]
+        [% PROCESS options_for_libraries params => { selected => budget_branchcode, unfiltered => 1 } %]
     </select>
     </li>
 
@@ -407,7 +408,7 @@
             <label for="filter_budgetbranch2">Library: </label>
             <select name="filter_budgetbranch" id="filter_budgetbranch2">
                 <option value=""></option>
-                [% PROCESS options_for_libraries libraries => Branches.all( selected => selected_branchcode, unfiltered => 1 ) %]
+                [% PROCESS options_for_libraries params => { selected => selected_branchcode, unfiltered => 1 } %]
             </select>
         </li>
         <li class="radio">

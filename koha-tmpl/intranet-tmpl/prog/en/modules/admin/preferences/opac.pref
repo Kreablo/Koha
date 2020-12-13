@@ -36,6 +36,12 @@ OPAC:
               class: long
             - as the name of the library on the OPAC.
         -
+            - pref: OPACGroupedLibrarySelect
+              choices:
+                  yes: Grouped
+                  no: Flat
+            - Group library selections by library group
+        -
             - pref: OpacPublic
               choices:
                   yes: Enable
