@@ -111,13 +111,7 @@
                         <li>
                             <label for="branchcode">Pickup library:</label>
                             <select name="branchcode" id="branchcode" required="required">
-                                [% FOREACH b IN Branches.all %]
-                                    [% IF b.branchcode == Branches.GetLoggedInBranchcode %]
-                                        <option value="[% b.branchcode | html %]" selected="selected">[% b.branchname | html %]</option>
-                                    [% ELSE %]
-                                        <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                                    [% END %]
-                                [% END %]
+                                [% PROCESS options_for_libraries params => { selected => Branches.GetLoggedInBranchcode } %]
                             </select>
                         </li>
                     </ul>

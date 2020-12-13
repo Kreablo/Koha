@@ -75,9 +75,7 @@
           | <a href="#" id="show_inactive">Show inactive budgets</a>
           | <select id="library-filter">
               <option value="">Filter by library</option>
-              [% FOREACH b IN Branches.all %]
-                <option value="[% b.branchname | html %]">[% b.branchname | html %]</option>
-              [% END %]
+              [% PROCESS options_for_libraries params => { selected => '' } %]
             </select>
         </span>
 

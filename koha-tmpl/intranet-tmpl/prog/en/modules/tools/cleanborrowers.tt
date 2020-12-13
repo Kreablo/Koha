@@ -41,13 +41,7 @@
     Select a library :
         <select name="branch" id="branch" style="width:20em;">
             <option value="*">All libraries</option>
-        [% FOREACH branch IN Branches.all( selected => current_branch ) %]
-          [% IF branch.selected %]
-            <option value="[% branch.branchcode | html %]" selected="selected">[% branch.branchname | html %]</option>
-          [% ELSE %]
-            <option value="[% branch.branchcode | html %]">[% branch.branchname | html %]</option>
-          [% END %]
-        [% END %]
+            [% PROCESS options_for_libraries params => { selected => current_branch } %]
         </select>
     </form>
     [% END %]
