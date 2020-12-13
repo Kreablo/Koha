@@ -1,5 +1,6 @@
 [% USE AuthorisedValues %]
 [% USE Branches %]
+[% USE Koha %]
 [% USE ItemTypes %]
 
 [% SET footerjs = 1 %]
@@ -75,9 +76,7 @@
                             <input type="checkbox" value="1" class="field-toggle" data-pulldown="homebranch" name="homebranch_enabled" id="homebranch_enabled" />
                             <select id="homebranch" name="homebranch" disabled="disabled">
                                 <option value=""></option>
-                                [% FOREACH b IN Branches.all() %]
-                                    <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                                [% END %]
+                                [% PROCESS options_for_libraries params => { selected => '' } %]
                             </select>
                         </li>
 
@@ -86,9 +85,7 @@
                             <input type="checkbox" value="1" class="field-toggle" data-pulldown="holdingbranch" name="holdingbranch_enabled" id="holdingbranch_enabled" />
                             <select id="holdingbranch" name="holdingbranch" disabled="disabled">
                                 <option value=""></option>
-                                [% FOREACH b IN Branches.all() %]
-                                    <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                                [% END %]
+                                [% PROCESS options_for_libraries params => { selected => '' } %]
                             </select>
                         </li>
 
