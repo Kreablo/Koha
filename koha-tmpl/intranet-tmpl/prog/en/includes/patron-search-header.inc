@@ -57,7 +57,7 @@
                 [% IF branches.size != 1 %]
                   <option value="">Any</option>
                 [% END %]
-                [% PROCESS options_for_libraries %]
+                [% PROCESS options_for_libraries params => {} %]
             </select>
         </p>
 
