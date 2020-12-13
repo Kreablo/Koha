@@ -1,4 +1,5 @@
 [% USE Branches %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>Holds statistics[% IF ( do_it ) %] &rsaquo; Results[% END %] &rsaquo; Reports &rsaquo; Koha</title>
@@ -189,7 +190,7 @@
             <td><input type="radio" name="Column" value="reserves.branchcode" /></td>
             <td><select name="filter_reserves.branchcode" id="resbranchcode">
                <option value=""> </option>
-                [% PROCESS options_for_libraries libraries => Branches.all() %]
+                [% PROCESS options_for_libraries params => {} %]
                </select>
              </td> 
         </tr>
@@ -199,7 +200,7 @@
             <td><input type="radio" name="Column" value="items.holdingbranch" /></td>
             <td><select name="filter_items.holdingbranch" id="holdingbranch">
                <option value=""> </option>
-                [% PROCESS options_for_libraries libraries => Branches.all() %]
+                [% PROCESS options_for_libraries params => {} %]
                </select>
              </td> 
         </tr>
@@ -209,7 +210,7 @@
             <td><input type="radio" name="Column" value="items.homebranch" /></td>
             <td><select name="filter_items.homebranch" id="homebranch">
                 <option value=""> </option>
-                [% PROCESS options_for_libraries libraries => Branches.all() %]
+                [% PROCESS options_for_libraries params => {} %]
                </select>
              </td> 
         </tr>
