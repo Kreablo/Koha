@@ -115,9 +115,9 @@
                         <select id="branchcode" name="branchcode" required="required">
                             <option value=""></option>
                             [% IF desk %]
-                                [% PROCESS options_for_libraries libraries => Branches.all( selected => desk.branchcode ) %]
+                                [% PROCESS options_for_libraries params => { selected => desk.branchcode } %]
                             [% ELSE %]
-                                [% PROCESS options_for_libraries libraries => Branches.all() %]
+                                [% PROCESS options_for_libraries params => {} %]
                             [% END %]
                         </select>
                     </li>

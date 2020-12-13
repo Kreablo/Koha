@@ -4,6 +4,7 @@
 [% USE KohaDates %]
 [% USE Branches %]
 [% PROCESS 'i18n.inc' %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title
@@ -98,7 +99,7 @@
                         <label for="branchcode"> Library: </label>
                         <select name="branchcode" id="branchcode">
                             <option value="">Any library</option>
-                            [% PROCESS options_for_libraries libraries => Branches.all() %]
+                            [% PROCESS options_for_libraries params => {} %]
                         </select>
                     </li>
                     <li>

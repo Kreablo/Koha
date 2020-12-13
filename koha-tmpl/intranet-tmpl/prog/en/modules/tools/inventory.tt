@@ -6,6 +6,7 @@
 [% USE Branches %]
 [% USE TablesSettings %]
 [% PROCESS 'i18n.inc' %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title
@@ -124,7 +125,7 @@
                         <label for="branchloop">Library: </label>
                         <select id="branchloop" name="branchcode" style="width:12em;">
                             <option value="">All libraries</option>
-                            [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode, unfiltered => 1, ) %]
+                            [% PROCESS options_for_libraries params => { selected => branchcode, unfiltered => 1, } %]
                         </select>
                     </li>
 

@@ -4,6 +4,7 @@
 [% PROCESS 'i18n.inc' %]
 [% SET footerjs = 1 %]
 [% USE Branches %]
+[% USE Koha %]
 [% USE Categories %]
 [% USE KohaDates %]
 [% USE ItemTypes %]
@@ -109,7 +110,7 @@
                     <li>
                         <label for="branchcodes">Libraries: </label>
                         <select name="branchcodes" id="branchcodes" multiple="multiple">
-                            [% PROCESS options_for_libraries libraries => Branches.all() %]
+                            [% PROCESS options_for_libraries params => {} %]
                         </select>
                     </li>
 

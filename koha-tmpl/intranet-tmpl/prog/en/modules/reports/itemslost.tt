@@ -3,7 +3,8 @@
 [% USE Asset %]
 [% USE AuthorisedValues %]
 [% USE Branches %]
-[% USE TablesSettings %]
+[% USE ColumnsSettings %]
+[% USE Koha %]
 [% USE KohaDates %]
 [% USE ItemTypes %]
 [% USE Price %]
@@ -144,7 +145,7 @@
                         ><label for="branchfilter">Library: </label
                         ><select name="branchfilter" id="branchfilter">
                             <option value="">All</option>
-                            [% PROCESS options_for_libraries libraries => Branches.all() %]
+                            [% PROCESS options_for_libraries params => {} %]
                         </select></li
                     >
                     <li

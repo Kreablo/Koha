@@ -229,7 +229,7 @@
                     <div class="form-control-group">
                         <label for="tobranchcd" class="hint">Destination library: </label>
                         <select name="tobranchcd" id="tobranchcd" class="required select2" required="required">
-                            [% PROCESS options_for_libraries libraries => Branches.all( selected => tobranchcd, unfiltered => 1) %]
+                            [% PROCESS options_for_libraries params => { selected => tobranchcd, unfiltered => 1} %]
                         </select>
                         <span class="required">Required</span>
                     </div>

@@ -2,6 +2,7 @@
 [% USE Koha %]
 [% USE Branches %]
 [% PROCESS 'i18n.inc' %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title
@@ -177,7 +178,7 @@
                             <td>
                                 <select name="Filter" id="branch">
                                     <option value=""></option>
-                                    [% PROCESS options_for_libraries libraries => Branches.all() %]
+                                    [% PROCESS options_for_libraries params => {} %]
                                 </select>
                             </td>
                         </tr>

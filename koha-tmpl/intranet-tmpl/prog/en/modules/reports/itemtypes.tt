@@ -2,6 +2,7 @@
 [% USE Koha %]
 [% USE Asset %]
 [% USE Branches %]
+[% USE Koha %]
 [% USE ItemTypes %]
 [% PROCESS 'i18n.inc' %]
 [% SET footerjs = 1 %]
@@ -82,7 +83,7 @@
                         <label for="value">Select a library:</label>
                         <select name="value" id="value">
                             <option value=""></option>
-                            [% PROCESS options_for_libraries libraries => Branches.all() %]
+                            [% PROCESS options_for_libraries params => {} %]
                         </select>
                         <div class="hint">Select none to see all libraries</div>
                     </li>

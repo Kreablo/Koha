@@ -56,14 +56,14 @@
                     <li
                         ><label for="set-library-branch">Choose library:</label>
                         <select name="branch" id="set-library-branch">
-                            [% PROCESS options_for_libraries libraries => Branches.all( selected => branch, unfiltered => 1 ) %]
+                            [% PROCESS options_for_libraries params => { selected => branch, unfiltered => 1 } %]
                         </select></li
                     >
                 </ol>
             </fieldset>
         [% ELSE %]
             <select name="branch" id="set-library-branch" style="visibility:hidden;">
-                [% PROCESS options_for_libraries libraries => Branches.all( selected => branch ) %]
+                [% PROCESS options_for_libraries params => { selected => branch } %]
             </select>
         [% END %]
 

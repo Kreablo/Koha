@@ -25,7 +25,7 @@
                                 <li id="batch_branch">
                                     <label class="required" for="branchcode">Library:</label>
                                     <select id="branchcode" name="branchcode">
-                                        [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode ) %]
+                                        [% PROCESS options_for_libraries params => { selected => branchcode } %]
                                     </select>
                                 </li>
                                 <li id="batch_status_code" style="display:none">

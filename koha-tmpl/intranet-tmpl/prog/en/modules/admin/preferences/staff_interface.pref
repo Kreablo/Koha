@@ -203,6 +203,12 @@ Staff interface:
               class: integer
             - 'records when downloading from the reports module.<br>NOTE: Only a positive value will enforce a limit. A specific limit in the report overrides this setting.'
 
+        -
+            - pref: IntranetGroupedLibrarySelect
+              choices:
+                  yes: Grouped
+                  no: Flat
+            - Group library selections by library group
     Authentication:
         -
             - pref: staffShibOnly

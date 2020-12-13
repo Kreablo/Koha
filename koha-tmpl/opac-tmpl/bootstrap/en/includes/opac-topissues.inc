@@ -25,7 +25,7 @@
                     <label for="branch">From: </label>
                     <select name="branch" id="branch">
                         <option value="">All libraries</option>
-                        [% PROCESS options_for_libraries libraries => AllPublicBranches %]
+                        [% PROCESS options_for_libraries params => { search_params => { public => 1 }, selected => branch } %]
                     </select>
                 </li>
             [% END %]

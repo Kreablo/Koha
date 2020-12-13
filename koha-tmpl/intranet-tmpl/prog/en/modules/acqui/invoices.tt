@@ -4,6 +4,7 @@
 [% USE AuthorisedValues %]
 [% USE KohaDates %]
 [% USE Branches %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% PROCESS 'i18n.inc' %]
 [% INCLUDE 'doc-head-open.inc' %]
@@ -432,7 +433,7 @@
                                 <select id="branch" name="branch">
                                     <option value="">All</option>
                                     [%# FIXME Should not we filter the libraries %]
-                                    [% PROCESS options_for_libraries libraries => Branches.all( selected => branch, unfiltered => 1 ) %]
+                                    [% PROCESS options_for_libraries params => { selected => branch, unfiltered => 1 } %]
                                 </select>
                             </li>
                             [%# FIXME additional-fields.entry.inc should/could be considered here %]

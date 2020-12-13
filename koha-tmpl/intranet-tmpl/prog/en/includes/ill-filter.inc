@@ -41,7 +41,7 @@
                 <label for="illfilter_branchname">Library:</label>
                 <select name="illfilter_branchname" id="illfilter_branchname">
                     <option value="">All libraries</option>
-                    [% PROCESS options_for_libraries libraries => Branches.all( selected => userbranch, only_from_group => 1 ) %]
+                    [% PROCESS options_for_libraries params => { selected => userbranch, only_from_group => 1 } %]
                 </select>
             </li>
             <li>

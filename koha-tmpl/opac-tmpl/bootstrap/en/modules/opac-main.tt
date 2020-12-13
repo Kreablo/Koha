@@ -75,7 +75,7 @@
                                 [% ELSE %]
                                     <option value="">System-wide only</option>
                                 [% END %]
-                                [% PROCESS options_for_libraries libraries => AllPublicBranches %]
+                                [% PROCESS options_for_libraries params => { search_params => { public => 1 }, selected => branchcode  } %]
                             </select>
                         </form>
                     [% END %]
