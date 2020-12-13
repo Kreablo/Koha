@@ -238,7 +238,7 @@
                     <label for="branchlimit">Library: </label>
                     <select name="branchlimit" id="branchlimit">
                         <option value="">All</option>
-                        [% PROCESS options_for_libraries libraries => Branches.all( selected => branchlimit, only_from_group => 1 ) %]
+                        [% PROCESS options_for_libraries params => { selected => branchlimit, only_from_group => 1 } %]
                     </select>
                 </li>
                 <li>
