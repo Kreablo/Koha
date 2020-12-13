@@ -234,13 +234,7 @@
                                     <label for="branchloop">Library:</label>
                                     <select name="limit" id="branchloop">
                                     <option value="">All libraries</option>
-                                    [% FOREACH BranchesLoo IN Branches.all( selected => opac_name ) %]
-                                        [% IF BranchesLoo.selected %]
-                                            <option value="branch:[% BranchesLoo.branchcode | html %]" selected="selected">[% BranchesLoo.branchname | html %]</option>
-                                        [% ELSE %]
-                                            <option value="branch:[% BranchesLoo.branchcode | html %]">[% BranchesLoo.branchname | html %]</option>
-                                        [% END %]
-                                    [% END %]
+                                    [% PROCESS options_for_libraries prefix => 'branch:', params = { selected => opac_name } %]
                                     </select>
                                     [% IF search_groups %]
                                         <p>OR</p>
