@@ -2,6 +2,7 @@
 [% USE Asset %]
 [% USE KohaDates %]
 [% USE Branches %]
+[% USE Koha %]
 [% USE ItemTypes %]
 [% SET footerjs = 1 %]
 [% SET article_requests_view = 1 %]
@@ -134,13 +135,7 @@
                                         <li>
                                             <label for="branchcode">Pickup library:</label>
                                             <select name="branchcode" id="branchcode">
-                                                [% FOREACH b IN Branches.all %]
-                                                    [% IF b.branchcode == Branches.GetLoggedInBranchcode %]
-                                                        <option value="[% b.branchcode | html %]" selected="selected">[% b.branchname | html %]</option>
-                                                    [% ELSE %]
-                                                        <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                                                    [% END %]
-                                                [% END %]
+                                                [% PROCESS options_for_libraries params => {}  %]
                                             </select>
                                         </li>
                                     </ul>
