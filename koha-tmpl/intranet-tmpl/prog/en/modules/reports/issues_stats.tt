@@ -1,4 +1,5 @@
 [% USE Branches %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>Circulation statistics[% IF ( do_it ) %] &rsaquo; Results[% END %] &rsaquo; Reports &rsaquo; Koha</title>
@@ -204,7 +205,7 @@
             <td><input type="radio" name="Column" value="branch" /></td>
             <td><select name="Filter" id="branch">
                 <option value=""> </option>
-                [% PROCESS options_for_libraries libraries => Branches.all() %]
+                [% PROCESS options_for_libraries params => {} %]
                </select>
              </td> 
         </tr>
@@ -269,7 +270,7 @@
             <td><input type="radio" name="Column" value="items.homebranch" /></td>
             <td><select name="Filter" id="homebranch">
                     <option value=""> </option>
-                    [% PROCESS options_for_libraries libraries => Branches.all() %]
+                    [% PROCESS options_for_libraries params => {} %]
                 </select>
             </td>
         </tr>
@@ -279,7 +280,7 @@
             <td><input type="radio" name="Column" value="items.holdingbranch" /></td>
             <td><select name="Filter" id="holdingbranch">
                     <option value=""> </option>
-                    [% PROCESS options_for_libraries libraries => Branches.all() %]
+                    [% PROCESS options_for_libraries params => {} %]
                 </select>
             </td>
         </tr>
