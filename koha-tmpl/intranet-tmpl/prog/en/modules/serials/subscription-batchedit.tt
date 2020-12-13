@@ -1,5 +1,6 @@
 [% USE raw %]
 [% USE AuthorisedValues %]
+[% USE Koha %]
 [% USE Branches %]
 [% USE ItemTypes %]
 [% USE KohaDates %]
@@ -106,9 +107,7 @@
                                     <label for="branchcode">Library: </label>
                                     <select id="branchcode" name="branchcode">
                                         <option value="">No change</option>
-                                        [% FOREACH branch IN Branches.all %]
-                                            <option value="[% branch.branchcode | html %]">[% branch.branchname | html %]</option>
-                                        [% END %]
+                                        [% PROCESS options_for_libraries params => { selected => '' } %]
                                     </select>
                                 </li>
                                 <li>

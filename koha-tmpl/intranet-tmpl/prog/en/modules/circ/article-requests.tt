@@ -2,6 +2,7 @@
 [% USE Koha %]
 [% USE ItemTypes %]
 [% USE Branches %]
+[% USE Koha %]
 [% USE AuthorisedValues %]
 [% USE Asset %]
 [% USE raw %]
@@ -159,13 +160,7 @@
                 <form id="ar-branchcode-form" method="post">
                     <select name="branchcode" id="branchcode">
                         <option value="">All libraries</option>
-                        [% FOREACH b IN Branches.all( only_from_group => 1 ) %]
-                            [% IF b.branchcode == branchcode %]
-                                <option value="[% b.branchcode | html %]" selected="selected">[% b.branchname | html %]</option>
-                            [% ELSE %]
-                                <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                            [% END %]
-                        [% END %]
+                        [% PROCESS options_for_libraries params => { only_from_group => 1, selected => branchcode } %]
                     </select>
                     <button type="submit" class="btn btn-default btn-xs">
                         <i class="fa fa-refresh"></i> Update
