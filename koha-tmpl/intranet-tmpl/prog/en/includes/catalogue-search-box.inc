@@ -38,7 +38,7 @@
                         <label for="select_library">Library</label>
                         <select id="select_library" name="limit">
                             <option value="">All libraries</option>
-                            [% PROCESS options_for_libraries prefix => "branch:" libraries => Branches.all( selected => branch_limit ) %]
+                            [% PROCESS options_for_libraries prefix => "branch:" params => { selected => branch_limit } %]
                         </select>
                     </div>
                 [% END %]

@@ -542,7 +542,7 @@
                                         data-biblio-id="[% biblio.biblionumber | html %]"
                                         data-patron-id="[% patron.borrowernumber | html %]"
                                         data-pickup-location-source="biblio">
-                                    [% PROCESS ungrouped_options_for_libraries libraries => Branches.pickup_locations({ search_params => { biblio => biblionumber, patron => patron }, selected => pickup }) %]
+                                    [% PROCESS options_for_libraries pickup_location => 1, params => { search_params => { biblio => biblionumber, patron => patron }, selected => pickup } %]
                             [% ELSE %]
                                 <select name="pickup" id="pickup_multi" data-patron-id="[% patron.borrowernumber | html %]">
                                     <option value="" selected="selected"></option>
