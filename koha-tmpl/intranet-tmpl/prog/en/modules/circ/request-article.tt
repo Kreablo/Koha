@@ -3,6 +3,7 @@
 [% USE KohaDates %]
 [% USE Branches %]
 [% USE Categories %]
+[% USE Koha %]
 [% USE ItemTypes %]
 [% USE AuthorisedValues %]
 [% USE Price %]
@@ -311,13 +312,7 @@
                         <td>
                             <i id="update-processing-[% ar.id | html %]" class="fa fa-cog fa-spin" style="visibility: hidden"></i>
                             <select name="branchcode" id="branchcode-[% ar.id | html %]" class="ar-update-branchcode">
-                                [% FOREACH b IN Branches.all %]
-                                    [% IF b.branchcode == ar.branchcode %]
-                                        <option value="[% b.branchcode | html %]" selected="selected">[% b.branchname | html %]</option>
-                                    [% ELSE %]
-                                        <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                                    [% END %]
-                                [% END %]
+                                [% PROCESS options_for_libraries params => { selected => ar.branchcode } %]
                             </select>
                         </td>
                         <td>

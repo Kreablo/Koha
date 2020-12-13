@@ -182,13 +182,7 @@
                                         <li>
                                             <label for="branchcode">Pickup library:</label>
                                             <select name="branchcode" id="branchcode" required="required">
-                                                [% FOREACH b IN AllPublicBranches %]
-                                                    [% IF b.branchcode == Branches.GetLoggedInBranchcode %]
-                                                        <option value="[% b.branchcode | html %]" selected="selected">[% b.branchname | html %]</option>
-                                                    [% ELSE %]
-                                                        <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                                                    [% END %]
-                                                [% END %]
+                                                [% PROCESS options_for_libraries params => { selected => Branches.GetLoggedInBranchcode, search_params => { public => 1 } } %]
                                             </select>
                                         </li>
                                     [% ELSE %]

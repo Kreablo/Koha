@@ -3,6 +3,7 @@
 [% USE HtmlTags %]
 [% USE Branches %]
 [% PROCESS 'i18n.inc' %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title
@@ -151,13 +152,8 @@
 
                         <select id="homebranch" name="homebranch" [% UNLESS course_item.homebranch_enabled %]disabled="disabled"[% END %]>
                             <option value=""></option>
-                            [% FOREACH b IN Branches.all() %]
-                                [% IF course_item.homebranch.defined && ( ( course.enabled == 'yes' && b.branchcode == item.homebranch ) || ( course.enabled == 'no' && b.branchcode == course_item.homebranch ) ) %]
-                                    <option value="[% b.branchcode | html %]" selected="selected">[% b.branchname | html %]</option>
-                                [% ELSE %]
-                                    <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                                [% END %]
-                            [% END %]
+                            [% SET selected_branch = course_item.homebranch.defined && course.enabled == 'yes' ? b.branchcode == item.homebranch : (course_item.homebranch.defined && course.enabled == 'no' ? course_item.homebranch : '') %]
+                            [% PROCESS options_for_libraries params => { selected => selected_branch } %]
                         </select>
                     </li>
 
@@ -172,13 +168,7 @@
 
                         <select id="holdingbranch" name="holdingbranch" [% UNLESS course_item.holdingbranch_enabled %]disabled="disabled"[% END %]>
                             <option value=""></option>
-                            [% FOREACH b IN Branches.all() %]
-                                [% IF b.branchcode == course_item.holdingbranch %]
-                                    <option value="[% b.branchcode | html %]" selected="selected">[% b.branchname | html %]</option>
-                                [% ELSE %]
-                                    <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                                [% END %]
-                            [% END %]
+                            [% PROCESS options_for_libraries params => { selected => course_item.holdingbranch } %]
                         </select>
                     </li>
 

@@ -2,6 +2,7 @@
 [% USE Koha %]
 [% USE AuthorisedValues %]
 [% USE Branches %]
+[% USE Koha %]
 [% USE ItemTypes %]
 [% PROCESS 'i18n.inc' %]
 [% SET footerjs = 1 %]
@@ -95,9 +96,7 @@
                         <input type="checkbox" value="1" class="field-toggle" data-pulldown="homebranch" name="homebranch_enabled" id="homebranch_enabled" />
                         <select id="homebranch" name="homebranch" disabled="disabled">
                             <option value=""></option>
-                            [% FOREACH b IN Branches.all() %]
-                                <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                            [% END %]
+                            [% PROCESS options_for_libraries params => { } %]
                         </select>
                     </li>
 
