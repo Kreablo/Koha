@@ -16,7 +16,7 @@
 
 use Modern::Perl;
 
-use Test::More tests => 3;
+use Test::More tests => 4;
 use Test::MockModule;
 
 use C4::Context;
@@ -106,6 +106,107 @@ subtest 'all() tests' => sub {
     is( scalar(@$libraries), 1, 'If IndependentBranches is set, only 1 library should be returned' );
     $libraries = $plugin->all( { unfiltered => 1 } );
     ok( scalar(@$libraries) > 1, 'If IndependentBranches is set, all libraries should be returned if the unfiltered flag is set' );
+
+    $schema->storage->txn_rollback;
+};
+
+
+subtest 'all_grouped() tests' => sub {
+
+    plan tests => 11;
+
+    $schema->storage->txn_begin;
+
+    my $groupA =
+        Koha::Library::Group->new( { title => "Group A" } )->store();
+    my $groupB =
+        Koha::Library::Group->new( { title => "Group B" } )->store();
+
+    my $library = $builder->build({
+        source => 'Branch',
+        value => {
+            branchcode => 'MYLIBRARY',
+            branchname => 'My sweet library'
+        }
+    });
+    my $another_library = $builder->build({
+        source => 'Branch',
+        value => {
+            branchcode => 'ANOTHERLIB',
+        }
+    });
+
+    my $groupA_library1  = Koha::Library::Group->new({ parent_id => $groupA->id,  branchcode => $library->{branchcode} })->store();
+    my $groupB_library1  = Koha::Library::Group->new({ parent_id => $groupB->id,  branchcode => $another_library->{branchcode} })->store();
+
+    
+    my $plugin = Koha::Template::Plugin::Branches->new();
+    ok($plugin, "initialized Branches plugin");
+
+    t::lib::Mocks::mock_preference( 'IndependentBranches', 0 );
+    my $groups = $plugin->all_grouped();
+    my $libraries = [];
+    for my $g (@$groups) {
+        push @$libraries, @{$g->{libraries}};
+    }
+    ok( scalar(@$libraries) > 1, 'If IndependentBranches is not set, all libraries should be returned' );
+    is( grep ( { $_->{branchcode} eq 'MYLIBRARY'  and $_->{selected} == 1 } @$libraries ),       1, 'Without selected parameter, my library should be preselected' );
+    is( grep ( { $_->{branchcode} eq 'ANOTHERLIB' and !$_->{selected} } @$libraries ), 1, 'Without selected parameter, other library should not be preselected' );
+    $libraries = $plugin->all( { selected => 'ANOTHERLIB' } );
+    is( grep ( { $_->{branchcode} eq 'MYLIBRARY'  and !$_->{selected} } @$libraries ), 1, 'With selected parameter, my library should not be preselected' );
+    is( grep ( { $_->{branchcode} eq 'ANOTHERLIB' and $_->{selected} == 1 } @$libraries ),       1, 'With selected parameter, other library should be preselected' );
+    $libraries = $plugin->all( { selected => '' } );
+    is( grep ( { exists $_->{selected} } @$libraries ), 0, 'With selected parameter set to an empty string, no library should be preselected' );
+
+    my $total = [];
+    for my $g (@{$plugin->all_grouped}) {
+        push @$total, @{$g->{libraries}};
+    }
+    my $pickupable = [];
+    for my $g (@{$plugin->all_grouped( { search_params => { pickup_location => 1 } }) }) {
+        push @$pickupable, @{$g->{libraries}};
+    }
+    my $yet_another_library = $builder->build({
+        source => 'Branch',
+        value => {
+            branchcode => 'CANTPICKUP',
+            pickup_location => 0,
+        }
+    });
+    my $pickupable_test = [];
+
+    for my $g (@{$plugin->all_grouped( { search_params => { pickup_location => 1 } }) }) {
+        push @$pickupable_test, @{$g->{libraries}};
+    }
+    is(scalar(@$pickupable_test), scalar(@$pickupable),
+       'Adding a new library with pickups'
+       .' disabled does not increase the amount returned by ->pickup_locations');
+
+    my $total_test = [];
+    for my $g (@{$plugin->all_grouped}) {
+        push @$total_test, @{$g->{libraries}};
+    }
+
+    is(@{$total_test}, @{$total}+1, 'However, adding a new library increases'
+       .' the total amount gotten with ->all');
+
+    t::lib::Mocks::mock_preference( 'IndependentBranches', 1 );
+    $libraries = [];
+    for my $g (@{$plugin->all_grouped()}) {
+        push @$libraries, @{$g->{libraries}};
+    }
+
+    print STDERR $libraries;
+    
+    is( scalar(@$libraries), 1, 'If IndependentBranches is set, only 1 library should be returned' );
+
+    $libraries = [];
+    for my $g (@{$plugin->all_grouped( { unfiltered => 1 } )}) {
+        push @$libraries, @{$g->{libraries}};
+    }
+    for my $library (@$libraries) {
+        is( $library->{branchcode}, 'MYLIBRARY', 'If IndependentBranches is set, only MYLABRARY should be returned' );
+    }
 
     $schema->storage->txn_rollback;
 };
