@@ -29,7 +29,7 @@
             <label for="branch">Select a library:</label>
                 <select id="branch" name="branch">
                     <option value="">Default</option>
-                    [% PROCESS options_for_libraries libraries => Branches.all( selected => branch ) %]
+                    [% PROCESS options_for_libraries params => { selected => branch } %]
                 </select>
                 <input type="submit" value="Select" />
             </form>

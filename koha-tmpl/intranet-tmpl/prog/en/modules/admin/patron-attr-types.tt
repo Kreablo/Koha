@@ -147,7 +147,7 @@
         <li><label for="branches">Branches limitation: </label>
             <select id="branches" name="branches" multiple size="10">
                 <option value="">All branches</option>
-                [% PROCESS options_for_libraries libraries => Branches.all( selecteds => attribute_type.library_limits ) %]
+                [% PROCESS options_for_libraries params => { selecteds => attribute_type.library_limits } %]
             </select>
             <span>Select All if this attribute type must to be displayed all the time. Otherwise select libraries you want to associate with this value.
             </span>

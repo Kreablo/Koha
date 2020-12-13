@@ -32,7 +32,7 @@
                 <select id="branch" name="branch_filter">
                   <option value="">All</option>
                   [%# FIXME Should not we filter the libraries? %]
-                  [% PROCESS options_for_libraries libraries => Branches.all( selected => branch_filter, unfiltered => 1 ) %]
+                  [% PROCESS options_for_libraries params => { selected => branch_filter, unfiltered => 1 } %]
                 </select>
               </li>
             </ol>

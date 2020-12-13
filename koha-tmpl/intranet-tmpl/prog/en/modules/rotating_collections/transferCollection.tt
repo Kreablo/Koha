@@ -1,6 +1,7 @@
 [% USE raw %]
 [% USE Asset %]
 [% USE Branches %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>Koha &rsaquo; Tools &rsaquo; Rotating collections &rsaquo; Transfer collection</title>
@@ -41,7 +42,7 @@
                                     <li>
                                         <label for="toBranch">Choose your library:</label>
                                         <select id="toBranch" name="toBranch">
-                                            [% PROCESS options_for_libraries libraries => Branches.all( unfiltered => 1 ) %]
+                                            [% PROCESS options_for_libraries params => { unfiltered => 1 } %]
                                         </select>
                                     </li>
                                 </ol>
