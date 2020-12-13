@@ -117,7 +117,7 @@
                         <label for="default_library_id">Default library: </label>
                         <select id="default_library_id" name="default_library_id">
                             <option value="">None</option>
-                            [% PROCESS options_for_libraries libraries => Branches.all( unfiltered => 1, do_not_select_my_library => 1 ) %]
+                            [% PROCESS options_for_libraries params => { unfiltered => 1, do_not_select_my_library => 1 } %]
                         </select>
                         <div class="hint">Use this library for the patron on auto register</div>
                     </li>
@@ -209,7 +209,7 @@
                         <label for="default_library_id">Default library: </label>
                         <select id="default_library_id" name="default_library_id">
                             <option value="">None</option>
-                            [% PROCESS options_for_libraries libraries => Branches.all( selected => identity_provider_domain.default_library_id, unfiltered => 1, do_not_select_my_library => 1 ) %]
+                            [% PROCESS options_for_libraries params => { selected => identity_provider_domain.default_library_id, unfiltered => 1, do_not_select_my_library => 1 } %]
                         </select>
                         <div class="hint">Use this library for the patron on auto register</div>
                     </li>

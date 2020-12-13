@@ -199,6 +199,12 @@ Staff interface:
                   1: Show
                   0: "Don't show"
             - a search field pulldown for 'Search the catalog' boxes.
+        -
+            - pref: IntranetGroupedLibrarySelect
+              choices:
+                  yes: Grouped
+                  no: Flat
+            - Group library selections by library group
     Authentication:
         -
             - pref: staffShibOnly
