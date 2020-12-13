@@ -252,7 +252,7 @@
                         [% IF CAN_user_superlibrarian || !Koha.Preference('IndependentBranches') %]
                             <option value="">All</option>
                         [% END %]
-                        [% PROCESS options_for_libraries libraries => Branches.all( selected => branchlimit, only_from_group => 1 ) %]
+                        [% PROCESS options_for_libraries params => { selected => branchlimit, only_from_group => 1 } %]
                     </select>
                 </li>
                 <li>

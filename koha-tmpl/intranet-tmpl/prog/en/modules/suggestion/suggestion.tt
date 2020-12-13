@@ -2,6 +2,7 @@
 [% USE raw %]
 [% USE Asset %]
 [% USE Branches %]
+[% USE Koha %]
 [% USE AuthorisedValues %]
 [% USE KohaDates %]
 [% USE Price %]
@@ -579,7 +580,7 @@
                             <label for="branchcode">Library:</label>
                             <select name="branchcode" id="branchcode">
                                 <option value="">Any</option>
-                                [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode ) %]
+                                [% PROCESS options_for_libraries params => { selected => branchcode } %]
                             </select>
                         </li>
                         <li>
@@ -665,7 +666,7 @@
                 <label for="branchcode">Viewing suggestions for library:</label>
                 <select name="branchcode" id="branchcode">
                     <option value="__ANY__">Any</option>
-                    [% PROCESS options_for_libraries libraries => Branches.all( selected => branchfilter || branchcode ) %]
+                    [% PROCESS options_for_libraries params => { selected => branchfilter || branchcode } %]
                 </select>
             [% END %]
 

@@ -338,7 +338,7 @@
                             <select name="limit" id="branchloop">
                                 <option value="">All libraries</option>
                                 [%# FIXME Should not we filter the libraries displayed? %]
-                                [% PROCESS options_for_libraries prefix => "branch:" libraries => Branches.all( unfiltered => 1, do_not_select_my_library => 1, selected => limits.branch.0 ) %]
+                                [% PROCESS options_for_libraries prefix => "branch:" params => { selected => selected_branchcode, unfiltered => 1, do_not_select_my_library => 1 } %]
                                 [% limits.delete('branch') %]
                             </select> <!-- /#branchloop -->
                         </p>

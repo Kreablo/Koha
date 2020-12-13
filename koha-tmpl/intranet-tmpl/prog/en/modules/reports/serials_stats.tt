@@ -2,6 +2,7 @@
 [% USE Asset %]
 [% USE KohaDates %]
 [% USE Branches %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>Serials subscriptions stats &rsaquo; Reports &rsaquo; Koha</title>
@@ -101,7 +102,7 @@
 		    	</label>
 		    	<select name="branchcode"  id="branchcode">
 				<option value="">Any library</option>
-                [% PROCESS options_for_libraries libraries => Branches.all() %]
+                [% PROCESS options_for_libraries params => {} %]
 		    	</select>
 
 		    </li>

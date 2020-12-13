@@ -1,5 +1,6 @@
 [% USE raw %]
 [% USE Branches %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>[% IF ( do_it ) %]Catalog statistics &rsaquo; Results[% ELSE %]Catalog statistics[% END %] &rsaquo; Reports &rsaquo; Koha</title>
@@ -152,7 +153,7 @@
 				<td><input type="radio" name="Column" value="items.homebranch" /></td>
 				<td><select name="Filter" id="branch">
                     <option value=""> </option>
-                    [% PROCESS options_for_libraries libraries => Branches.all() %]
+                    [% PROCESS options_for_libraries params => {} %]
                     </select>
 				</td>
 			</tr>

@@ -44,9 +44,7 @@
                                 [% IF libraries.size != 1 %]
                                     <option value="">Any</option>
                                 [% END %]
-                                [% FOREACH l IN libraries %]
-                                    <option value="[% l.branchcode | html %]">[% l.branchname | html %]</option>
-                                [% END %]
+                                [% PROCESS options_for_libraries params => { selected => branchcode_filter, only_from_group => 1 } %]
                             </select>
                         </li>
                     [% CASE 'category' %]

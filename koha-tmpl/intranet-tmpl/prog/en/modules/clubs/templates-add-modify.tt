@@ -1,5 +1,6 @@
 [% USE raw %]
 [% USE Branches %]
+[% USE Koha %]
 [% USE AuthorisedValues %]
 [% USE HtmlTags %]
 [% SET footerjs = 1 %]
@@ -96,7 +97,7 @@
                             <label for="club-template-branchcode">Library:</label>
                             <select name="branchcode" id="club-template-branchcode">
                                 <option value=""></option>
-                                [% PROCESS options_for_libraries libraries => Branches.all( selected => club_template.branchcode ) %]
+                                [% PROCESS options_for_libraries params => { selected => club_template.branchcode } %]
                             </select>
                             <div class="hint">If set, only librarians logged in with this branch will be able to modify this club template.</div>
                         </li>

@@ -220,13 +220,13 @@
                                                     <label for="branch" class="required">Library:</label>
                                                     <select name="branchcode" id="branch" required="required">
                                                         <option value=""></option>
-                                                        [% PROCESS options_for_libraries libraries => Branches.all( selected => logged_in_user.branchcode ) %]
+                                                        [% PROCESS options_for_libraries params => { selected => logged_in_user.branchcode } %]
                                                     </select>
                                                     <div class="required_label required">Required</div>
                                                 [% ELSE %]
                                                     <label for="branch">Library:</label>
                                                     <select name="branchcode" id="branch">
-                                                        [% PROCESS options_for_libraries libraries => Branches.all( selected => logged_in_user.branchcode ) %]
+                                                        [% PROCESS options_for_libraries params => { selected => logged_in_user.branchcode } %]
                                                     </select>
                                                 [% END %]
                                             </li>

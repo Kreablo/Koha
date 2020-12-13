@@ -2,6 +2,7 @@
 [% USE Asset %]
 [% USE KohaDates %]
 [% USE Branches %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>[% Branches.GetName( branch ) | html %] calendar &rsaquo; Tools &rsaquo; Koha</title>
@@ -36,7 +37,7 @@
                         <div class="page-section">
                             <label for="branch">Define the holidays for:</label>
                             <select id="branch" name="branch">
-                                [% PROCESS options_for_libraries libraries => Branches.all( selected => branch ) %]
+                                [% PROCESS options_for_libraries params => { selected => branch } %]
                             </select>
 
                             <div class="panel" id="showHoliday">
