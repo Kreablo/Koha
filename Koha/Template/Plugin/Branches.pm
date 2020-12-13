@@ -94,6 +94,145 @@ sub all {
     return $libraries;
 }
 
+
+use Data::Dumper;
+
+sub all_grouped {
+    my ( $self, $params ) = @_;
+    my $selected = $params->{selected};
+    my $selecteds = $params->{selecteds};
+    my $filtered = !$params->{unfiltered} || 1;
+    my $userenv = C4::Context->userenv;
+    my $search_params = $params->{search_params} || {};
+    my $pickup_location = $params->{pickup_location} || {};
+
+    my @branchcodes = ();
+
+    if ($filtered) {
+        if ( $userenv and $userenv->{number} ) {
+            my $only_from_group = $params->{only_from_group};
+            if ( $only_from_group ) {
+                my $logged_in_user = Koha::Patrons->find( $userenv->{number} );
+                @branchcodes = $logged_in_user->libraries_where_can_see_patrons;
+            } else {
+                if ( C4::Context::only_my_library ) {
+                    @branchcodes = (C4::Context->userenv->{branch});
+                }
+            }
+        }
+    }
+
+    if(defined $pickup_location->{item} || defined $pickup_location->{biblio}) {
+        my $item = $pickup_location->{'item'};
+        my $biblio = $pickup_location->{'biblio'};
+        my $patron = $pickup_location->{'patron'};
+        my @libraries;
+
+        unless (! defined $patron || ref($patron) eq 'Koha::Patron') {
+            $patron = Koha::Patrons->find($patron);
+        }
+
+        if ($item) {
+            $item = Koha::Items->find($item)
+              unless ref($item) eq 'Koha::Item';
+            @libraries = @{ $item->pickup_locations( { patron => $patron } ) }
+              if defined $item;
+
+
+            warn "item: " . Dumper(\@libraries);
+        }
+        elsif ($biblio) {
+            $biblio = Koha::Biblios->find($biblio)
+              unless ref($biblio) eq 'Koha::Biblio';
+            @libraries = @{ $biblio->pickup_locations( { patron => $patron } ) }
+              if defined $biblio;
+            warn "biblio: " . Dumper(\@libraries);
+        }
+
+        map { push @branchcodes, $_->branchcode } @libraries;
+    }
+
+    
+    my $where = '';
+    my @binds = ();
+
+    if (@branchcodes) {
+        $where = ' WHERE branches.branchcode IN (';
+        my $first = 1;
+        for my $b (@branchcodes) {
+            if ($first) {
+                $first = 0;
+            } else {
+                $where .= ', ';
+            }
+            $where .= '?';
+            push @binds, $b;
+        }
+        $where .= ') ';
+    }
+    
+    while (my ($key, $value)  = each %{$params->{search_params}}) {
+        next if $key eq 'patron' or $key eq 'biblio';
+        if ($where eq '') {
+            $where .= ' WHERE ';
+        } else {
+            $where .= ' AND ';
+        }
+        if ($key eq 'branchcode') {
+            $key = 'branches.branchcode';
+        }
+        $where .= "$key = ?";
+        push @binds, $value;
+    }
+
+    my $query = <<EOF;
+    SELECT gr.title AS `group`, branches.*
+    FROM branches
+      LEFT OUTER JOIN library_groups AS j USING(branchcode)
+      LEFT OUTER JOIN library_groups AS gr ON j.parent_id=gr.id
+    $where
+      ORDER BY gr.title, branchname;
+EOF
+
+    my $sth   = C4::Context->dbh->prepare($query);
+
+    $sth->execute(@binds);
+
+    my @selected_branchcodes = ();
+
+    push @selected_branchcodes, $selected if defined $selected;
+
+    if (defined $selecteds) {
+        @selected_branchcodes = $selecteds ? $selecteds->get_column( ['branchcode'] ) : ();
+    }
+
+    if (!@selected_branchcodes) {
+        @selected_branchcodes = (C4::Context->userenv->{branch} // '');
+    }
+
+    my $prevgroup = '';
+    my $group = { name => '', libraries => [] };
+    my $groups = [$group];
+
+    while (my $row = $sth->fetchrow_hashref) {
+        if (grep {$_ eq $row->{branchcode}} @selected_branchcodes) {
+            $row->{selected} = 1;
+        } else {
+            $row->{selected} = 0;
+        }
+        
+        my $g = $row->{group} // '';
+        if ($g ne $prevgroup) {
+            $prevgroup = $g;
+            $group = { name => $row->{group}, libraries => [] };
+            push @$groups, $group;
+        }
+        push @{$group->{libraries}}, $row;
+    }
+
+    return $groups;
+}
+
 sub InIndependentBranchesMode {
     my ( $self ) = @_;
     return ( not C4::Context->preference("IndependentBranches") or C4::Context::IsSuperLibrarian );
@@ -146,6 +285,13 @@ sub pickup_locations {
     }
 
     return \@libraries;
+}
+
+
+sub pickup_locations_grouped {
+    my ($self, $params) = @_;
+
+    return $self->all_grouped($params);
 }
 
 1;

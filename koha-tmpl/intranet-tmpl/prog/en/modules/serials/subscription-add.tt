@@ -124,9 +124,9 @@ fieldset.rows table { clear: none; margin: 0; }
                                             <option value="">None</option>
                                         [% END %]
                                         [% IF CAN_user_serials_superserials %]
-                                            [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode, unfiltered => 1 ) %]
+                                            [% PROCESS options_for_libraries params => { selected => branchcode, unfiltered => 1 } %]
                                         [% ELSE %]
-                                            [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode ) %]
+                                            [% PROCESS options_for_libraries params => { selected => branchcode } %]
                                         [% END %]
                                     </select>
                                 </li>

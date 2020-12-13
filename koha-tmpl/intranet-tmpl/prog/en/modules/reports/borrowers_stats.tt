@@ -143,9 +143,7 @@
 			<td>
                 <select name="Filter"  size="1" id="branch">
                 <option value=""></option>
-                [% FOREACH l IN Branches.all( unfiltered => 1 ) %]
-                    <option value="[% l.branchcode | html %]">[% l.branchcode | html %] - [% l.branchname || 'UNKNOWN' | html %]</option>
-                [% END %]
+                [% PROCESS options_for_libraries params => { unfiltered => 1, selected => '' } %]
                 </select>
 			</td>
 			</tr>

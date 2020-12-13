@@ -698,7 +698,7 @@
             <select name="bib_field_value">
             [% END %]
                 <option value=""></option>
-                [% PROCESS options_for_libraries libraries => Branches.all( selected => "FIXME" ) %]
+                [% PROCESS options_for_libraries params => {} %]
             </select>
         [% CASE 'itemtypes' %]
             [% IF field.mandatory %]

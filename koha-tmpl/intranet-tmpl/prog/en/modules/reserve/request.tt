@@ -179,7 +179,7 @@
                             <li>
                                 <label for="pickup">Pickup at:</label>
                                 <select name="pickup" size="1" id="pickup">
-                                    [% PROCESS options_for_libraries libraries => Branches.all({ selected => club.branchcode, search_params => { pickup_location => 1 } }) %]
+                                    [% PROCESS options_for_libraries params => { selected => club.branchcode, search_params => { pickup_location => 1 } } %]
                                 </select>
                             </li>
                             <li>
@@ -435,9 +435,9 @@
                                 <label for="pickup">Pickup at:</label>
                                 <select name="pickup" size="1" id="pickup">
                                     [% UNLESS ( multi_hold ) %]
-                                        [% PROCESS options_for_libraries libraries => Branches.pickup_locations({ search_params => { biblio => biblionumber, patron => patron }, selected => pickup }) %]
+                                        [% PROCESS options_for_libraries pickup_location => 1, params => { search_params => { biblio => biblionumber, patron => patron }, selected => pickup } %]
                                     [% ELSE %]
-                                        [% PROCESS options_for_libraries libraries => Branches.all({ selected => pickup, search_params => { pickup_location => 1 } }) %]
+                                        [% PROCESS options_for_libraries params => { selected => pickup, search_params => { pickup_location => 1 } } %]
                                     [% END %]
                                 </select>
                             </li>

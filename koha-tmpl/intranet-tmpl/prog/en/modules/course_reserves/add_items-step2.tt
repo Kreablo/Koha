@@ -1,4 +1,5 @@
 [% USE Branches %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>Koha &rsaquo; Course reserves &rsaquo;[% IF is_edit || course_reserve %] Edit item[% ELSE %] Add items[% END %]</title>
@@ -133,13 +134,8 @@
                         [% END %]
 
                             <option value=""></option>
-                            [% FOREACH b IN Branches.all() %]
-                                [% IF course_item.homebranch.defined && ( ( course.enabled == 'yes' && b.branchcode == item.homebranch ) || ( course.enabled == 'no' && b.branchcode == course_item.homebranch ) ) %]
-                                    <option value="[% b.branchcode | html %]" selected="selected">[% b.branchname | html %]</option>
-                                [% ELSE %]
-                                    <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                                [% END %]
-                            [% END %]
+                            [% SET selected_branch = course_item.homebranch.defined && course.enabled == 'yes' ? b.branchcode == item.homebranch : (course_item.homebranch.defined && course.enabled == 'no' ? course_item.homebranch : '') %]
+                            [% PROCESS options_for_libraries params => { selected => selected_branch } %]
                         </select>
                     </li>
 
@@ -159,13 +155,7 @@
                         [% END %]
 
                             <option value=""></option>
-                            [% FOREACH b IN Branches.all() %]
-                                [% IF b.branchcode == course_item.holdingbranch %]
-                                    <option value="[% b.branchcode | html %]" selected="selected">[% b.branchname | html %]</option>
-                                [% ELSE %]
-                                    <option value="[% b.branchcode | html %]">[% b.branchname | html %]</option>
-                                [% END %]
-                            [% END %]
+                            [% PROCESS options_for_libraries params => { selected => course_item.holdingbranch } %]
                         </select>
                     </li>
 
