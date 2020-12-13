@@ -21,7 +21,7 @@
                 <li><label for="branch">From: </label>
                             <select name="branch" id="branch">
                                 <option value="">All libraries</option>
-                                [% PROCESS options_for_libraries libraries => Branches.all( selected => branch ) %]
+                                [% PROCESS options_for_libraries params => { selected => branch } %]
                             </select></li>
                 [% END %]
 
