@@ -2,6 +2,7 @@
 [% USE Asset %]
 [% USE KohaDates %]
 [% USE Branches %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>Koha &rsaquo; Acquisitions &rsaquo; Invoices</title>
@@ -282,7 +283,7 @@
             <select id="branch" name="branch">
               <option value="">All</option>
               [%# FIXME Should not we filter the libraries %]
-              [% PROCESS options_for_libraries libraries => Branches.all( selected => branch, unfiltered => 1 ) %]
+              [% PROCESS options_for_libraries params => { selected => branch, unfiltered => 1 } %]
             </select>
           </li>
         </ol>

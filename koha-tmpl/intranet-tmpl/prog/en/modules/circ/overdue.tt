@@ -2,6 +2,7 @@
 [% USE Asset %]
 [% USE KohaDates %]
 [%- USE Branches -%]
+[%- USE Koha -%]
 [%- USE Price -%]
 [%- USE ItemTypes -%]
 [%- USE Categories -%]
@@ -182,7 +183,7 @@
         <label>Item home library:</label>
         <select name="homebranch" id="homebranch">
             <option value="">Any</option>
-            [% PROCESS options_for_libraries libraries => Branches.all( selected => filters.homebranch ) %]
+            [% PROCESS options_for_libraries params => { selected => filters.homebranch } %]
         </select>
     </li>
 
@@ -190,7 +191,7 @@
         <label>Item holding library:</label>
         <select name="holdingbranch" id="holdingbranch">
             <option value="">Any</option>
-            [% PROCESS options_for_libraries libraries => Branches.all( selected => filters.holdingbranch ) %]
+            [% PROCESS options_for_libraries params => { selected => filters.holdingbranch } %]
         </select>
     </li>
 
@@ -198,7 +199,7 @@
         <label>Library of the patron:</label>
         <select name="branch" id="branch">
             <option value="">Any</option>
-            [% PROCESS options_for_libraries libraries => Branches.all( selected => filters.branch, only_from_group => 1 ) %]
+            [% PROCESS options_for_libraries params => { selected => filters.branch, only_from_group => 1 } %]
         </select>
     </li>
 

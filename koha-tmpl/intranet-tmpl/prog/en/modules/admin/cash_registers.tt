@@ -1,6 +1,7 @@
 [% USE raw %]
 [% USE Asset %]
 [% USE Branches %]
+[% USE Koha %]
 [% USE Price %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
@@ -121,7 +122,7 @@
 
                <h3>Cash registers for <select id="branch_filter" name="branch_filter">
                        <option value=""></option>
-                       [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode, unfiltered => 1, ) %]
+                       [% PROCESS options_for_libraries params => { selected => branchcode, unfiltered => 1 } %]
                    </select>
                </h3>
 

@@ -62,11 +62,16 @@ Updated:<ul>
     [% ELSE %]
         <li><label for="branch">Choose library:</label>
         <select name="branch" id="branch">
-            [% PROCESS options_for_libraries libraries => Branches.all( selected => branch ) %]
+            [% PROCESS options_for_libraries params => { selected => branch } %]
         </select></li>
     [% END %]
     </ol>
 </fieldset>
+[% ELSE %]
+<select name="branch" id="branch" style="visibility:hidden;">
+    [% PROCESS options_for_libraries params => { selected => branch } %]
+</select>
+[% END %]
 <fieldset class="action">
     <input type="submit" value="Submit" />
     <a class="cancel" id="cancel_set_library" href="[% referer or '/cgi-bin/koha/circ/circulation.pl' %]">Cancel</a>

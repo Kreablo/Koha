@@ -65,7 +65,7 @@
             Select a library :
                 <select name="branch" id="branch" style="width:20em;">
                     <option value="*">Standard rules for all libraries</option>
-                    [% PROCESS options_for_libraries libraries => Branches.all( selected => current_branch, unfiltered => 1 ) %]
+                    [% PROCESS options_for_libraries params => { selected => current_branch, unfiltered => 1 } %]
                 </select>
             </form>
             [% IF ( definedbranch ) %]
@@ -73,7 +73,7 @@
                     <label for="tobranch"><strong>Clone these rules to:</strong></label>
                     <input type="hidden" name="frombranch" value="[% current_branch | html %]" />
                     <select name="tobranch" id="tobranch">
-                        [% PROCESS options_for_libraries libraries => Branches.all( unfiltered => 1 ) %]
+                        [% PROCESS options_for_libraries params => { unfiltered => 1 } %]
                     </select>
                     <input type="submit" id="clone_rules" value="Clone" />
                 </form>

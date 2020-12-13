@@ -201,7 +201,7 @@
                                             [% branchcode = items.size == 1 ? items.0.homebranch : params.branchcode ? params.branchcode : request.branchcode %]
                                             [% IF items.size != 1 %]
                                                 <select name="branchcode" id="ill_checkout_branchcode_select" required>
-                                                    [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode ) %]
+                                                    [% PROCESS options_for_libraries params => { selected => branchcode } %]
                                                 </select>
                                             [% ELSE %]
                                                 [% FOREACH branch IN whole.value.libraries.unblessed %]
@@ -372,7 +372,7 @@
                                 <li class="branchcode">
                                     <label for="library" class="branchcode">Library:</label>
                                     <select name="branchcode" id="library">
-                                        [% PROCESS options_for_libraries libraries => Branches.all( selected => request.branchcode ) %]
+                                        [% PROCESS options_for_libraries params => { selected => request.branchcode } %]
                                     </select>
                                 </li>
                                 <li class="status">

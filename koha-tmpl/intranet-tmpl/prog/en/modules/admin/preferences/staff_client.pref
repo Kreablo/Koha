@@ -181,3 +181,9 @@ Staff Client:
                   yes: Show
                   no: "Don't show"
             - a search field pulldown for 'Search the catalog' boxes.
+        -
+            - pref: IntranetGroupedLibrarySelect
+              choices:
+                  yes: Grouped
+                  no: Flat
+            - Group library selections by library group

@@ -1,6 +1,7 @@
 [% USE raw %]
 [% USE Asset %]
 [% USE Branches %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>Koha &rsaquo; Administration &rsaquo; Item circulation alerts</title>
@@ -58,7 +59,7 @@ table.grid td.default {
 <form id="branch_selector" method="get" action="/cgi-bin/koha/admin/item_circulation_alerts.pl">
 <select id="branch" name="branch">
     <option value="*">Default</option>
-    [% PROCESS options_for_libraries libraries => Branches.all( selected => branch, unfiltered => 1 ) %]
+    [% PROCESS options_for_libraries params => { selected => branch, unfiltered => 1 } %]
 </select>
 <input type="submit" name="pick" value="Pick" />
 </form>

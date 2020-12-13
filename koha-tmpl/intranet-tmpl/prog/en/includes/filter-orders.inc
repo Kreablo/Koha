@@ -21,7 +21,7 @@
         <label for="managing_library">Managing library: </label>
         <select name="managing_library" id="managing_library">
             <option value="">Any library</option>
-            [% PROCESS options_for_libraries libraries => Branches.all(selected => '') %]
+            [% PROCESS options_for_libraries params => { selected => '' } %]
         </select>
     </li>
     <li><label for="booksellerinvoicenumber ">Bookseller invoice no: </label> <input type="text" name="booksellerinvoicenumber" id="booksellerinvoicenumber" value="[% filters.booksellerinvoicenumber | html %]" /></li>

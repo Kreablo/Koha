@@ -74,7 +74,7 @@ Edit news item[% ELSE %]Add news item[% END %][% ELSE %]News[% END %]</div>
                     [% ELSE %]
                         <option value=""         >All libraries</option>
                     [% END %]
-                    [% PROCESS options_for_libraries libraries => Branches.all( selected => new_detail.branchcode, unfiltered => 1, ) %]
+                    [% PROCESS options_for_libraries params => { selected => new_detail.branchcode, unfiltered => 1 } %]
                 </select>
             </li>
             <li>
@@ -220,7 +220,7 @@ Edit news item[% ELSE %]Add news item[% END %][% ELSE %]News[% END %]</div>
                                             <select id="news_library" name="news_library">
                                                 <option value=""></option>
                                                 <option value="">All libraries</option>
-                                                [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode, unfiltered => 1, ) %]
+                                                [% PROCESS options_for_libraries params => { selected => branchcode, unfiltered => 1 } %]
                                             </select>
                                         </li>
                                     </ol>
