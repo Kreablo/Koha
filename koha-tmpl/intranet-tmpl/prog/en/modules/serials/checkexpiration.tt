@@ -1,3 +1,4 @@
+[% USE Koha %]
 [% USE Branches %]
 [% USE KohaDates %]
 [% SET footerjs = 1 %]
@@ -33,7 +34,7 @@
         <li><label for="branch">Library:</label>
         <select id="branch" name="branch">
             <option value="">All</option>
-            [% PROCESS options_for_libraries libraries => Branches.all( selected => branch ) %]
+            [% PROCESS options_for_libraries params => { selected => branch } %]
         </select>
         </li>
         [% END %]
