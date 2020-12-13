@@ -1,6 +1,7 @@
 [% USE raw %]
 [% USE Asset %]
 [% USE Branches %]
+[% USE Koha %]
 [% USE ItemTypes %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
@@ -57,7 +58,7 @@
                 <label for="value">Select a library:</label>
                 <select name="value" size="1" id="value">
                   <option value=""></option>
-                  [% PROCESS options_for_libraries libraries => Branches.all() %]
+                  [% PROCESS options_for_libraries params => {} %]
                 </select>
                 <span class="tip">Select none to see all libraries</span>
               </li>

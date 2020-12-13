@@ -1,6 +1,7 @@
 [% USE raw %]
 [% USE Asset %]
 [% USE Branches %]
+[% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>Koha &rsaquo; Tools &rsaquo; [% Branches.GetName( branch ) | html %] calendar</title>
@@ -42,7 +43,7 @@ td.repeatableyearly a.ui-state-default {  background:  #FFCC66 none; color :  Bl
     <div class="col-sm-6">
         <label for="branch">Define the holidays for:</label>
             <select id="branch" name="branch">
-                [% PROCESS options_for_libraries libraries => Branches.all( selected => branch ) %]
+                [% PROCESS options_for_libraries params => { selected => branch } %]
             </select>
     
     <!-- ******************************** FLAT PANELS ******************************************* -->
@@ -213,9 +214,7 @@ td.repeatableyearly a.ui-state-default {  background:  #FFCC66 none; color :  Bl
   <label for="branchcode">Copy holidays to:</label>
   <select id="branchcode" name="branchcode">
     <option value=""></option>
-    [% FOREACH l IN Branches.all() %]
-    <option value="[% l.branchcode | html %]">[% l.branchname | html %]</option>
-    [% END %]
+    [% PROCESS options_for_libraries params => { selected => branch } %]
   </select>
     <input type="submit" value="Copy" />
 </form>
