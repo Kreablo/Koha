@@ -178,6 +178,8 @@ sub all_grouped {
     while (my ($key, $value)  = each %{$params->{search_params}}) {
         if ($where eq '') {
             $where .= ' WHERE ';
+        } else {
+            $where .= ' AND ';
         }
         if ($key eq 'branchcode') {
             $key = 'branches.branchcode';
@@ -296,9 +298,6 @@ sub pickup_locations {
 
 sub pickup_locations_grouped {
     my ($self, $params) = @_;
-
-    $params->{pickup_location} = $params->{search_params};
-    delete $params->{search_params};
 
     return $self->all_grouped($params);
 }
