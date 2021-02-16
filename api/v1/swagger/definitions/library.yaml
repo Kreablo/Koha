@@ -64,6 +64,11 @@ properties:
       - string
       - "null"
     description: the ILL staff email address of the library
+  library_groups:
+    type:
+      - array
+      - "null"
+    description: The library groups where this library belongs
   reply_to_email:
     type:
       - string
