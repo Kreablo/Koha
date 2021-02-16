@@ -186,6 +186,15 @@ my ($template, $borrowernumber, $cookie) = get_template_and_user({
     }
 );
 
+if ( C4::Context->preference("SyndeticsEnabled") ) {
+    $template->param(SyndeticsEnabled => 1,
+                     SyndeticsClientCode                   => C4::Context->preference("SyndeticsClientCode"),
+                     SyndeticsCoverImages                  => C4::Context->preference("SyndeticsCoverImages"),
+                     SyndeticsCoverImageSize               => C4::Context->preference("SyndeticsCoverImageSize")
+
+        );
+}
+
 my $lang = C4::Languages::getlanguage($cgi);
 
 if (C4::Context->preference("marcflavour") eq "UNIMARC" ) {
