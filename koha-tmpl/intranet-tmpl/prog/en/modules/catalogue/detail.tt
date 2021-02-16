@@ -84,7 +84,7 @@
         <span class="Z3988" title="[% ocoins | html %]"></span>
     [% END %]
 
-    [% IF ( AmazonCoverImages  || LocalCoverImages || AdlibrisEnabled || IntranetCoce || (Koha.Preference('CustomCoverImages') && Koha.Preference('CustomCoverImagesURL')) ) %]
+    [% IF ( AmazonCoverImages  || LocalCoverImages || AdlibrisEnabled || IntranetCoce || ( SyndeticsEnabled && SyndeticsCoverImages ) || (Koha.Preference('CustomCoverImages') && Koha.Preference('CustomCoverImagesURL')) ) %]
         [% IF ( XSLTDetailsDisplay ) %]
             <div id="catalogue_detail_biblio" class="col-xs-9">
         [% ELSE %]
@@ -140,7 +140,7 @@
             </span>
         [% END %]
 
-        [% IF ( AmazonCoverImages  || LocalCoverImages || AdlibrisEnabled || IntranetCoce || (Koha.Preference('CustomCoverImages') && Koha.Preference('CustomCoverImagesURL')) ) %]
+        [% IF ( AmazonCoverImages  || LocalCoverImages || AdlibrisEnabled || IntranetCoce || ( SyndeticsEnabled && SyndeticsCoverImages ) || (Koha.Preference('CustomCoverImages') && Koha.Preference('CustomCoverImagesURL')) ) %]
         </div><div class="col-xs-3" id="bookcoverimg">
         [% IF ( LocalCoverImages ) %]
             <div title="[% biblionumber |url %]" class="[% biblionumber | html %]" id="local-thumbnail-preview"></div>
@@ -153,6 +153,13 @@
             <a href="http://www.amazon[% AmazonTld | uri %]/gp/reader/[% normalized_isbn | uri %][% AmazonAssocTag | uri %]#reader-link">
                 <img src="https://images-na.ssl-images-amazon.com/images/P/[% normalized_isbn | html %].01.MZZZZZZZ.jpg" alt="" />
         </a></div>
+        [% END %]
+        [% IF ( SyndeticsEnabled && SyndeticsCoverImages ) %]
+           [% IF ( content_identifier_exists ) %]
+              <img src="https://secure.syndetics.com/index.aspx?isbn=[% normalized_isbn | html %]/[% SyndeticsCoverImageSize | html %].GIF&amp;client=[% SyndeticsClientCode | html %]&amp;type=xw10&amp;upc=[% normalized_upc | html %]&amp;oclc=[% normalized_oclc | html %]" alt="" class="thumbnail" />
+              [% ELSE %]
+                  <span class="no-image">No cover image available</span>
+              [% END %]
         [% END %]
         [% IF ( IntranetCoce && CoceProviders ) %]
           [% coce_id = normalized_ean || normalized_isbn %]
