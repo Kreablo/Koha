@@ -144,12 +144,17 @@ my $upc = GetNormalizedUPC($record,$marcflavour);
 my $ean = GetNormalizedEAN($record,$marcflavour);
 my $oclc = GetNormalizedOCLCNumber($record,$marcflavour);
 my $isbn = GetNormalizedISBN(undef,$record,$marcflavour);
+my $content_identifier_exists;
+if ( $isbn or $ean or $oclc or $upc ) {
+    $content_identifier_exists = 1;
+}
 
 $template->param(
     normalized_upc => $upc,
     normalized_ean => $ean,
     normalized_oclc => $oclc,
     normalized_isbn => $isbn,
+    content_identifier_exists => $content_identifier_exists
 );
 
 my $marcnotesarray   = GetMarcNotes( $record, $marcflavour );
@@ -450,6 +455,15 @@ $template->param(
     subscriptiontitle   => $dat->{title},
     searchid            => scalar $query->param('searchid'),
 );
+
+if ( C4::Context->preference("SyndeticsEnabled") ) {
+    $template->param(SyndeticsEnabled => 1,
+                     SyndeticsClientCode                   => C4::Context->preference("SyndeticsClientCode"),
+                     SyndeticsCoverImages                  => C4::Context->preference("SyndeticsCoverImages"),
+                     SyndeticsCoverImageSize               => C4::Context->preference("SyndeticsCoverImageSize")
+
+        );
+}
 
 # $debug and $template->param(debug_display => 1);
 
