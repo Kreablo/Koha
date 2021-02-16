@@ -83,6 +83,10 @@
     "pickup_location": {
         "type": "boolean",
         "description": "If the library can act as a pickup location"
+    },
+    "library_groups": {
+        "type": ["array", "null"],
+        "description": "The library groups where this library belongs"
     }
   },
   "additionalProperties": false,

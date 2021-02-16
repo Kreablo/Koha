@@ -458,7 +458,7 @@ sub pickup_locations {
           ? @{ $hold->item->pickup_locations( { patron => $hold->patron } )->as_list() }
           : @{ $hold->biblio->pickup_locations( { patron => $hold->patron } )->as_list() };
 
-        @pickup_locations = map { $_->to_api } @pickup_locations;
+        @pickup_locations = map { my $lib = $_->to_api; set_library_groups($lib); $lib } @pickup_locations;
 
         return $c->render(
             status  => 200,
@@ -468,6 +468,28 @@ sub pickup_locations {
     catch {
         $c->unhandled_exception($_);
     };
+}
+
+
+sub set_library_groups {
+    my $lib = shift;
+
+    my $dbh = C4::Context->dbh;
+
+    my $sth = $dbh->prepare(<<'EOF');
+SELECT libgroup.title FROM
+(SELECT branchcode, parent_id FROM library_groups) AS libgroup0
+LEFT JOIN (SELECT id, title FROM library_groups) AS libgroup ON libgroup.id = libgroup0.parent_id
+WHERE libgroup0.branchcode = ?
+EOF
+
+    $sth->execute($lib->{library_id});
+    my @groups = ();
+    while (my $row = $sth->fetchrow_arrayref) {
+        push @groups, $row->[0];
+    }
+
+    $lib->{library_groups} = \@groups;
 }
 
 1;
