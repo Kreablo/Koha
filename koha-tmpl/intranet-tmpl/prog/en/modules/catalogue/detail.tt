@@ -85,7 +85,7 @@
         <span class="Z3988" title="[% ocoins | html %]"></span>
     [% END %]
 
-    [% IF ( AmazonCoverImages  || LocalCoverImages || AdlibrisEnabled || IntranetCoce || (Koha.Preference('CustomCoverImages') && Koha.Preference('CustomCoverImagesURL')) ) %]
+    [% IF ( AmazonCoverImages  || LocalCoverImages || AdlibrisEnabled || IntranetCoce || ( SyndeticsEnabled && SyndeticsCoverImages ) || (Koha.Preference('CustomCoverImages') && Koha.Preference('CustomCoverImagesURL')) ) %]
         [% IF ( XSLTDetailsDisplay ) %]
             <div id="catalogue_detail_biblio" class="col-xs-9">
         [% ELSE %]
@@ -168,6 +168,7 @@
             </span>
         [% END %]
 
+
         [% IF ( AmazonCoverImages  || LocalCoverImages || AdlibrisEnabled || IntranetCoce || (Koha.Preference('CustomCoverImages') && Koha.Preference('CustomCoverImagesURL')) ) %]
             </div>
             <div class="col-xs-3 bookcoverimg">
@@ -202,6 +203,17 @@
                             <div class="hint">Image from Amazon.com</div>
                         </div>
                     [% END %]
+
+                    [% IF ( SyndeticsEnabled && SyndeticsCoverImages ) %]
+                       <div class="cover-image" id="syndetics-coverimg">
+                          [% IF ( content_identifier_exists ) %]
+                             <img src="https://secure.syndetics.com/index.aspx?isbn=[% normalized_isbn | html %]/[% SyndeticsCoverImageSize | html %].GIF&amp;client=[% SyndeticsClientCode | html %]&amp;type=xw10&amp;upc=[% normalized_upc | html %]&amp;oclc=[% normalized_oclc | html %]" alt="" class="thumbnail" />
+                          [% ELSE %]
+                              <span class="no-image">No cover image available</span>
+                          [% END %]
+                      </div>
+                    [% END %]
+
 
                     [% IF ( IntranetCoce && CoceProviders && normalized_isbn ) %]
                         [% coce_id = normalized_ean || normalized_isbn %]
