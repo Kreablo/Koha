@@ -690,6 +690,10 @@ sub GetItemsInfo {
     my $dbh   = C4::Context->dbh;
     require C4::Languages;
     my $language = C4::Languages::getlanguage();
+
+    my $groupedLibrary = (C4::Context->interface eq 'intranet' && C4::Context->preference('IntranetGroupedLibrarySelect')) ||
+                         (C4::Context->interface eq 'opac'     && C4::Context->preference('OPACGroupedLibrarySelect'));
+
     my $query = "
     SELECT items.*,
            biblio.*,
@@ -722,8 +726,13 @@ sub GetItemsInfo {
            holding.branchname,
            holding.opac_info as holding_branch_opac_info,
            home.opac_info as home_branch_opac_info,
-           IF(tmp_holdsqueue.itemnumber,1,0) AS has_pending_hold
-     FROM items
+           IF(tmp_holdsqueue.itemnumber,1,0) AS has_pending_hold";
+
+    if ($groupedLibrary) {
+        $query .= ", libgroup.title as `home_library_group`, libgroup_holding.title as `holding_library_group` ";
+    }
+
+    $query .= "FROM items
      LEFT JOIN branches AS holding ON items.holdingbranch = holding.branchcode
      LEFT JOIN branches AS home ON items.homebranch=home.branchcode
      LEFT JOIN biblio      ON      biblio.biblionumber     = items.biblionumber
@@ -741,7 +750,19 @@ sub GetItemsInfo {
         AND localization.lang = ?
     |;
 
-    $query .= " WHERE items.biblionumber = ? ORDER BY home.branchname, items.enumchron, LPAD( items.copynumber, 8, '0' ), items.dateaccessioned DESC" ;
+    if ($groupedLibrary) {
+        $query .= ' LEFT JOIN (SELECT branchcode, parent_id, count(*) AS c FROM library_groups GROUP BY branchcode) AS libgroup0 ON libgroup0.branchcode = items.homebranch' .
+            ' LEFT JOIN (SELECT id, title FROM library_groups) AS libgroup ON libgroup.id = libgroup0.parent_id';
+        $query .= ' LEFT JOIN (SELECT branchcode, parent_id, count(*) AS c FROM library_groups GROUP BY branchcode) AS libgroup1 ON libgroup1.branchcode = items.holdingbranch' .
+            ' LEFT JOIN (SELECT id, title FROM library_groups) AS libgroup_holding ON libgroup_holding.id = libgroup1.parent_id';
+    }
+
+    $query .= " WHERE items.biblionumber = ? ORDER BY";
+    if ($groupedLibrary) {
+        $query .= ' libgroup1.c >= 1 DESC, libgroup_holding.title,';
+    }
+    $query .= " home.branchname, items.enumchron, LPAD( items.copynumber, 8, '0' ), items.dateaccessioned DESC" ;
+
     my $sth = $dbh->prepare($query);
     $sth->execute($language, $biblionumber);
     my $i = 0;

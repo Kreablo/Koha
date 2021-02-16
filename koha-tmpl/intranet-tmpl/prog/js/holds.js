@@ -295,6 +295,34 @@ $(document).ready(function() {
         });
     });
 
+    var process_library_groups = function (data) {
+        var map = new Map();
+        var nogroup = [];
+
+        for (var i = 0; i < data.length; i += 1) {
+            var lib = data[i];
+            var groups = lib.library_groups;
+            var keys = [];
+            if (groups.length === 0) {
+                nogroup.push(lib);
+            } else {
+                for (var j = 0; j < groups.length; j += 1) {
+                    var g0 = map.get(groups[j]);
+                    if (typeof g0 === "undefined") {
+                        g0 = [lib];
+                        keys.push(groups[j]);
+                    } else {
+                        g0.push(lib);
+                    }
+                    map.set(groups[j], g0);
+                }
+            }
+        }
+        nogroup.sort();
+
+        return {map: map, nogroup: nogroup};
+    };
+
     $(".pickup_location_dropdown").on( "focus",function(){
         var this_dropdown = $(this);
         if(this_dropdown.data('loaded')===1){ return true};
@@ -307,12 +335,25 @@ $(document).ready(function() {
             url: api_url,
             success: function( data ){
                 var dropdown = "";
-                $.each(data, function(index,library) {
+                var groups  = process_library_groups(data);
+                var addopt = function (library) {
                     if( preselected == library.library_id ){
                         selected = ' selected="selected" ';
                     } else { selected = ""; }
                     dropdown += '<option value="' + library.library_id.escapeHtml() + '"' + selected + '>' + library.name.escapeHtml() + '</option>';
-                });
+                }
+                for (var i = 0; i < groups.nogroup.length; i += 1) {
+                    addopt(groups.nogroup[i]);
+                }
+                var keys = Array.from(groups.map.keys());
+                keys.sort();
+                for (var i = 0; i < keys.length; i += 1) {
+                    dropdown += '<optgroup label="' + keys[i] + '">';
+                    var libs = groups.map.get(keys[i]);
+                    for (var j = 0; j < libs.length; j += 1) {
+                        addopt(libs[j]);
+                    }
+                }
                 this_dropdown.html(dropdown);
                 this_dropdown.data("loaded",1);
                 $(".loading_"+hold_id).hide();
