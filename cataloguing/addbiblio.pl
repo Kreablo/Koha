@@ -47,6 +47,8 @@ use MARC::File::USMARC;
 use MARC::File::XML;
 use URI::Escape;
 
+use Data::UUID;
+
 if ( C4::Context->preference('marcflavour') eq 'UNIMARC' ) {
     MARC::File::XML->default_record_format('UNIMARC');
 }
@@ -952,6 +954,16 @@ elsif ( $op eq "delete" ) {
             my $urecord = MARC::Record::new_from_xml( $uxml, 'UTF-8' );
             $record = $urecord;
         };
+    }
+    if ( $op eq "duplicate" && $record != -1 ) {
+        my $dup003 = C4::Context->preference('DuplicateBiblioSet003');
+        if ($dup003) {
+            $record->delete_fields($record->field('003'));
+            $record->insert_fields_ordered(MARC::Field->new('003', $dup003));
+            $record->delete_fields($record->field('001'));
+            my $ug = Data::UUID->new;
+            $record->insert_fields_ordered(MARC::Field->new('001', $ug->to_string($ug->create)));
+        }
     }
     build_tabs( $template, $record, $dbh, $encoding,$input );
     $template->param(
