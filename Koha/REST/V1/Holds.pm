@@ -486,6 +486,7 @@ sub pickup_locations {
                   )
                   ? Mojo::JSON->false
                   : Mojo::JSON->true;
+                set_library_groups($library);
                 $library;
             } @{$libraries};
 
@@ -572,6 +573,27 @@ sub update_pickup_location {
 
         $c->unhandled_exception($_);
     };
+}
+
+sub set_library_groups {
+    my $lib = shift;
+
+    my $dbh = C4::Context->dbh;
+
+    my $sth = $dbh->prepare(<<'EOF');
+SELECT libgroup.title FROM
+(SELECT branchcode, parent_id FROM library_groups) AS libgroup0
+LEFT JOIN (SELECT id, title FROM library_groups) AS libgroup ON libgroup.id = libgroup0.parent_id
+WHERE libgroup0.branchcode = ?
+EOF
+
+    $sth->execute($lib->{library_id});
+    my @groups = ();
+    while (my $row = $sth->fetchrow_arrayref) {
+        push @groups, $row->[0];
+    }
+
+    $lib->{library_groups} = \@groups;
 }
 
 1;
