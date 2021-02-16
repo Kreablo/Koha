@@ -1249,6 +1249,61 @@
                 return $text;
             };
 
+            var process_library_groups = function (data) {
+                var map = new Map();
+                var keys = [];
+        
+                for (var i = 0; i < data.length; i += 1) {
+                    var lib = data[i];
+                    var groups = lib.library_groups;
+                    if (groups.length === 0) {
+                        nogroup.push(lib);
+                    } else {
+                        for (var j = 0; j < groups.length; j += 1) {
+                            var g0 = map.get(groups[j]);
+                            if (typeof g0 === "undefined") {
+                                g0 = [lib];
+                                keys.push(groups[j]);
+                            } else {
+                                g0.push(lib);
+                            }
+                            map.set(groups[j], g0);
+                        }
+                    }
+                }
+                nogroup.sort();
+        
+                var results = [];
+        
+                var children = function (l) {
+                    var result = [];
+                    for (var i = 0; i < l.length; i+=1) {
+                        library = l[i];
+                        result.push({
+                            "id": library.library_id.escapeHtml(),
+                            "text": library.name.escapeHtml(),
+                            "needs_override": library.needs_override
+                        });
+                    }
+                    return result;
+                }
+        
+                if (nogroup.length > 0) {
+                    results = children(nogroup);
+                }
+        
+                for (var i = 0; i < keys.length; i += 1) {
+                    results.push({
+                        "text": keys[i],
+                        "children": children(groups.get(keys[i]));
+                    });
+                }
+                
+                return { "results": results };
+            };
+
+
+
             $(".pickup_location_dropdown").each( function () {
                 var this_dropdown = $(this);
                 var hold_id = $(this).data('hold_id');
@@ -1267,19 +1322,7 @@
                             };
                             return query;
                         },
-                        processResults: function (data) {
-                            var results = [];
-                            data.forEach( function ( pickup_location ) {
-                                results.push(
-                                    {
-                                        "id": pickup_location.library_id.escapeHtml(),
-                                        "text": pickup_location.name.escapeHtml(),
-                                        "needs_override": pickup_location.needs_override
-                                    }
-                                );
-                            });
-                            return { "results": results };
-                        }
+                        processResults: process_library_groups
                     },
                     templateResult: display_pickup_location
                 });

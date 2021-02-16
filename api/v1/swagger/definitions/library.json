@@ -95,6 +95,10 @@
     "needs_override": {
         "type": "boolean",
         "description": "If the library needs an override to act as pickup location for a hold"
+    },
+    "library_groups": {
+        "type": ["array", "null"],
+        "description": "The library groups where this library belongs"
     }
   },
   "additionalProperties": false,
