@@ -87,6 +87,11 @@ Cataloging:
             - pref: DefaultCountryField008
             - " Empty defaults to ||| - No attempt to code."
         -
+            - Autofill controlfield 003 with this value and generate a unique 001 when duplicating an existing record.
+            - pref: DuplicateBiblioSet003
+              class: Text
+            - An identifier for locally catalogued recrods.
+        -
             - Interpret and store MARC records in the
             - pref: marcflavour
               choices:
