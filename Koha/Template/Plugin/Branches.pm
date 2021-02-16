@@ -94,6 +94,9 @@ sub all {
     return $libraries;
 }
 
+
+use Data::Dumper;
+
 sub all_grouped {
     my ( $self, $params ) = @_;
     my $selected = $params->{selected};
@@ -134,12 +137,16 @@ sub all_grouped {
               unless ref($item) eq 'Koha::Item';
             @libraries = @{ $item->pickup_locations( { patron => $patron } ) }
               if defined $item;
+
+
+            warn "item: " . Dumper(\@libraries);
         }
         elsif ($biblio) {
             $biblio = Koha::Biblios->find($biblio)
               unless ref($biblio) eq 'Koha::Biblio';
             @libraries = @{ $biblio->pickup_locations( { patron => $patron } ) }
               if defined $biblio;
+            warn "biblio: " . Dumper(\@libraries);
         }
 
         map { push @branchcodes, $_->branchcode } @libraries;
@@ -165,6 +172,7 @@ sub all_grouped {
     }
     
     while (my ($key, $value)  = each %{$params->{search_params}}) {
+        next if $key eq 'patron' or $key eq 'biblio';
         if ($where eq '') {
             $where .= ' WHERE ';
         } else {
