@@ -732,7 +732,7 @@ sub GetItemsInfo {
         $query .= ", libgroup.title as `home_library_group`, libgroup_holding.title as `holding_library_group` ";
     }
 
-    $query .= "FROM items
+    $query .= " FROM items
      LEFT JOIN branches AS holding ON items.holdingbranch = holding.branchcode
      LEFT JOIN branches AS home ON items.homebranch=home.branchcode
      LEFT JOIN biblio      ON      biblio.biblionumber     = items.biblionumber
