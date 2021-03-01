@@ -414,7 +414,7 @@
                             <span class="itypedesc itypetext">[% itemtype.translated_description | html %]</span>
                         </td>
                     [% END %]
-                    <td class="location">[% UNLESS ( singlebranchmode ) %][% IF Koha.Preference('IntranetGroupedLibrarySelect') && item.holding_library_group %] <span class="librarygroup">([% item.holding_library_group | html%]) </span>[% END %] [% Branches.GetName( item.branchcode ) | html %] [% END %]</td>
+                    <td class="location">[% UNLESS ( singlebranchmode ) %] [% Branches.GetName( item.branchcode ) | html %] [% END %]</td>
                     <td class="homebranch">
                         <span class="homebranchdesc">[% IF Koha.Preference('IntranetGroupedLibrarySelect') && item.home_library_group %] <span class="librarygroup">([% item.home_library_group | html%]) </span>[% END %] [% Branches.GetName(item.homebranch) | html %]</span>
                         <span class="shelvingloc">
