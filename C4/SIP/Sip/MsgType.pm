@@ -24,6 +24,7 @@ use Koha::Patron::Attributes;
 use Koha::Plugins;
 use Koha::Items;
 use Koha::DateUtils qw( output_pref );
+use Koha::Patrons;
 
 use UNIVERSAL::can;
 
@@ -993,11 +994,13 @@ sub handle_patron_info {
 
     $resp = (PATRON_INFO_RESP);
     if (defined $patron) {
-
         if (defined $server->{account}->{authorize_on_patron_attribute}) {
-            my $attr = C4::Members::Attributes::GetBorrowerAttributeValue($patron->{borrowernumber}, $server->{account}->{authorize_on_patron_attribute});
+            my $kp = Koha::Patrons->find( {
+                borrowernumber => $patron->{borrowernumber}
+            } );
+            my $attr = $kp->get_extended_attribute($server->{account}->{authorize_on_patron_attribute});
 	    my $val = defined $server->{account}->{authorize_on_patron_attribute_value} ? $server->{account}->{authorize_on_patron_attribute_value} : '1';
-            unless (defined $attr && $attr eq $val) {
+            unless (defined $attr && $attr->attribute eq $val) {
                 $patron = undef;
             }
         }
