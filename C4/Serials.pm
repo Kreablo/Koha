@@ -265,14 +265,15 @@ sub GetSubscription {
     my ($subscriptionid) = @_;
     my $dbh              = C4::Context->dbh;
     my $query            = qq(
-        SELECT  subscription.*,
-                subscriptionhistory.*,
+       SELECT
+                subscription.*,
+                histstartdate, histenddate, missinglist, recievedlist, opacnote, librariannote,
                 aqbooksellers.name AS aqbooksellername,
                 biblio.title AS bibliotitle,
                 biblio.subtitle AS bibliosubtitle,
                 subscription.biblionumber as bibnum
        FROM subscription
-       LEFT JOIN subscriptionhistory ON subscription.subscriptionid=subscriptionhistory.subscriptionid
+       LEFT JOIN subscriptionhistory USING(subscriptionid)
        LEFT JOIN aqbooksellers ON subscription.aqbooksellerid=aqbooksellers.id
        LEFT JOIN biblio ON biblio.biblionumber=subscription.biblionumber
        WHERE subscription.subscriptionid = ?
@@ -412,11 +413,11 @@ sub GetSubscriptionsFromBiblionumber {
     my $query          = qq(
         SELECT subscription.*,
                branches.branchname,
-               subscriptionhistory.*,
+               histstartdate, histenddate, missinglist, recievedlist, opacnote, librariannote,
                aqbooksellers.name AS aqbooksellername,
                biblio.title AS bibliotitle
        FROM subscription
-       LEFT JOIN subscriptionhistory ON subscription.subscriptionid=subscriptionhistory.subscriptionid
+       LEFT JOIN subscriptionhistory USING(subscriptionid)
        LEFT JOIN aqbooksellers ON subscription.aqbooksellerid=aqbooksellers.id
        LEFT JOIN biblio ON biblio.biblionumber=subscription.biblionumber
        LEFT JOIN branches ON branches.branchcode=subscription.branchcode
