@@ -22,6 +22,7 @@ use Modern::Perl;
 
 use Template::Plugin;
 use base qw( Template::Plugin );
+use Ref::Util qw( is_arrayref );
 
 use C4::Koha;
 use C4::Context;
@@ -141,6 +142,10 @@ sub pickup_locations {
     @libraries = map { $_->unblessed } @libraries;
 
     for my $l (@libraries) {
+
+        # Handle DBIx::Class bug (see https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=27970).
+        next if is_arrayref($l);
+
         if ( defined $selected and $l->{branchcode} eq $selected
             or not defined $selected
             and C4::Context->userenv
