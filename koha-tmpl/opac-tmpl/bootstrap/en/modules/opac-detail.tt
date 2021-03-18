@@ -1215,12 +1215,12 @@
                                 [% IF Branches.GetURL( ITEM_RESULT.homebranch ) %]
                                     [% home_branch_url = Branches.GetURL( ITEM_RESULT.homebranch ) %]
                                     [% IF ( home_branch_url ) %]
-                                         <a href="[% home_branch_url | url %]">[% IF Koha.Preference('OPACGroupedLibrarySelect') && ITEM_RESULT.home_library_group %] <span class="librarygroup">([% ITEM_RESULT.home_library_group | html%])</span>[% END %] [% Branches.GetName( ITEM_RESULT.homebranch ) | html %]</a>
+                                         <a href="[% home_branch_url | url %]">[% Branches.GetName( ITEM_RESULT.homebranch ) | html %]</a>
                                     [% ELSE %]
-                                        <span>[% IF Koha.Preference('OPACGroupedLibrarySelect') && ITEM_RESULT.home_library_group %] <span class="librarygroup">([% ITEM_RESULT.home_library_group | html%])</span>[% END %] [% Branches.GetName( ITEM_RESULT.homebranch ) | html %]</span>
+                                        <span>[% Branches.GetName( ITEM_RESULT.homebranch ) | html %]</span>
                                     [% END %]
                                 [% ELSE %]
-                                    <span>[% IF Koha.Preference('OPACGroupedLibrarySelect') && ITEM_RESULT.home_library_group %] <span class="librarygroup">([% ITEM_RESULT.home_library_group | html%])</span>[% END %] [% Branches.GetName( ITEM_RESULT.homebranch ) | html %]</span>
+                                    <span>[% Branches.GetName( ITEM_RESULT.homebranch ) | html %]</span>
                                 [% END %]
                             </span>
                             <div class="branch-info-tooltip">[% ITEM_RESULT.home_branch_opac_info | $raw %]</div>
