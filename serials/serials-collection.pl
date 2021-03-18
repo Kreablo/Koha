@@ -160,7 +160,7 @@ if (@subscriptionid){
     @subscriptioninformation=(@$tmpsubscription,@subscriptioninformation);
   }
 
-  output_and_exit( $query, $cookie, $template, 'unknown_subscription') unless @subscriptioninformation;
+  output_and_exit( $query, $cookie, $template, 'unknown_subscription') unless @$subscriptiondescs;
 
   $template->param(closed => $closed);
   $subscriptions=PrepareSerialsData(\@subscriptioninformation);
