@@ -416,7 +416,7 @@
                     [% END %]
                     <td class="location">[% UNLESS ( singlebranchmode ) %] [% Branches.GetName( item.branchcode ) | html %] [% END %]</td>
                     <td class="homebranch">
-                        <span class="homebranchdesc">[% IF Koha.Preference('IntranetGroupedLibrarySelect') && item.home_library_group %] <span class="librarygroup">([% item.home_library_group | html%]) </span>[% END %] [% Branches.GetName(item.homebranch) | html %]</span>
+                        <span class="homebranchdesc">[% Branches.GetName(item.homebranch) | html %]</span>
                         <span class="shelvingloc">
                         [%# If permanent location is defined, show description or code and             %]
                         [%# display current location in parentheses. If not, display current location. %]
