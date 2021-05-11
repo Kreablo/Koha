@@ -551,10 +551,28 @@ sub handle_patron_status {
 
     $ils->check_inst_id( $fields->{ (FID_INST_ID) }, "handle_patron_status" );
     $patron = $ils->find_patron( $fields->{ (FID_PATRON_ID) } );
-    if ( C4::Context->preference('TrackLastPatronActivityTriggers') && $patron ) {
-        my $koha_patron = Koha::Patrons->find( $patron->{borrowernumber} );
-        $koha_patron->update_lastseen('connection');
+    if (defined $patron) {
+        my $koha_patron;
+        if (defined $server->{account}->{authorize_on_patron_attribute}) {
+            my $authorize = 0;
+            $koha_patron = Koha::Patrons->find($patron->{borrowernumber});
+            for my $attr ($koha_patron->extended_attributes->search({ code => $server->{account}->{authorize_on_patron_attribute} })) {
+                my $val = defined $server->{account}->{authorize_on_patron_attribute_value} ? $server->{account}->{authorize_on_patron_attribute_value} : '1';
+                if (defined $attr && $attr->attribute eq $val) {
+                    $authorize = 1;
+                    last;
+                }
+            }
+            if (!$authorize) {
+                $patron = undef;
+            }
+        }
+        if ( C4::Context->preference('TrackLastPatronActivityTriggers') ) {
+            $koha_patron = Koha::Patrons->find($patron->{borrowernumber}) unless defined $koha_patron;
+            $koha_patron->update_lastseen('connection');
+        }
     }
+
     $resp = build_patron_status( $patron, $lang, $fields, $server );
     $self->write_msg( $resp, $server );
     return (PATRON_STATUS_REQ);
@@ -1076,25 +1094,28 @@ sub handle_patron_info {
 
     $resp = (PATRON_INFO_RESP);
     if (defined $patron) {
-        if ( C4::Context->preference('TrackLastPatronActivityTriggers') ) {
-            my $koha_patron = Koha::Patrons->find( $patron->{borrowernumber} );
-            $koha_patron->update_lastseen('connection');
-        }
-
+        my $koha_patron;
         if (defined $server->{account}->{authorize_on_patron_attribute}) {
-            my $kp = Koha::Patrons->find( {
-                borrowernumber => $patron->{borrowernumber}
-            } );
-            my $attr = $kp->get_extended_attribute($server->{account}->{authorize_on_patron_attribute});
-	    my $val = defined $server->{account}->{authorize_on_patron_attribute_value} ? $server->{account}->{authorize_on_patron_attribute_value} : '1';
-            unless (defined $attr && $attr->attribute eq $val) {
+            my $authorize = 0;
+            for my $attr ($koha_patron->extended_attributes->search({ code => $server->{account}->{authorize_on_patron_attribute} })) {
+                my $val = defined $server->{account}->{authorize_on_patron_attribute_value} ? $server->{account}->{authorize_on_patron_attribute_value} : '1';
+                if (defined $attr && $attr->attribute eq $val) {
+                    $authorize = 1;
+                    last;
+                }
+            }
+            if (!$authorize) {
                 $patron = undef;
             }
+        }
+
+        if ( defined $patron && C4::Context->preference('TrackLastPatronActivityTriggers') ) {
+            $koha_patron = Koha::Patrons->find($patron->{borrowernumber}) unless defined $koha_patron;
+            $koha_patron->update_lastseen('connection');
         }
     }
 
     if (defined $patron) {
-        $patron->update_lastseen();
 
         $resp .= patron_status_string( $patron, $server );
         $resp .= ( defined($lang) and length($lang) == 3 ) ? $lang : $patron->language;
