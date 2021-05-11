@@ -411,7 +411,7 @@ my $branch_limit = C4::Context->userenv ? C4::Context->userenv->{"branch"} : "";
 my $libraries = Koha::Libraries->search({}, { order_by => ['branchname'] })->unblessed;# build once ahead of time, instead of multiple times later.
 
 # Adding a default choice, in case the user does not want to modify the branch
-my $nochange_branch = { branchname => '', value => '', selected => 1 };
+my $nochange_branch = { branchname => '', branchcode => '', selected => 1 };
 unshift (@$libraries, $nochange_branch);
 
 my $pref_itemcallnumber = C4::Context->preference('itemcallnumber');
