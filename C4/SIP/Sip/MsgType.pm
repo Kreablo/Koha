@@ -504,6 +504,26 @@ sub handle_patron_status {
 
     $ils->check_inst_id( $fields->{ (FID_INST_ID) }, "handle_patron_status" );
     $patron = $ils->find_patron( $fields->{ (FID_PATRON_ID) } );
+
+    if (defined $patron) {
+        if (defined $server->{account}->{authorize_on_patron_attribute}) {
+            my $authorize = 0;
+            my $kp = Koha::Patrons->find({
+                borrowernumber => $patron->{borrowernumber}
+                                         });
+            for my $attr ($kp->extended_attributes->search({ code => $server->{account}->{authorize_on_patron_attribute} })) {
+                my $val = defined $server->{account}->{authorize_on_patron_attribute_value} ? $server->{account}->{authorize_on_patron_attribute_value} : '1';
+                if (defined $attr && $attr->attribute eq $val) {
+                    $authorize = 1;
+                    last;
+                }
+            }
+            if (!$authorize) {
+                $patron = undef;
+            }
+        }
+    }
+
     $resp = build_patron_status( $patron, $lang, $fields, $server );
     $self->write_msg( $resp, undef, $server->{account}->{terminator}, $server->{account}->{encoding} );
     return (PATRON_STATUS_REQ);
@@ -995,12 +1015,18 @@ sub handle_patron_info {
     $resp = (PATRON_INFO_RESP);
     if (defined $patron) {
         if (defined $server->{account}->{authorize_on_patron_attribute}) {
-            my $kp = Koha::Patrons->find( {
+            my $authorize = 0;
+            my $kp = Koha::Patrons->find({
                 borrowernumber => $patron->{borrowernumber}
-            } );
-            my $attr = $kp->get_extended_attribute($server->{account}->{authorize_on_patron_attribute});
-	    my $val = defined $server->{account}->{authorize_on_patron_attribute_value} ? $server->{account}->{authorize_on_patron_attribute_value} : '1';
-            unless (defined $attr && $attr->attribute eq $val) {
+            });
+            for my $attr ($kp->extended_attributes->search({ code => $server->{account}->{authorize_on_patron_attribute} })) {
+                my $val = defined $server->{account}->{authorize_on_patron_attribute_value} ? $server->{account}->{authorize_on_patron_attribute_value} : '1';
+                if (defined $attr && $attr->attribute eq $val) {
+                    $authorize = 1;
+                    last;
+                }
+            }
+            if (!$authorize) {
                 $patron = undef;
             }
         }
