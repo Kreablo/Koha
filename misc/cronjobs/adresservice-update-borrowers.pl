@@ -52,7 +52,7 @@ Options:
    -c --confirm             commit changes to db, no action will be taken unless this switch is included
    --category=<categorycode>limit updates to this borrower category (repeat for multiple categories)
    --attribute-code=<code>  The patron attribute code containing the personal number (default pnr).
-   --usleep=<microseconds>  Time to sleep between API-calls.  Default: 100 microsecons.                 
+   --usleep=<microseconds>  Time to sleep between API-calls.  Default: 100 microsecons.
 =cut
 
 my $help    = 0;
@@ -161,7 +161,7 @@ BORROWERS: while ( my $target_patron = $target_patrons->next() ) {
                     });
                     $a->store if $doit;
                 }
-                
+
             } elsif ($n eq 'dateofbirth') {
                 if ($t->dateofbirth ne $v) {
                     $logger->debug($n  . ' update: "' . $v . '" ne "' . $t->dateofbirth . '"');
