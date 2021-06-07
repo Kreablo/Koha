@@ -33,29 +33,29 @@ sub fetch {
     my $completions = fetch_completions( $pnr );
 
     if (defined ($completions->{error})) {
-	return $c->render( status => $completions->{status},
-			   openapi => { error => $completions->{error} });
+        return $c->render( status => $completions->{status},
+                           openapi => { error => $completions->{error} });
     }
-    
+
     my $parser = DateTime::Format::Strptime->new(
-	pattern => '%F',
-	);
+        pattern => '%F',
+        );
 
     for my $compl (@{$completions->{form_fields}}) {
-	if ($compl->{'name'} eq 'dateofbirth') {
-	    $compl->{'value'} =  output_pref({
-		dt => $parser->parse_datetime($compl->{'value'}),
-		dateonly => 1
-		});
-	}
+        if ($compl->{'name'} eq 'dateofbirth') {
+            $compl->{'value'} =  output_pref({
+                dt => $parser->parse_datetime($compl->{'value'}),
+                dateonly => 1
+                });
+        }
     }
-    
+
     return $c->render( status => 200,
-		       openapi => {
-			   form_id => "entryform",
-			   form_fields => $completions->{form_fields}
-		       }
-	);
+                       openapi => {
+                           form_id => "entryform",
+                           form_fields => $completions->{form_fields}
+                       }
+        );
 }
 
 =head1 AUTHOR
