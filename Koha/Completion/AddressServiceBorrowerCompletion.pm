@@ -19,75 +19,30 @@ use Modern::Perl;
 use strict;
 use IO::Socket::SSL;
 use SOAP::Lite;
-use DateTime;
 use Koha::Logger;
 
-require Exporter;
-our @ISA = qw( Exporter );
-our @EXPORT = qw(fetch_completions);
-our @EXPORT_OK = qw(normalize_pnr);
+our @ISA = qw( BorrowerCompletion );
 
-
-sub normalize_pnr {
-    my $pnr = shift;
-
-    if ($pnr =~ /^(\d{2}|\d{4})(\d{2})(\d{2})(?:[-+]?)(\d{4})$/) {
-        my $y = int($1);
-        my $m = int($2);
-        my $d = int($3);
-        my $n = int($4);
-
-        if ($y < 100) {
-            my $cy = DateTime->now->year % 100;
-            if ($y < $cy) {
-                $y += 2000;
-            } else {
-                $y += 1900;
-            }
-        }
-
-        return (sprintf('%04d%02d%02d-%04d', $y, $m, $d, $n), sprintf('%04d%02d%02d%04d', $y, $m, $d, $n), sprintf('%04d-%02d-%02d', $y, $m, $d));
-    }
-    return undef;
-}
-
-sub name_capitalization {
-    my $name = shift;
-
-    my $s = '';
-    my $first = 1;
-
-    while (length($name) > 0) {
-        my $c = substr($name, 0, 1);
-        $name = substr($name, 1);
-        if (!($c =~ /^\p{XPosixAlpha}+$/)) {
-            $first = 1;
-            $s .= $c;
-        } elsif ($first) {
-            $first = 0;
-            $s .= uc($c);
-        } else {
-            $s .= lc($c);
-        }
-    }
-
-    return $s;
-}
+my %MAP = (
+    'ENamn' => ['surname', 1],
+    'FNamn' => ['firstname', 1],
+    'PostAdress' => ['city', 1],
+    'GatuAdress' => ['address', 1],
+    'PostNr' => ['zipcode', 0],
+    'Avliden' => ['patron_attr_', 0, 'AVLIDEN']
+);
 
 sub fetch_completions {
+    my $self = shift;
     my $id = shift;
+
     my $logger = Koha::Logger->get({ category => 'Koha.Completion.AddressServiceBorrowerCompletion'});
 
-    my ($pnrd, $pnrn, $dob) = normalize_pnr($id);
+    my ($pnrd, $pnrn, $dob) = $self->normalize_pnr($id);
 
     if (defined $pnrn) {
 
-        my $soap = SOAP::Lite->proxy("https://adresservice.ltv.se/csp/population/LTV.AddressService.Service.GetAddressResponderBinding.cls", ssl_opts => {
-            SSL_cert_file => "/etc/ssl/certs/kovast-addressservice.cert.pem",
-            SSL_key_file => "/etc/ssl/private/kovast-addressservice.key2.pem",
-            SSL_ca_file => "/etc/ssl/certs/SITHS-cacerts.pem",
-            SSL_use_cert => 1
-        });
+        my $soap = SOAP::Lite->proxy("https://adresservice.ltv.se/csp/population/LTV.AddressService.Service.GetAddressResponderBinding.cls", ssl_opts => $self->ssl_opts);
 
         $soap->on_action( sub { 'ltv:population:resident:AddressService:GetAddress' } );
         $soap->ns( 'ltv:population:resident:AddressService' );
@@ -104,45 +59,11 @@ sub fetch_completions {
             return { error => $msg, status => 500 };
         }
 
-        my @form_fields = ();
+        my $pnr = $self->{config}->{dashed_pnr} ? $pnrd : $pnrn;
 
-        push @form_fields, {
-            'name' => 'patron_attr_',
-            'attrname' => 'PERSNUMMER',
-            'value' => $pnrd
-        };
-        push @form_fields, {
-            'name' => 'dateofbirth',
-            'value' => $dob
-        };
-
-        my %map = (
-            'ENamn' => ['surname', 1],
-            'FNamn' => ['firstname', 1],
-            'PostAdress' => ['city', 1],
-            'GatuAdress' => ['address', 1],
-            'PostNr' => ['zipcode', 0],
-            'Avliden' => ['patron_attr_', 0, 'AVLIDEN'],
-        );
-
-        while (my ($srcname, $targetname) = each %map) {
-            if (defined($resp->result->{$srcname})) {
-                my $val = $resp->result->{$srcname};
-                if ($targetname->[1]) {
-                    $val = name_capitalization($val);
-                }
-                my $record = {
-                    'name' => $targetname->[0],
-                    'value' => $val
-                };
-                if ($targetname->[0] eq 'patron_attr_') {
-                    $record->{attrname} = $targetname->[2];
-                }
-                push @form_fields, $record;
-            }
-        }
-
-        return { form_fields => \@form_fields };
+        my $form_fields = $self->populate_form_fields($pnr, $dob, $resp->result, \%MAP);
+        
+        return { form_fields => $form_fields };
 
     } else {
         my $msg = "Felaktigt personnummer: " . $id;
