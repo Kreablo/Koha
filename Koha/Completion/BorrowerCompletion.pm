@@ -134,7 +134,7 @@ sub get_val {
 
 sub populate_form_fields {
     my $self = shift;
-    my $pnrd = shift;
+    my $pnr = shift;
     my $dob = shift;
     my $res = shift;
     my $map = shift;
@@ -146,12 +146,19 @@ sub populate_form_fields {
     push @form_fields, {
         'name' => 'patron_attr_',
         'attrname' => $pnr_attr,
-        'value' => $pnrd
+        'value' => $pnr
     };
     push @form_fields, {
         'name' => 'dateofbirth',
         'value' => $dob
     };
+
+    if ($self->{config}->{populate_userid}) {
+        push @form_fields, {
+            'name' => 'userid',
+            'value' => $pnr
+        };
+    }
 
     while (my ($srcname, $targetname) = each %$map) {
         my $val = $self->get_val($res, $srcname);
