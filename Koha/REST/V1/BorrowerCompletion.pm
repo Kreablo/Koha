@@ -22,15 +22,33 @@ use DateTime;
 use DateTime::Format::Builder;
 use DateTime::Format::Strptime;
 use Koha::DateUtils;
-use Koha::Completion::AddressServiceBorrowerCompletion;
-
+use Koha::Completion::BorrowerCompletion;
+use C4::Context;
 
 sub fetch {
     my $c = shift->openapi->valid_input or return;
     my $dateformat = C4::Context->preference('dateformat');
 
+    my $config = C4::Context->config('borrower_completion');
+    my $bcservice;
+    my $backend = $config->{backend};
+
+    my $logger = Koha::Logger->get({ category => 'Koha.Completion.BorrowerCompletion'});
+
+    $logger->warn('fetch');
+
+    eval "use $backend; \$bcservice = new $backend;";
+
+    $logger->warn('eval result: ' . $@);
+
+    if ($@) {
+        return $c->render( status => 500,
+                           openapi => { error => $@ });
+    }
+
     my $pnr = $c->validation->param('pnr');
-    my $completions = fetch_completions( $pnr );
+    my $completions = $bcservice->fetch_completions( $pnr );
+
 
     if (defined ($completions->{error})) {
         return $c->render( status => $completions->{status},
@@ -57,6 +75,7 @@ sub fetch {
                        }
         );
 }
+
 
 =head1 AUTHOR
 
