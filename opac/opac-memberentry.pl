@@ -43,6 +43,7 @@ use Koha::Patron::Modification;
 use Koha::Patron::Modifications;
 use Koha::Patrons;
 use Koha::Token;
+use Personnummer;
 
 my $cgi = new CGI;
 my $dbh = C4::Context->dbh;
@@ -114,12 +115,12 @@ foreach my $attr (@$attributes) {
         $conflicting_attribute = 1;
     }
 }
-
 if ( $action eq 'create' ) {
 
     my %borrower = ParseCgiForBorrower($cgi);
 
     %borrower = DelEmptyFields(%borrower);
+
     $borrower{categorycode} ||= C4::Context->preference('PatronSelfRegistrationDefaultCategory');
 
     my @empty_mandatory_fields = CheckMandatoryFields( \%borrower, $action );
@@ -131,7 +132,6 @@ if ( $action eq 'create' ) {
         # spurious length warning.
         $cardnumber_error_code = checkcardnumber( $borrower{cardnumber}, $borrower{borrowernumber} );
     }
-
     if ( @empty_mandatory_fields || @$invalidformfields || $cardnumber_error_code || $conflicting_attribute ) {
         if ( $cardnumber_error_code == 1 ) {
             $template->param( cardnumber_already_exists => 1 );
@@ -181,7 +181,17 @@ if ( $action eq 'create' ) {
             $borrower{password}          = Koha::AuthUtils::generate_password unless $borrower{password};
             $borrower{verification_token} = $verification_token;
 
-            Koha::Patron::Modification->new( \%borrower )->store();
+            my $personnr =  $borrower{personnr};
+            delete $borrower{personnr};
+
+            $borrower{userid} = $personnr;
+
+            my $modification = Koha::Patron::Modification->new( \%borrower )->store;
+
+            $modification->extended_attributes([{
+                code => 'PERSNUMMER',
+                attribute => $personnr
+            }]);
 
             #Send verification email
             my $letter = C4::Letters::GetPreparedLetter(
@@ -218,7 +228,19 @@ if ( $action eq 'create' ) {
 
             $borrower{password}         ||= Koha::AuthUtils::generate_password(Koha::Patron::Categories->find($borrower{categorycode}));
             my $consent_dt = delete $borrower{gdpr_proc_consent};
+
+            my $personnr =  $borrower{personnr};
+            delete $borrower{personnr};
+
+            $borrower{userid} = $personnr;
+
             my $patron = Koha::Patron->new( \%borrower )->store;
+            
+            push @$attributes, {
+                code => 'PERSNUMMER',
+                attribute => $personnr
+            };
+
             Koha::Patron::Consent->new({ borrowernumber => $patron->borrowernumber, type => 'GDPR_PROCESSING', given_on => $consent_dt })->store if $consent_dt;
             if ( $patron ) {
                 $patron->extended_attributes->filter_by_branch_limitations->delete;
@@ -412,9 +434,11 @@ sub CheckMandatoryFields {
     return @empty_mandatory_fields;
 }
 
+
 sub CheckForInvalidFields {
     my $borrower = shift;
     my @invalidFields;
+
     if ($borrower->{'email'}) {
         unless ( Email::Valid->address($borrower->{'email'}) ) {
             push(@invalidFields, "email");
@@ -459,6 +483,16 @@ sub CheckForInvalidFields {
               push @invalidFields, 'password_too_weak' if $error eq 'too_weak';
               push @invalidFields, 'password_has_whitespaces' if $error eq 'has_whitespaces';
           }
+    }
+    if ($borrower->{'personnr'}) {
+        my $p = $borrower->{'personnr'};
+        my $valid = valid_personnummer($p) || valid_samordningsnummer($p);
+        $p = normalize_personnummer($p);
+        my $sth = $dbh->prepare("SELECT count(*) FROM borrowers WHERE userid = ?");
+        push @invalidFields, 'personnr' if !$valid;
+        $sth->execute($p);
+        my ($n) = $sth->fetchrow_array();
+        push @invalidFields, 'personnr_already_registered' if $n > 0;
     }
 
     return \@invalidFields;
