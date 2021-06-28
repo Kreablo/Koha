@@ -274,6 +274,7 @@ sub pickup_locations {
     @libraries = map { $_->unblessed } @libraries;
 
     for my $l (@libraries) {
+        next if ref $l eq 'ARRAY';
         if ( defined $selected and $l->{branchcode} eq $selected
             or not defined $selected
             and C4::Context->userenv
