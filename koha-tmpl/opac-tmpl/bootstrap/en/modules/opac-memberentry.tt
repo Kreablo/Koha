@@ -96,6 +96,12 @@
                                 [% IF field == "email_match" %]
                                     <li>Emails do not match! <a href="#borrower_repeat_email">confirm email address</a></li>
                                 [% END %]
+                                [% IF field == "personnr" %]
+                                    <li>Personnummret är felaktigt!</li>
+                                [% END %]
+                                [% IF field == "personnr_already_registered" %]
+                                    <li>Personnummret är felaktigt!</li>
+                                [% END %]
                             [% END %]
                         </ul>
                         <span>Please correct and resubmit.</span>
@@ -322,6 +328,17 @@
                                             <input type="text" id="borrower_firstname" name="borrower_firstname" value="[% borrower.firstname | html %]" />
                                             [% IF mandatory.defined('firstname') %]<span class="required">Required</span>[% END %]
                                         </li>
+                                    [% END %]
+
+                                    [% IF action == 'create' || action == 'new' %]
+                                        [% UNLESS hidden.defined('personnr') %]
+                                            <li>
+                                                <label for="borrower_personnr" class="required">Personnummer eller samordningsnummer:</label>
+
+                                                <input type="text" id="borrower_personnr" name="borrower_personnr" value=""  placeholder="ååååmmddnnnn" />
+                                                <span class="required">Required</span>
+                                            </li>
+                                        [% END %]
                                     [% END %]
 
                                     [% UNLESS hidden.defined('dateofbirth') %]
@@ -1014,6 +1031,97 @@
                 $('span.required').remove();
                 $('label.required').removeClass('required');
             [% END %]
+            var pre = new RegExp(/^((19)|(20))?\d{6}[-+]?\d{4}$/);
+
+            var pnr_checksum_match = function pnr_checksum_match (s) {
+                var sum = 0;
+                
+                for (var i = 0; i < 9; i++) {
+                    var t = Number(s.charAt(i));
+                    var t0 = t * ((i + 1) % 2 + 1);
+                    var t1 = 0;
+                    while (t0 > 0) {
+                        t1 += t0 % 10;
+                        t0 = Math.floor(t0 / 10);
+                    }
+                    sum += t1;
+                }
+                c = (10 - sum % 10) % 10;
+                return Number(s.charAt(9)) === c;
+            };
+
+            var valid_personnummer = function valid_personnummer (s) {
+                if (!pre.test(s)) {
+                    return false;
+                }
+                s = s.replace(/[-+]/, '');
+                var s0 = s.substring(s.length - 10);
+                var d = s0.substring(0, 6);
+                if (Date.parse(d) == NaN) {
+                    return false;
+                }
+                return pnr_checksum_match(s0);
+            };
+
+            var valid_samordningsnummer = function valid_samordningsnummer(s) {
+                if (!pre.test(s)) {
+                    return false;
+                }
+                s = s.replace(/[-+]/, '');
+                var s0 = s.substring(s.length - 10);
+                var d0 = s0.substring(0, 6);
+                var x = Number(d0.substring(4)) - 60;
+                if (x < 0) {
+                    return false;
+                }
+                var d = d0.substring(0, 4) + String(x);
+                if (Date.parse(d) == NaN) {
+                    return false;
+                }
+                return pnr_checksum_match(s0);
+            };
+
+
+            var normalize_personnummer_generic = function normalize_personnummer_generic(s, ignore_invalid, with_dash, ten_digits, min_age) {
+                if (!(valid_personnummer(s) || valid_samordningsnummer(s))) {
+                    if (ignore_invalid) {
+                        return s;
+                    } else {
+                        return undefined;
+                    }
+                }
+                var s = s.replace(/[-+]/, '');
+                if (s.length == 10) {
+                    var year = Number(s.substring(0, 2));
+                    if (year + 2000 > (new Date().getFullYear()) - (min_age - 1)) {
+                        year = year + 1900;
+                    } else {
+                        year = year + 2000;
+                    }
+                    s = s.substring(2);
+                } else {
+                    year = Number(s.substring(0, 4));
+                    s = s.substring(4);
+                }
+
+                var d = s.substring(0, 4);
+                var last = s.substring(4);
+
+                return (ten_digits ? String(year).substring(2, 4) : String(year)) + d + (with_dash ? '-' : '') + last;
+            }
+
+            var normalize_personnummer = function normalize_personnummer(s) {
+                return normalize_personnummer_generic(s, true, false, false, 1);
+            };
+
+
+            jQuery.validator.addMethod('personnr', function (p, e, params) {
+               return valid_personnummer(p) || valid_samordningsnummer(p);
+            }, 'Måste vara ett korrekt personnummer eller samordningsnummer.');
+
+            $("#borrower_personnr").blur(function ()  {
+                $("#borrower_personnr").val(normalize_personnummer($("#borrower_personnr").val()));
+            });
 
             $("#memberentry-form").validate({
                 rules: {
@@ -1041,6 +1149,10 @@
                         required: true,
                         [% END %]
                         password_match: true
+                    },
+                    borrower_personnr: {
+                        required: true,
+                        personnr: true
                     },
                     captcha: {
                         required: true,
