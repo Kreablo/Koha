@@ -1624,15 +1624,16 @@ sub searchResults {
     #Build branchnames hash
     my %branches = map { $_->branchcode => $_->branchname } Koha::Libraries->search({}, { order_by => 'branchname' });
 
-# FIXME - We build an authorised values hash here, using the default framework
-# though it is possible to have different authvals for different fws.
-
+    my $description = $is_opac ? 'opac_description' : 'lib';
     my $shelflocations =
-      { map { $_->{authorised_value} => $_->{lib} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => '', kohafield => 'items.location' } ) };
+      { map { $_->{authorised_value} => $_->{$description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => '', kohafield => 'items.location' } ) };
+    my $ccodes = { map { $_->{authorised_value} => $_->{$description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => "", kohafield => 'items.ccode' } ) };
 
     # get notforloan authorised value list (see $shelflocations  FIXME)
     my $av = Koha::MarcSubfieldStructures->search({ frameworkcode => '', kohafield => 'items.notforloan', authorised_value => [ -and => {'!=' => undef }, {'!=' => ''}] });
     my $notforloan_authorised_value = $av->count ? $av->next->authorised_value : undef;
+    my $notforloan_descriptions = { map { $_->{authorised_value} => $_->{$description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { kohafield => 'items.notforloan' } ) };
+
 
     #Get itemtype hash
     my $itemtypes = Koha::ItemTypes->search_with_localization;
@@ -1831,6 +1832,7 @@ sub searchResults {
         my @hiddenitems; # hidden itemnumbers based on OpacHiddenItems syspref
 
         # loop through every item
+        my @items = ();
         foreach my $field (@fields) {
             my $item;
 
@@ -1866,6 +1868,8 @@ sub searchResults {
             elsif ($item->{$otherbranch}) {	# Last resort
                 $item->{'branchname'} = $branches{$item->{$otherbranch}};
             }
+            $item->{homebranch} = $branches{ $item->{homebranch} } if defined $item->{homebranch};
+            $item->{holdingbranch} = $branches{ $item->{holdingbranch} } if defined $item->{holdingbranch};
 
             my $prefix =
                 ( $item->{$hbranch} ? $item->{$hbranch} . '--' : q{} )
@@ -1873,6 +1877,12 @@ sub searchResults {
               . ( $item->{itype}    ? $item->{itype}    : q{} )
               . ( $item->{itemcallnumber} ? $item->{itemcallnumber} : q{} );
 # For each grouping of items (onloan, available, unavailable), we build a key to store relevant info about that item
+            my $itemtype = C4::Context->preference("item-level_itypes")? $item->{itype}: $oldbiblio->{itemtype};
+            $item->{itemtype} = $itemtype;
+            $item->{location} = $item->{location} && exists $shelflocations->{$item->{location}} ? $shelflocations->{$item->{location}} : $item->{location} ;
+            $item->{notforloan_description} = exists $notforloan_descriptions->{ $item->{notforloan} } ? $notforloan_descriptions->{ $item->{notforloan} } : "Not for loan";
+            $item->{ccode_description} = defined $item->{ccode} && exists $ccodes->{ $item->{ccode} } ? $ccodes->{ $item->{ccode} } :  $item->{ccode};
+            $item->{notforloan_itemtype} = defined $itemtype && exists $itemtypes{ $itemtype } ? $itemtypes{ $itemtype }->{notforloan} : undef;
             if ( $item->{onloan}
                 and $logged_in_user
                 and !( $patron_category_hide_lost_items and $item->{itemlost} ) )
@@ -1882,7 +1892,7 @@ sub searchResults {
                 $onloan_items->{$key}->{due_date} = $item->{onloan};
                 $onloan_items->{$key}->{count}++ if $item->{$hbranch};
                 $onloan_items->{$key}->{branchname}     = $item->{branchname};
-                $onloan_items->{$key}->{location}       = $shelflocations->{ $item->{location} } if $item->{location};
+                $onloan_items->{$key}->{location}       = $item->{location} if $item->{location};
                 $onloan_items->{$key}->{itemcallnumber} = $item->{itemcallnumber};
                 $onloan_items->{$key}->{description}    = $item->{description};
                 $onloan_items->{$key}->{imageurl} =
@@ -1901,7 +1911,6 @@ sub searchResults {
          # items not on loan, but still unavailable ( lost, withdrawn, damaged )
             else {
 
-                my $itemtype = C4::Context->preference("item-level_itypes")? $item->{itype}: $oldbiblio->{itemtype};
                 $item->{notforloan} = 1 if !$item->{notforloan} &&
                     $itemtype && $itemtypes{ $itemtype }->{notforloan};
 
@@ -1979,7 +1988,7 @@ sub searchResults {
                     $other_items->{$key}->{onhold} = ($reservestatus) ? 1 : 0;
                     $other_items->{$key}->{notforloan} = GetAuthorisedValueDesc('','',$item->{notforloan},'','',$notforloan_authorised_value) if $notforloan_authorised_value and $item->{notforloan};
                     $other_items->{$key}->{count}++ if $item->{$hbranch};
-                    $other_items->{$key}->{location} = $shelflocations->{ $item->{location} } if $item->{location};
+                    $other_items->{$key}->{location} = $item->{location} if $item->{location};
                     $other_items->{$key}->{description} = $item->{description};
                     $other_items->{$key}->{imageurl} = getitemtypeimagelocation( $search_context->{'interface'}, $itemtypes{ $item->{itype}//q{} }->{imageurl} );
                 }
@@ -1991,10 +2000,11 @@ sub searchResults {
                     foreach (qw(branchname itemcallnumber description)) {
                         $available_items->{$prefix}->{$_} = $item->{$_};
                     }
-                    $available_items->{$prefix}->{location} = $shelflocations->{ $item->{location} } if $item->{location};
+                    $available_items->{$prefix}->{location} = $item->{location} if $item->{location};
                     $available_items->{$prefix}->{imageurl} = getitemtypeimagelocation( $search_context->{'interface'}, $itemtypes{ $item->{itype}//q{} }->{imageurl} );
                 }
             }
+            push @items, $item;
         }    # notforloan, item level and biblioitem level
 
         # if all items are hidden, do not show the record
@@ -2025,7 +2035,7 @@ sub searchResults {
             });
 
             $record_processor->process($marcrecord);
-            $oldbiblio->{XSLTResultsRecord} = XSLTParse4Display($oldbiblio->{biblionumber}, $marcrecord, $xslsyspref, 1, \@hiddenitems, $sysxml, $xslfile, $lang, $xslt_variables);
+            $oldbiblio->{XSLTResultsRecord} = XSLTParse4Display($oldbiblio->{biblionumber}, $marcrecord, $xslsyspref, 1, \@hiddenitems, $sysxml, $xslfile, $lang, $xslt_variables, \@items );
         }
 
         # if biblio level itypes are used and itemtype is notforloan, it can't be reserved either

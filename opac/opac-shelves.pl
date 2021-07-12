@@ -311,6 +311,14 @@ if ( $op eq 'view' ) {
                 $art_req_itypes = Koha::CirculationRules->guess_article_requestable_itemtypes({ $patron ? ( categorycode => $patron->categorycode ) : () });
             }
 
+            # Build lookup tables now to avoid fetching later
+            my %branches = map { $_->branchcode => $_->branchname } Koha::Libraries->search({}, { order_by => 'branchname' });
+            my $shelflocations = { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => '', kohafield => 'items.location' } ) };
+            my $notforloan_descriptions = { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { kohafield => 'items.notforloan' } ) };
+            my $ccodes = { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => "", kohafield => 'items.ccode' } ) };
+            my $itemtypes = Koha::ItemTypes->search_with_localization;
+            my %itemtypes = map { $_->{itemtype} => $_ } @{ $itemtypes->unblessed };
+
             my @items_info;
             while ( my $content = $contents->next ) {
                 my $biblionumber = $content->biblionumber;
@@ -355,11 +363,21 @@ if ( $op eq 'view' ) {
 
                 my $items = $biblio->items->filter_by_visible_in_opac({ patron => $patron });
                 my $allow_onshelf_holds;
+                my @items;
                 while ( my $item = $items->next ) {
 
                     # This method must take a Koha::Items rs
                     $allow_onshelf_holds ||= Koha::CirculationRules->get_onshelfholds_policy(
                         { item => $item, patron => $patron } );
+                    my $item_hash = $item->unblessed;
+                    $item_hash->{itemtype} = $item->effective_itemtype;
+                    $item_hash->{homebranch} = $branches{ $item->homebranch };
+                    $item_hash->{holdingbranch} = $branches{ $item->holdingbranch };
+                    $item_hash->{notforloan_description} = $item->notforloan && exists $notforloan_descriptions->{ $item->notforloan } ? $notforloan_descriptions->{ $item->notforloan } : "Not for loan";
+                    $item_hash->{location} = $item->{location} && exists $shelflocations->{$item->location} ? $shelflocations->{$item->location} : $item->location ;
+                    $item_hash->{ccode_description} = $item->{ccode} && exists $ccodes->{$item->ccode} ? $ccodes->{$item->ccode} : $item->ccode ;
+                    $item_hash->{notforloan_itemtype} = $itemtypes{ $itemtype }->{notforloan};
+                    push @items, $item_hash;
 
                 }
 
@@ -375,7 +393,7 @@ if ( $op eq 'view' ) {
                         "OPACXSLTListsDisplay", 1,
                         undef,                 $sysxml,
                         $xslfile,              $lang,
-                        $variables,            $items->reset
+                        $variables,            \@items
                     );
                 }
 

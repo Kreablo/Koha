@@ -191,7 +191,7 @@ sub get_xslt_sysprefs {
 }
 
 sub XSLTParse4Display {
-    my ( $biblionumber, $orig_record, $xslsyspref, $fixamps, $hidden_items, $sysxml, $xslfilename, $lang, $variables, $items_rs ) = @_;
+    my ( $biblionumber, $orig_record, $xslsyspref, $fixamps, $hidden_items, $sysxml, $xslfilename, $lang, $variables, $items ) = @_;
 
     $sysxml ||= C4::Context->preference($xslsyspref);
     $xslfilename ||= C4::Context->preference($xslsyspref);
@@ -247,7 +247,7 @@ sub XSLTParse4Display {
     if ( $xslsyspref eq "OPACXSLTDetailsDisplay" || $xslsyspref eq "XSLTDetailsDisplay" || $xslsyspref eq "XSLTResultsDisplay" ) {
         $itemsxml = ""; #We don't use XSLT for items display on these pages
     } else {
-        $itemsxml = buildKohaItemsNamespace($biblionumber, $hidden_items, $items_rs);
+        $itemsxml = buildKohaItemsNamespace($items);
     }
     my $xmlrecord = $record->as_xml(C4::Context->preference('marcflavour'));
 
@@ -290,81 +290,56 @@ sub XSLTParse4Display {
 
 =head2 buildKohaItemsNamespace
 
-    my $items_xml = buildKohaItemsNamespace( $biblionumber, [ $hidden_items, $items ] );
+    my $items_xml = buildKohaItemsNamespace( $items );
 
-Returns XML for items. It accepts two optional parameters:
-- I<$hidden_items>: An arrayref of itemnumber values, for items that should be hidden
-- I<$items>: A Koha::Items resultset, for the items to be returned
-
-If both parameters are passed, I<$items> is used as the basis resultset, and I<$hidden_items>
-are filtered out of it.
+Returns XML for items. It requires one parameter:
+- I<$items>: An arrayref of item hashes, for the items to be returned, hidden items should be filtered before calling this routine
 
 Is only used in this module currently.
 
 =cut
 
 sub buildKohaItemsNamespace {
-    my ($biblionumber, $hidden_items, $items_rs) = @_;
+    my ($items) = @_;
 
-    $hidden_items ||= [];
-
-    my $query = {};
-    $query = { 'me.itemnumber' => { not_in => $hidden_items } }
-      if $hidden_items;
-
-    unless ( $items_rs && ref($items_rs) eq 'Koha::Items' ) {
-        $query->{'me.biblionumber'} = $biblionumber;
-        $items_rs = Koha::Items->new;
-    }
-
-    my $items = $items_rs->search( $query, { prefetch => [ 'branchtransfers', 'reserves' ] } );
-
-    my $shelflocations =
-      { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => "", kohafield => 'items.location' } ) };
-    my $ccodes =
-      { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => "", kohafield => 'items.ccode' } ) };
-
-    my %branches = map { $_->branchcode => $_->branchname } Koha::Libraries->search({}, { order_by => 'branchname' });
-
-    my $itemtypes = { map { $_->{itemtype} => $_ } @{ Koha::ItemTypes->search->unblessed } };
     my $xml = '';
-    my %descs = map { $_->{authorised_value} => $_ } Koha::AuthorisedValues->get_descriptions_by_koha_field( { kohafield => 'items.notforloan' } );
     my $ref_status = C4::Context->preference('Reference_NFL_Statuses') || '1|2';
 
-    while ( my $item = $items->next ) {
+    for my $item ( @$items ) {
         my $status;
         my $substatus = '';
 
-        if ($item->has_pending_hold) {
+        my $reservestatus = C4::Reserves::GetReserveStatus( $item->{itemnumber} );
+        my $transfer = C4::Circulation::GetTransfers($item->{itemnumber});
+
+        if ($reservestatus eq 'Pending' ) {
             $status = 'Pending hold';
         }
-        elsif ( $item->holds->waiting->count ) {
+        elsif ( $reservestatus eq 'Waiting' ) {
             $status = 'Waiting';
         }
-        elsif ($item->get_transfer) {
+        elsif ($transfer) {
             $status = 'In transit';
         }
-        elsif ($item->damaged) {
+        elsif ($item->{damaged}) {
             $status = "Damaged";
         }
-        elsif ($item->itemlost) {
+        elsif ($item->{itemlost}) {
             $status = "Lost";
         }
-        elsif ( $item->withdrawn) {
+        elsif ( $item->{withdrawn}) {
             $status = "Withdrawn";
         }
-        elsif ($item->onloan) {
+        elsif ($item->{onloan}) {
             $status = "Checked out";
         }
-        elsif ( $item->notforloan ) {
-            $status = $item->notforloan =~ /^($ref_status)$/
+        elsif ( $item->{notforloan} ) {
+            $status = $item->{notforloan} =~ /^($ref_status)$/
                 ? "reference"
                 : "reallynotforloan";
-            $substatus = exists $descs{$item->notforloan} ? $descs{$item->notforloan}->{opac_description} : "Not for loan";
+            $substatus = $item->{notforloan_description};
         }
-        elsif ( exists $itemtypes->{ $item->effective_itemtype }
-            && $itemtypes->{ $item->effective_itemtype }->{notforloan}
-            && $itemtypes->{ $item->effective_itemtype }->{notforloan} == 1 )
+        elsif ( defined $item->{notforloan_itemtype} && $item->{notforloan_itemtype} == 1 )
         {
             $status = "1" =~ /^($ref_status)$/
                 ? "reference"
@@ -374,12 +349,12 @@ sub buildKohaItemsNamespace {
         else {
             $status = "available";
         }
-        my $homebranch     = xml_escape($branches{$item->homebranch});
-        my $holdingbranch  = xml_escape($branches{$item->holdingbranch});
-        my $location       = xml_escape($item->location && exists $shelflocations->{$item->location} ? $shelflocations->{$item->location} : $item->location);
-        my $ccode          = xml_escape($item->ccode    && exists $ccodes->{$item->ccode}            ? $ccodes->{$item->ccode}            : $item->ccode);
-        my $itemcallnumber = xml_escape($item->itemcallnumber);
-        my $stocknumber    = xml_escape($item->stocknumber);
+        my $homebranch     = xml_escape( $item->{homebranch} );
+        my $holdingbranch  = xml_escape( $item->{holdingbranch} );
+        my $location       = xml_escape( $item->{location} );
+        my $ccode          = xml_escape( $item->{ccode} );
+        my $itemcallnumber = xml_escape($item->{itemcallnumber});
+        my $stocknumber    = xml_escape($item->{stocknumber});
         $xml .=
             "<item>"
           . "<homebranch>$homebranch</homebranch>"

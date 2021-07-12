@@ -743,12 +743,19 @@ sub GetReserveStatus {
 
     my $dbh = C4::Context->dbh;
 
-    my ($sth, $found, $priority);
+    my ($sth, $found, $priority, $pending);
     if ( $itemnumber ) {
-        $sth = $dbh->prepare("SELECT found, priority FROM reserves WHERE itemnumber = ? order by priority LIMIT 1");
+        $sth = $dbh->prepare(q{
+                SELECT found, priority, IF( tmp_holdsqueue.itemnumber IS NULL, 0, 1) AS pending
+                FROM reserves
+                LEFT JOIN tmp_holdsqueue USING (itemnumber)
+                WHERE itemnumber = ? order by priority LIMIT 1
+        });
         $sth->execute($itemnumber);
-        ($found, $priority) = $sth->fetchrow_array;
+        ($found, $priority, $pending) = $sth->fetchrow_array;
     }
+
+    return 'Pending' if $pending;
 
     if(defined $found) {
         return 'Waiting'  if $found eq 'W' and $priority == 0;
