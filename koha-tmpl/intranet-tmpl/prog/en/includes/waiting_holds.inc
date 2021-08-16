@@ -7,6 +7,7 @@
             <th class="title-string">Date hold placed</th>
             <th class="anti-the">Title</th>
             <th>Patron</th>
+            <th>Borrower number<th>
             <th>Home library</th>
             <th>Current location</th>
             <th>Shelving location</th>
@@ -37,6 +38,7 @@
                         [% reserveloo.borrower.first_valid_email_address | html %]</a></span>
                     [% END %]
                 </td>
+                <td><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% reserveloo.borrower.borrowernumber | uri %]">[% reserveloo.borrower.borrowernumber | html %]</a></td>
                 <td>[% Branches.GetName( reserveloo.item.homebranch ) | html %]</td>
                 <td>[% Branches.GetName( reserveloo.item.holdingbranch ) | html %]</td>
                 <td>[% AuthorisedValues.GetByCode('LOC', reserveloo.item.location) | html %]</td>
