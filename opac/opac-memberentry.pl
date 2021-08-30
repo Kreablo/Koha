@@ -188,10 +188,12 @@ if ( $action eq 'create' ) {
 
             my $modification = Koha::Patron::Modification->new( \%borrower )->store;
 
-            $modification->extended_attributes([{
-                code => 'PERSNUMMER',
-                attribute => $personnr
-            }]);
+            if (defined $personnr && $personnr ne '') {
+                $modification->extended_attributes([{
+                    code => 'PERSNUMMER',
+                    attribute => $personnr
+                }]);
+            }
 
             #Send verification email
             my $letter = C4::Letters::GetPreparedLetter(

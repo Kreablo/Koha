@@ -333,10 +333,9 @@
                                     [% IF action == 'create' || action == 'new' %]
                                         [% UNLESS hidden.defined('personnr') %]
                                             <li>
-                                                <label for="borrower_personnr" class="required">Personnummer eller samordningsnummer:</label>
+                                                <label for="borrower_personnr">Personnummer eller samordningsnummer:</label>
 
                                                 <input type="text" id="borrower_personnr" name="borrower_personnr" value=""  placeholder="ååååmmddnnnn" />
-                                                <span class="required">Required</span>
                                             </li>
                                         [% END %]
                                     [% END %]
