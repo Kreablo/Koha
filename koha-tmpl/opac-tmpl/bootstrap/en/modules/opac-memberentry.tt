@@ -1115,7 +1115,7 @@
 
 
             jQuery.validator.addMethod('personnr', function (p, e, params) {
-               return valid_personnummer(p) || valid_samordningsnummer(p);
+               return (typeof p === 'undefined' || p === '') || valid_personnummer(p) || valid_samordningsnummer(p);
             }, 'Måste vara ett korrekt personnummer eller samordningsnummer.');
 
             $("#borrower_personnr").blur(function ()  {
@@ -1150,7 +1150,7 @@
                         password_match: true
                     },
                     borrower_personnr: {
-                        required: true,
+                        required: false,
                         personnr: true
                     },
                     captcha: {
