@@ -57,9 +57,7 @@ if ( $run_report ) {
         ccodeslimit => $ccodeslimit,
         locationslimit => $locationslimit
     });
-    for my $item ( @$items ) {
-        $item->{patron} = Koha::Patrons->find( $item->{borrowernumber} );
-    }
+
     $template->param(
         branchlimit     => $branchlimit,
         itemtypeslimit     => $itemtypeslimit,
