@@ -572,6 +572,13 @@ Circulation:
             - This is a list of value pairs. When an item is checked out, if the not for loan value on the left matches the items not for loan value
             - "it will be updated to the right-hand value. For example, '-1: 0' will cause an item that was set to 'Ordered' to now be available for loan."
             - Each pair of values should be on a separate line.
+        -
+            - pref: ItemsAllowPrevCheckoutButNoRenew
+              class: multi
+            - Comma separated list of itemtypes for which SIP-checkouts on prevoisly checked out items should be granted, although no renewal is made on the issue. 
+        -
+            - pref: ItemsAllowPrevCheckoutButNoRenewMessage
+            - Reply message to use when SIP checkout on prevoiusly checked out item is granted without renewal.
     Checkin policy:
         -
             - pref: TrapHoldsOnOrder
