@@ -18,6 +18,8 @@ use C4::Context;
 use C4::Circulation qw( AddIssue GetIssuingCharges CanBookBeIssued ProcessOfflineIssue );
 use C4::Members;
 use Koha::DateUtils qw( dt_from_string );
+use C4::Log qw( logaction );
+require Koha::Items;
 
 use parent qw(C4::SIP::ILS::Transaction);
 
@@ -36,6 +38,24 @@ sub new {
     }
     @{$self}{keys %fields} = values %fields;
     return bless $self, $class;
+}
+
+sub _allow_but_no_renew {
+    my $item = shift;
+    my $patron =  shift;
+
+    my $pref = C4::Context->preference('ItemsAllowPrevCheckoutButNoRenew');
+
+    if ($pref !~ /^\s*$/) {
+        my @itypes = split /,/, $pref;
+        my $item = Koha::Items->find($item->{itemnumber});
+        my $itype =  $item->effective_itemtype;
+        if (grep { $itype eq $_ } @itypes) {
+            return $patron->do_check_for_previous_checkout($item->unblessed);
+        }
+    }
+
+    return 0;
 }
 
 sub do_checkout {
@@ -63,6 +83,26 @@ sub do_checkout {
     }
 
     my $noerror=1;  # If set to zero we block the issue
+
+    if (_allow_but_no_renew($self->{item}, $patron)) {
+        my $msg = C4::Context->preference('ItemsAllowPrevCheckoutButNoRenewMessage');
+        if ($msg =~ /^\s*$/) {
+            $msg = "This item was previously checked out by you. No renew is made.";
+        }
+        $self->screen_msg($msg);
+
+        logaction(
+            "CIRCULATION", "ISSUE",
+            $self->{patron}->{borrowernumber},
+            $self->{item}->{itemnumber},
+        ) if C4::Context->preference("IssueLog");
+
+        Koha::Items->find($self->{item}->{itemnumber})->store(); # Update lastseen.
+
+        $self->ok(1);
+        return;
+    }
+
     if (keys %{$issuingimpossible}) {
         foreach (keys %{$issuingimpossible}) {
             # do something here so we pass these errors

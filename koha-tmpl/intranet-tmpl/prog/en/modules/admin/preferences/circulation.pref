@@ -561,6 +561,13 @@ Circulation:
             - "<br />ccode: [NEWFIC,NULL,DVD]"
             - "<br />itype: [NEWBK,\"\"]"
             - "<br /> <strong>NOTE:</strong> The word 'NULL' can be used to block renewal on undefined fields, while an empty string \"\" will block on an empty (but defined) field."
+        -
+            - pref: ItemsAllowPrevCheckoutButNoRenew
+              class: multi
+            - Comma separated list of itemtypes for which SIP-checkouts on prevoisly checked out items should be granted, although no renewal is made on the issue. 
+        -
+            - pref: ItemsAllowPrevCheckoutButNoRenewMessage
+            - Reply message to use when SIP checkout on prevoiusly checked out itme is granted without renewal.
     Checkin policy:
         -
             - pref: TrapHoldsOnOrder
