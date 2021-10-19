@@ -635,6 +635,13 @@ Circulation:
               choices: authval
               source: LOST
             - "when the outstanding balance is written off."
+        -
+            - pref: ItemsAllowPrevCheckoutButNoRenew
+              class: multi
+            - Comma separated list of itemtypes for which SIP-checkouts on prevoisly checked out items should be granted, although no renewal is made on the issue. 
+        -
+            - pref: ItemsAllowPrevCheckoutButNoRenewMessage
+            - Reply message to use when SIP checkout on prevoiusly checked out item is granted without renewal.
     Checkin policy:
         -
             - pref: TrapHoldsOnOrder
