@@ -230,7 +230,7 @@ EOF
            or  not @selected_branchcodes
                 and not $do_not_select_my_library
                 and C4::Context->userenv
-                and $l->{branchcode} eq ( C4::Context->userenv->{branch} // q{} )) {
+                and $row->{branchcode} eq ( C4::Context->userenv->{branch} // q{} )) {
             $row->{selected} = 1;
         } else {
             $row->{selected} = 0;
