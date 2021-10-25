@@ -117,6 +117,10 @@ generate_config_file() {
         keep_cookie_lines="${keep_cookie_lines} <do_not_remove_cookie>${cookie}<\/do_not_remove_cookie>\\n"
     done
 
+    if [ "$mysqlport" == "" ]; then
+        mysqlport="3306"
+    fi
+
     chmod 0640 "$2"
     sed -e "s/__KOHA_CONF_DIR__/\/etc\/koha\/sites\/$name/g" \
         -e "s/__KOHASITE__/$name/g" \
