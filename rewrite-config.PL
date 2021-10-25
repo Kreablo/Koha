@@ -71,10 +71,13 @@ if ( $myhost = $ENV{WEBSERVER_HOST} || hostname ) {
 
 my $myip;
 unless ( $myip = $ENV{WEBSERVER_IP} ) {
-    my $byname = gethostbyname( $myhost )
-	or die "Could not get the IP address of $myhost, DNS fault? ($!)";
-    $myip = inet_ntoa $byname
-	or die "can't inet_ntoa ($!)";
+    my $byname = gethostbyname( $myhost );
+    if (!$myip) {
+         $myip='127.0.0.1';
+    } else {
+        $myip = inet_ntoa $byname
+    	or die "can't inet_ntoa ($!)";
+    }
 }
 
 
