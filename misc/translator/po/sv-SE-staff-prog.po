@@ -27827,6 +27827,18 @@ msgstr "Fenway Library Organization, USA"
 msgid "Fetch all data for chart"
 msgstr "Hämta all data för diagram"
 
+#: koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tt:136
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:22
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:32
+#, c-format
+msgid "Fetch borrower data"
+msgstr "Hämta låntagaruppgifter"
+
+#. SCRIPT
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:4
+msgid "Fetching borrower data ..."
+msgstr "Hämtar låntagaruppgifter"
+
 #: koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/advsearch.tt:56
 #, c-format
 msgid "Fewer options"
@@ -46158,6 +46170,11 @@ msgstr "Radera permanent dessa låntagare"
 msgid "Permissions (code)"
 msgstr "Rättigheter (kod)"
 
+#: koha-tmpl/intranet-tmpl/prog/en/includes/borrower-completion.inc:26
+#, c-format
+msgid "Personal number:"
+msgstr "Personnummer:"
+
 #. SCRIPT
 #: koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tt:242
 msgid "Ph: "
@@ -59975,6 +59992,12 @@ msgstr "Överföringar att ta emot"
 #, c-format
 msgid "Translate into other languages"
 msgstr "Översätt till andra språk"
+
+#. INPUT type=text
+#: intranet-tmpl/prog/en/includes/borrower-completion.inc:27
+#, c-format
+msgid "A valid personal number (yymmdd-xxxx, yyyymmdd-xxxx, yymmddxxxx, or yyyymmddxxxx)."
+msgstr "Ett giltigt personnummer eller samordningsnummer (ååmmdd-xxxx, ååååmmdd-xxxx, ååmmddxxxx eller ååååmmddxxxx)."
 
 #. A
 #: koha-tmpl/intranet-tmpl/prog/en/modules/admin/itemtypes.tt:144
