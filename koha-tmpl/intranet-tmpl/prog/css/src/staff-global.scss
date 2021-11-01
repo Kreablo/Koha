@@ -198,6 +198,11 @@ aside {
                 margin-right: 3px;
                 width: calc(100% - 20px);
             }
+
+            &+.action {
+                margin-left: 0;
+                padding: 0;
+            }
         }
     }
 }
