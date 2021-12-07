@@ -8129,7 +8129,7 @@ msgid ""
 "see your current tags."
 msgstr ""
 "Obs: du kan bara tagga en artikel med en specifik term en gång. Titta under "
-"\"Mina taggar\" om du vill se dina nuvarande taggar."
+"'Mina taggar' om du vill se dina nuvarande taggar."
 
 #: koha-tmpl/opac-tmpl/bootstrap/en/modules/opac-review.tt:23
 #, c-format
