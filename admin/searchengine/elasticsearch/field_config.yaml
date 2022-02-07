@@ -74,7 +74,11 @@ sort:
     type: icu_collation_keyword
     index: false
     numeric: true
+    language: sv
+    country: SE
   cn_sort:
     type: icu_collation_keyword
     index: false
     numeric: false
+    language: sv
+    country: SE
