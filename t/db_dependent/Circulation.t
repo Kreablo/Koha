@@ -18,7 +18,7 @@
 use Modern::Perl;
 use utf8;
 
-use Test::More tests => 57;
+use Test::More tests => 58;
 use Test::Exception;
 use Test::MockModule;
 use Test::Deep qw( cmp_deeply );
@@ -2008,6 +2008,104 @@ subtest 'AddIssue & AllowReturnToBranch' => sub {
     set_userenv($otherbranch);
     is ( ref( AddIssue( $patron_2, $item->barcode ) ), '', 'AllowReturnToBranch - homebranch | Cannot be issued from otherbranch' );
     # TODO t::lib::Mocks::mock_preference('AllowReturnToBranch', 'homeorholdingbranch');
+};
+
+subtest 'AddIssue | recalls' => sub {
+    plan tests => 3;
+
+    t::lib::Mocks::mock_preference("UseRecalls", 1);
+    t::lib::Mocks::mock_preference("item-level_itypes", 1);
+    my $patron1 = $builder->build_object({ class => 'Koha::Patrons' });
+    my $patron2 = $builder->build_object({ class => 'Koha::Patrons' });
+    my $item = $builder->build_sample_item;
+    Koha::CirculationRules->set_rules({
+        branchcode => undef,
+        itemtype => undef,
+        categorycode => undef,
+        rules => {
+            recalls_allowed => 10,
+        },
+    });
+
+    # checking out item that they have recalled
+    my $recall1 = Koha::Recall->new(
+        {   patron_id         => $patron1->borrowernumber,
+            biblio_id         => $item->biblionumber,
+            item_id           => $item->itemnumber,
+            item_level        => 1,
+            pickup_library_id => $patron1->branchcode,
+        }
+    )->store;
+    AddIssue( $patron1->unblessed, $item->barcode, undef, undef, undef, undef, { recall_id => $recall1->id } );
+    $recall1 = Koha::Recalls->find( $recall1->id );
+    is( $recall1->fulfilled, 1, 'Recall was fulfilled when patron checked out item' );
+    AddReturn( $item->barcode, $item->homebranch );
+
+    # this item is has a recall request. cancel recall
+    my $recall2 = Koha::Recall->new(
+        {   patron_id         => $patron2->borrowernumber,
+            biblio_id         => $item->biblionumber,
+            item_id           => $item->itemnumber,
+            item_level        => 1,
+            pickup_library_id => $patron2->branchcode,
+        }
+    )->store;
+    AddIssue( $patron1->unblessed, $item->barcode, undef, undef, undef, undef, { recall_id => $recall2->id, cancel_recall => 'cancel' } );
+    $recall2 = Koha::Recalls->find( $recall2->id );
+    is( $recall2->cancelled, 1, 'Recall was cancelled when patron checked out item' );
+    AddReturn( $item->barcode, $item->homebranch );
+
+    # this item is waiting to fulfill a recall. revert recall
+    my $recall3 = Koha::Recall->new(
+        {   patron_id         => $patron2->borrowernumber,
+            biblio_id         => $item->biblionumber,
+            item_id           => $item->itemnumber,
+            item_level        => 1,
+            pickup_library_id => $patron2->branchcode,
+        }
+    )->store;
+    $recall3->set_waiting;
+    AddIssue( $patron1->unblessed, $item->barcode, undef, undef, undef, undef, { recall_id => $recall3->id, cancel_recall => 'revert' } );
+    $recall3 = Koha::Recalls->find( $recall3->id );
+    is( $recall3->requested, 1, 'Recall was reverted from waiting when patron checked out item' );
+    AddReturn( $item->barcode, $item->homebranch );
+};
+
+subtest 'AddIssue & illrequests.date_due' => sub {
+    plan tests => 2;
+
+    t::lib::Mocks::mock_preference( 'ILLModule', 1 );
+    my $library = $builder->build( { source => 'Branch' } );
+    my $patron = $builder->build_object( { class => 'Koha::Patrons' } );
+    my $item = $builder->build_sample_item();
+
+    set_userenv($library);
+
+    my $custom_date_due = '9999-12-18 12:34:56';
+    my $expected_date_due = '9999-12-18 23:59:00';
+    my $illrequest = Koha::Illrequest->new({
+        borrowernumber => $patron->borrowernumber,
+        biblio_id => $item->biblionumber,
+        branchcode => $library->{'branchcode'},
+        date_due => $custom_date_due,
+    })->store;
+
+    my $issue = AddIssue( $patron->unblessed, $item->barcode );
+    is( $issue->date_due, $expected_date_due, 'Custom illrequest date due has been set for this issue');
+
+    $patron = $builder->build_object( { class => 'Koha::Patrons' } );
+    $item = $builder->build_sample_item();
+    $custom_date_due = '9999-12-19';
+    $expected_date_due = '9999-12-19 23:59:00';
+    $illrequest = Koha::Illrequest->new({
+        borrowernumber => $patron->borrowernumber,
+        biblio_id => $item->biblionumber,
+        branchcode => $library->{'branchcode'},
+        date_due => $custom_date_due,
+    })->store;
+
+    $issue = AddIssue( $patron->unblessed, $item->barcode );
+    is( $issue->date_due, $expected_date_due, 'Custom illrequest date due has been set for this issue');
 };
 
 subtest 'CanBookBeIssued + Koha::Patron->is_debarred|has_overdues' => sub {
