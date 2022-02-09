@@ -47,6 +47,14 @@ Patron associated with request
 
 Potential bib linked to request
 
+=head2 date_due
+
+  data_type: 'datetime'
+  datetime_undef_if_invalid: 1
+  is_nullable: 1
+
+Custom date due specified by backend, leave NULL for default date_due calculation
+
 =head2 branchcode
 
   data_type: 'varchar'
@@ -180,6 +188,12 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "biblio_id",
   { data_type => "integer", is_nullable => 1 },
+  "date_due",
+  {
+    data_type => "datetime",
+    datetime_undef_if_invalid => 1,
+    is_nullable => 1,
+  },
   "branchcode",
   { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 50 },
   "status",
