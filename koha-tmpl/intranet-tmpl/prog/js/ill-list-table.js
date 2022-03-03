@@ -318,6 +318,50 @@ $(document).ready(function() {
         }
     };
 
+    var tabsInit = function( ui, illtable_el ) {
+        localStorage.setItem(
+            "illrequests_activetab",
+            $( "#ill-requests-tabs" ).tabs( "option", "active" )
+        );
+
+        var ill_dt = illtable_el.DataTable();
+        $.fn.dataTable.ext.search.pop();
+        ill_dt.draw();
+
+        if ( $( "#ill-requests-tabs" ).tabs( "option", "active" ) > 0 ) {
+            // Initializing some other tab than "All"
+            var ill_tab_statuses = $("#ill-requests-tabs>ul>li.ui-tabs-active>a").attr('data-statuses');
+            ill_tab_statuses = ill_tab_statuses.split("|");
+
+            // Only show rows having the status defined in ILLRequestsTabs system
+            // preference in this tab
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    return ill_tab_statuses.indexOf(ill_dt.row(dataIndex).data().status) >= 0;
+                }
+            );
+            ill_dt.draw();
+        }
+    };
+
+    $('#ill-requests-tabs').tabs({
+        create: function(event,ui) {
+            if ( $.fn.dataTable.isDataTable( 'table#ill-requests' ) ) {
+                tabsInit(ui, $("table#ill-requests"));
+            }
+        },
+        activate: function(event,ui) {
+            if ( $.fn.dataTable.isDataTable( 'table#ill-requests' ) ) {
+                tabsInit(ui, $("table#ill-requests"));
+            }
+        }
+    });
+
+    var activeTab = localStorage.getItem("illrequests_activetab");
+    if( activeTab ){
+        $("#ill-requests-tabs").tabs("option","active", activeTab );
+    }
+
     // Display the modal containing request supplier metadata
     $('#ill-request-display-log').on('click', function(e) {
         e.preventDefault();
@@ -524,6 +568,12 @@ $(document).ready(function() {
                 return placedPassed && modifiedPassed;
 
             });
+
+            if( activeTab ){
+                if ( $.fn.dataTable.isDataTable( 'table#ill-requests' ) ) {
+                    tabsInit(null, $("table#ill-requests"));
+                }
+            }
 
         });
     } //END if window.location.search.length == 0

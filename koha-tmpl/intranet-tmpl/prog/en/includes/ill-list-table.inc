@@ -1,4 +1,4 @@
-<div>
+<div id="ill-requests-results">
     [% IF prefilters.length > 0 %]
     <table id="ill-requests" data-prefilters="[% prefilters | html %]">
     [% ELSE %]

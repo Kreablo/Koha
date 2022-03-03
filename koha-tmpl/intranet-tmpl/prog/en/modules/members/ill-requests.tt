@@ -39,7 +39,18 @@
             <main>
                 [% INCLUDE 'members-toolbar.inc' %]
                 <h1>ILL requests history</h1>
-                [% INCLUDE 'ill-list-table.inc' %]
+                <div id="ill-requests-tabs" class="toptabs">
+                    <ul>
+                        <li>
+                            <a id="#ill-requests-tab-all" href="#ill-requests-results">All</a>
+                        </li>
+                        [% FOREACH illreq_tab IN illreq_tabs %]
+                        <li>
+                            <a href="#ill-requests-results" data-statuses="[% illreq_tab.status.join('|') %]">[% illreq_tab.name %]</a>
+                        </li>
+                        [% END %]
+                    </ul>
+                    [% INCLUDE 'ill-list-table.inc' %]
             </main>
         </div> <!-- .col-sm-10.col-sm-push-2 -->
 

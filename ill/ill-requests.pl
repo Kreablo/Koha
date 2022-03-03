@@ -427,6 +427,7 @@ if ( $backends_available ) {
 
 $template->param(
     backends   => $backends,
+    illreq_tabs => C4::Context->yaml_preference('ILLRequestsTabs'),
     types      => [ "Book", "Article", "Journal" ],
     query_type => $op,
     branches   => Koha::Libraries->search,

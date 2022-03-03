@@ -779,9 +779,18 @@
                 [% ELSIF query_type == 'illlist' %]
                     <!-- illlist -->
                     <h1>View ILL requests</h1>
-                    <div id="results">
-                        <h3>Details for all requests</h3>
-                        [% INCLUDE 'ill-list-table.inc' %]
+                    <div id="ill-requests-tabs" class="toptabs">
+                    <ul>
+                        <li>
+                            <a id="#ill-requests-tab-all" href="#ill-requests-results">All</a>
+                        </li>
+                        [% FOREACH illreq_tab IN illreq_tabs %]
+                        <li>
+                            <a href="#ill-requests-results" data-statuses="[% illreq_tab.status.join('|') %]">[% illreq_tab.name %]</a>
+                        </li>
+                        [% END %]
+                    </ul>
+                    [% INCLUDE 'ill-list-table.inc' %]
 
                     </div> <!-- /#results -->
                 [% ELSIF query_type == 'availability' %]

@@ -42,6 +42,7 @@ my $patron         = Koha::Patrons->find( $borrowernumber );
 output_and_exit_if_error( $input, $cookie, $template, { module => 'members', logged_in_user => $logged_in_user, current_patron => $patron } );
 
 $template->param(
+    illreq_tabs => C4::Context->yaml_preference('ILLRequestsTabs'),
     prefilters => "borrowernumber=$borrowernumber",
     patron => $patron,
     illview  => 1,
