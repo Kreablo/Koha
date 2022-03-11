@@ -565,6 +565,7 @@ INSERT INTO systempreferences ( `variable`, `value`, `options`, `explanation`, `
 ('PatronSelfRegistrationPrefillForm','1',NULL,'Display password and prefill login form after a patron has self registered','YesNo'),
 ('PatronSelfRegistrationVerifyByEmail','0',NULL,'If enabled, any patron attempting to register themselves via the OPAC will be required to verify themselves via email to activate their account.','YesNo'),
 ('PatronsPerPage','20','20','Number of Patrons Per Page displayed by default','Integer'),
+('PatronViewLog','0',NULL,'If enabled, log when patron personal data is viewed in staff interface','YesNo'),
 ('PatronQuickAddFields',  '', NULL ,  'A list of fields separated by "|" to be displayed along with mandatory fields in the patron quick add form if chosen at patron entry',  'Free' ),
 ('PhoneNotification','0',NULL,'If ON, enables generation of phone notifications to be sent by plugins','YesNo'),
 ('PrefillGuaranteeField', 'phone,email,streetnumber,address,city,state,zipcode,country', NULL, 'Prefill these fields in guarantee member entry form from guarantor patron record', 'Multiple'),
