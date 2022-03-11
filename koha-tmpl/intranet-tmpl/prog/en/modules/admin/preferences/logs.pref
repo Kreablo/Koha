@@ -108,6 +108,12 @@ Logging:
                   1: Log
                   0: "Don't log"
             - " changes to news entries and other contents managed in the news tool."
+        -
+            - pref: PatronViewLog
+              choices:
+                  1: Log
+                  0: "Don't log"
+            - " when patron personal information is viewed in the staff interface."
     Debugging:
         -
             - pref: DumpTemplateVarsIntranet
