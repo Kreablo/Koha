@@ -38,8 +38,6 @@ use Koha::DateUtils;
 use Koha::Logger;
 
 use Log::Log4perl;
-use KohaLibrisServices;
-use Plack::Middleware::SetEnvFromQueryString;
 
 use KohaServices::RedirectBibitem;
 use KohaServices::RedirectReserve;
