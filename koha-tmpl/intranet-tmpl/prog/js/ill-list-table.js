@@ -498,31 +498,24 @@ $(document).ready(function() {
 
             // Custom date range filtering
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                var placedStart = illfilter_dateplaced_start.selectedDates[0];
-                var placedEnd = illfilter_dateplaced_end.selectedDates[0];
-                var modifiedStart = illfilter_datemodified_start.selectedDates[0];
-                var modifiedEnd = illfilter_datemodified_end.selectedDates[0];
-                var rowPlaced = data[14] ? new Date(data[14]) : null;
-                var rowModified = data[16] ? new Date(data[16]) : null;
-                var placedPassed = true;
-                var modifiedPassed = true;
-                if (placedStart && rowPlaced && rowPlaced < placedStart) {
-                    placedPassed = false
+                const d = (s) => s ? new Date(s) : null;
+                const t = (value, filter, test) => {
+                    da = d(value);
+                    if (!da) {
+                        return true;
+                    }
+                    const fv = $('#illfilter_' + filter).val();
+                    db = d(fv);
+                    if (!db) {
+                        return true;
+                    }
+                    return test(da, db);
                 };
-                if (placedEnd && rowPlaced && rowPlaced > placedEnd) {
-                    placedPassed = false;
-                }
-                if (modifiedStart && rowModified && rowModified < modifiedStart) {
-                    modifiedPassed = false
-                };
-                if (modifiedEnd && rowModified && rowModified > modifiedEnd) {
-                    modifiedPassed = false;
-                }
-
-                return placedPassed && modifiedPassed;
-
+                return t(data[14], 'dateplaced_start',   (a, b) => a >= b) &&
+                       t(data[14], 'dateplaced_end',     (a, b) => a <= b) &&
+                       t(data[16], 'datemodified_start', (a, b) => a >= b) &&
+                       t(data[16], 'datemodified_end',   (a, b) => a <= b);
             });
-
         });
     } //END if window.location.search.length == 0
 
