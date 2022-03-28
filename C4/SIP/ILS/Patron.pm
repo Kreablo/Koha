@@ -99,11 +99,12 @@ sub new {
     }
 
     my $circ_blocked =( C4::Context->preference('OverduesBlockCirc') ne "noblock" &&  defined $flags->{ODUES}->{itemlist} ) ? 1 : 0;
+    my $id = ref $patron_id eq "HASH" || !C4::Context->preference('SIPUseSameUserID' ) ? $kp->{cardnumber} : $patron_id;
     {
     no warnings;    # any of these $kp->{fields} being concat'd could be undef
     %ilspatron = (
         name => $kp->{firstname} . " " . $kp->{surname},
-        id   => $kp->{cardnumber},    # to SIP, the id is the BARCODE, not userid
+        id   => $id,
         password        => $pw,
         ptype           => $kp->{categorycode},     # 'A'dult.  Whatever.
         dateexpiry      => $dexpiry,
