@@ -440,3 +440,10 @@ Patrons:
              location: "Location"
              itemcallnumber: "Item's callnumber"
              ccode: "Collection"
+     -
+         - pref: SIPUseSameUserID
+           choices:
+              0: Disable
+              1: Enable
+         - "Return the same user identity in SIP reply as was sent in the sip request to identify the patron."
+
