@@ -240,7 +240,7 @@ $(document).ready(function() {
                 ? row.status_alias.lib
                 : row.status_alias.authorised_value;
         } else {
-            var status_name = row.capabilities[row.status].name;
+            var status_name = typeof row.capabilities[row.status] !== 'undefined' ? row.capabilities[row.status].name : row.status;
             return getStatusName(status_name, row);
         }
     };
