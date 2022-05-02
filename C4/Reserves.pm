@@ -42,6 +42,7 @@ use Koha::Hold;
 use Koha::Holds;
 use Koha::ItemTypes;
 use Koha::Items;
+use Koha::Item::Transfers;
 use Koha::Libraries;
 use Koha::Old::Hold;
 use Koha::Patrons;
@@ -1404,7 +1405,7 @@ sub IsAvailableForItemLevelRequest {
 
 =head2 ItemsAnyAvailableAndNotRestricted
 
-  ItemsAnyAvailableAndNotRestricted( { biblionumber => $biblionumber, patron => $patron });
+  ItemsAnyAvailableAndNotRestricted( { biblionumber => $biblionumber, patron => $patron [, holdingbranch => $branchcode ] });
 
 This function checks all items for specified biblionumber (numeric) against patron (object)
 and returns true (1) if at least one item available for loan/check out/present/not held
@@ -1416,7 +1417,10 @@ AllowHoldsOnDamagedItems or 'holdallowed' own/sibling library)
 sub ItemsAnyAvailableAndNotRestricted {
     my $param = shift;
 
-    my @items = Koha::Items->search( { biblionumber => $param->{biblionumber} } );
+    my $where = { biblionumber => $param->{biblionumber} };
+    $where->{holdingbranch} = $param->{holdingbranch} if exists $param->{holdingbranch};
+
+    my @items = Koha::Items->search( $where );
 
     foreach my $i (@items) {
         my $reserves_control_branch =
@@ -1437,7 +1441,8 @@ sub ItemsAnyAvailableAndNotRestricted {
             || Koha::ItemTypes->find( $i->effective_itemtype() )->notforloan
             || $branchitemrule->{holdallowed} eq 'from_home_library' && $param->{patron}->branchcode ne $i->homebranch
             || $branchitemrule->{holdallowed} eq 'from_local_hold_group' && ! $item_library->validate_hold_sibling( { branchcode => $param->{patron}->branchcode } )
-            || CanItemBeReserved( $param->{patron}->borrowernumber, $i->id )->{status} ne 'OK';
+            || CanItemBeReserved( $param->{patron}->borrowernumber, $i->id )->{status} ne 'OK'
+            || Koha::Item::Transfers->search({ itemnumber => $i->itemnumber, datearrived => undef })->count > 0;
     }
 
     return 0;
