@@ -20,7 +20,7 @@ msg () {
 }
 
 parse_arguments () {
-    local tmp=$(getopt -o 'R,h,q,d:' --long 'reverse,help,quiet,kohadir:' -- "$@")
+    local tmp=$(getopt -o 'R,h,q,d:,f:' --long 'reverse,help,quiet,kohadir:,forkpoint:' -- "$@")
 
     if [[ $? -ne 0 ]]; then
         exit 1
@@ -32,6 +32,10 @@ parse_arguments () {
             -R|--reverse)
                 patchflags+=" -R"
                 shift
+                ;;
+            -f|--forkpoint)
+                fp="$2";
+                shift 2
                 ;;
             -d|--kohadir)
                 kohadir="$2";
@@ -99,12 +103,10 @@ fi
 
 declare -a intra=()
 readarray -t intra < <(for filename in $(git diff --numstat $fp..HEAD | awk '{ print $3 }') ; do
-                           if [[ ! $filename =~ ^opac/|koha-tmpl/|C4/|Koha/|CGI/|(Koha.pm$)|(cpanfile$)|api/ ]]; then
+                           if [[ ! $filename =~ ^opac/|koha-tmpl/|C4/|Koha/|CGI/|(Koha.pm$)|(cpanfile$)|api/|(extract-patches.sh$) ]]; then
                                msg $filename
                            fi
                       done)
-
-
 
 if (( $(git log $fp..HEAD -- "${intra[@]}" | wc -l) > 0 )); then
     msg "Creating intra patch."
