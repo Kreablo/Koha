@@ -31,8 +31,9 @@ $(document).ready(function() {
                     if (row.status_alias) {
                         resolvedName = row.status_alias.lib;
                     } else {
+                        var status_name = typeof row.capabilities[row.status] !== 'undefined' ? row.capabilities[row.status].name : row.status;
                         resolvedName = getStatusName(
-                            row.capabilities[row.status].name,
+                            status_name,
                             row
                         );
                     }
