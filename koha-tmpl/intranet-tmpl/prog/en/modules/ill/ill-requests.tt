@@ -786,7 +786,7 @@
                         </li>
                         [% FOREACH illreq_tab IN illreq_tabs %]
                         <li>
-                            <a href="#ill-requests-results" data-statuses="[% illreq_tab.status.join('|') %]">[% illreq_tab.name %]</a>
+                            <a href="#ill-requests-results" data-statuses="[% illreq_tab.status.join('|') | html %]">[% illreq_tab.name | html %]</a>
                         </li>
                         [% END %]
                     </ul>
