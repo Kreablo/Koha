@@ -21,7 +21,7 @@
 # along with Koha; if not, see <http://www.gnu.org/licenses>.
 
 use Modern::Perl;
-use Test::More tests => 16;
+use Test::More tests => 17;
 use Test::Exception;
 use Test::MockObject;
 use Test::MockModule;
@@ -51,6 +51,15 @@ use C4::SIP::Sip::MsgType;
 use constant PATRON_PW => 'do_not_ever_use_this_one';
 
 # START testing
+subtest 'Custom sort fields' => sub {
+    my $schema = Koha::Database->new->schema;
+    $schema->storage->txn_begin;
+    plan tests => 8;
+    $C4::SIP::Sip::protocol_version = 2;
+    test_custom_sort_fields();
+    $schema->storage->txn_rollback;
+};
+
 subtest 'Testing Patron Status Request V2' => sub {
     my $schema = Koha::Database->new->schema;
     $schema->storage->txn_begin;
@@ -1255,6 +1264,102 @@ sub test_renew_desensitize {
     is( $respcode, 'N', "Desensitize flag was not set for itemtype in inhouse_item_types" );
 
 }
+
+sub respfield {
+    my ($response, $fieldcode) = @_;
+
+    $response =~ m/\|$fieldcode(.*?)\|/;
+
+    return $1;
+}
+
+sub test_custom_sort_fields {
+    my $schema = Koha::Database->new->schema;
+    $schema->storage->txn_begin;
+
+    my $builder = t::lib::TestBuilder->new();
+
+    my $branchcode = $builder->build({ source => 'Branch' })->{branchcode};
+
+    my ($response, $findpatron);
+    my $mocks = create_mocks( \$response, \$findpatron, \$branchcode );
+    my $mockILS = $mocks->{ils};
+    my $server = { ils => $mockILS, account => {} };
+    $mockILS->mock( 'institution', sub { $branchcode; } );
+    $mockILS->mock( 'supports', sub { return; } );
+    $mockILS->mock( 'checkin', sub {
+        shift;
+        return C4::SIP::ILS->checkin(@_);
+    });
+
+    my $biblio = $builder->build_sample_biblio({ 'title' => 'Title', 'author' => 'Author' });
+    
+    my $item = $builder->build_sample_item(
+         {
+            biblionumber  => $biblio->biblionumber,
+            damaged       => 0,
+            withdrawn     => 0,
+            itemlost      => 0,
+            restricted    => 0,
+            homebranch    => $branchcode,
+            holdingbranch => $branchcode,
+            ccode         => 'ccode',
+            itemcallnumber => 'callnumber',
+            location       => 'location'
+        }
+        );
+
+    my $sip_item = C4::SIP::ILS::Item->new( $item->barcode );
+
+    my $patron1 = $builder->build({
+        source => 'Borrower',
+        value  => {
+            password => hash_password( PATRON_PW ),
+        },
+    });
+    my $card1 = $patron1->{cardnumber};
+    my $sip_patron1 = C4::SIP::ILS::Patron->new( $card1 );
+    $findpatron = $sip_patron1;
+
+    my $issue = Koha::Checkout->new({ branchcode => $branchcode, borrowernumber => $patron1->{borrowernumber}, itemnumber => $item->itemnumber })->store;
+
+    my $today = dt_from_string;
+    my $siprequest = CHECKIN . 'N' . 'YYYYMMDDZZZZHHMMSS' .
+        siprequestdate( $today->clone->add( days => 1) ) .
+        FID_INST_ID . $branchcode . '|'.
+        FID_ITEM_ID . $item->barcode . '|' .
+        FID_TERMINAL_PWD . 'ignored' . '|';
+
+    undef $response;
+
+    my $msg = C4::SIP::Sip::MsgType->new( $siprequest, 0 );
+    $msg->handle_checkin( $server );
+    my $respcode = substr( $response, 0, 2 );
+
+    warn $response;
+
+    is(respfield($response, FID_CALL_NUMBER), 'callnumber', 'Callnumber is set');
+    is(respfield($response, FID_COLLECTION_CODE), 'ccode', 'Collection code is set');
+    is(respfield($response, FID_SORT_BIN), undef, 'Sort bin is not set');
+    is(respfield($response, FID_MEDIA_TYPE), $sip_item->sip_media_type, 'Media type is set to media type');
+
+
+    undef $response;
+    $issue = Koha::Checkout->new({ branchcode => $branchcode, borrowernumber => $patron1->{borrowernumber}, itemnumber => $item->itemnumber })->store;
+
+    $server = { ils => $mockILS, account => { 'custom_checkin_response_fields' => 1 } };
+
+    $msg->handle_checkin( $server );
+    
+    warn $response;
+
+    is(respfield($response, FID_CALL_NUMBER), 'callnumber', 'Callnumber is set');
+    is(respfield($response, FID_COLLECTION_CODE), 'ccode', 'Collection code is set');
+    is(respfield($response, FID_SORT_BIN), 'location', 'Sort bin is set to location');
+    is(respfield($response, FID_MEDIA_TYPE), 'Author', 'Media type is set to author');
+
+    return 0;
+};
 
 # Helper routines
 
