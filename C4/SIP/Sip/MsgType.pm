@@ -729,13 +729,28 @@ sub handle_checkin {
         $resp .= add_field( FID_PERM_LOCN, "", $server );
     }
 
+    my $sort_bin;
+    my $media_type;
+
+    if ($account->{custom_checkin_response_fields}) {
+        if ($item) {
+            $sort_bin = $item->location;
+            $media_type = $item->{author};
+        }
+    } else {
+        $sort_bin = $status->sort_bin;
+        if ($item) {
+            $media_type = $item->sip_media_type;
+        }
+    }
+
     if ( $protocol_version >= 2 ) {
-        $resp .= maybe_add( FID_SORT_BIN, $status->sort_bin, $server );
+        $resp .= maybe_add( FID_SORT_BIN, $sort_bin, $server );
         if ($patron) {
             $resp .= add_field( FID_PATRON_ID, $patron->id, $server );
         }
         if ($item) {
-            $resp .= maybe_add( FID_MEDIA_TYPE,           $item->sip_media_type,      $server );
+            $resp .= maybe_add( FID_MEDIA_TYPE,           $media_type,                $server );
             $resp .= maybe_add( FID_ITEM_PROPS,           $item->sip_item_properties, $server );
             $resp .= maybe_add( FID_CALL_NUMBER,          $item->call_number,         $server );
             $resp .= maybe_add( FID_HOLD_PATRON_ID,       $item->hold_patron_bcode,   $server );
