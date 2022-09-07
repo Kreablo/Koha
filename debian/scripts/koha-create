@@ -893,14 +893,23 @@ then
     if [ -e "$DEFAULTSQL" ]
     then
 	if [ "$DEFAULTSQL_CREDS" = "instance" ] ; then
-	    mysqlcmd="koha-mysql $(printf %q $name)"
+	    mysqlcmd="koha-mysql $name"
 	else
-	    mysqlcmd="mysql --host=$(printf %q $mysqlhost) --user=$(printf %q $mysqluser) --port=$(printf %q $mysqlport) --password=$(printf %q $mysqlpwd) $(printf %q $mysqldb)"
+            mysqlconf=$(mktemp)
+            cat > $mysqlconf <<EOF
+[client]
+host = $mysqlhost
+port = $mysqlport
+user = $mysqluser
+password = $mysqlpwd
+database = $mysqldb
+EOF
+            trap 'rm $mysqlconf' EXIT INT TERM HUP
+
+	    mysqlcmd="mysql --defaults-file=$mysqlconf"
 	fi
         # Populate the database with default content.
-        zcat -f "$DEFAULTSQL" |
-        sed "s/__KOHASITE__/koha_$name/g" |
-	$mysqlcmd --init-command='SET foreign_key_checks = 0;'
+        zcat -f "$DEFAULTSQL" | sed "s/__KOHASITE__/koha_$name/g" | $mysqlcmd --init-command='SET foreign_key_checks = 0;'
 
 
         # Change the default user's password.
