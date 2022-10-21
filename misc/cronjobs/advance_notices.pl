@@ -498,6 +498,7 @@ sub parse_letter {
         lang => $patron->lang,
         substitute => $params->{'substitute'},
         tables     => \%table_params,
+        repeat     => exists $params->{'repeat'} ? $params->{'repeat'} : undef,
         message_transport_type => $params->{message_transport_type},
     );
 }
@@ -593,8 +594,15 @@ sub send_digests {
             borrower_preferences => $borrower_preferences
         });
         my $titles = "";
+        my @item_tables = ();
         while ( my $item_info = $next_item_info->()) {
             $titles .= C4::Letters::get_item_content( { item => $item_info, item_content_fields => \@item_content_fields } );
+            push @item_tables, {
+                'biblio' => $item_info->{'biblionumber'},
+                'biblioitems' => $item_info->{'biblionumber'},
+                'items' => $item_info->{'itemnumber'},
+                'issues' => $item_info->{'itemnumber'}
+            };
         }
 
         foreach my $transport ( keys %{ $borrower_preferences->{'transports'} } ) {
@@ -606,6 +614,9 @@ sub send_digests {
                         count           => $count,
                         'items.content' => $titles,
                         %branch_info
+                    },
+                    repeat         => {
+                        item            => \@item_tables
                     },
                     branchcode     => $branchcode,
                     message_transport_type => $transport
