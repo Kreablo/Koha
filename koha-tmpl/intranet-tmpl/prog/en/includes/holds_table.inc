@@ -158,7 +158,6 @@
                                 name="pickup">
                             <option selected="selected" value="[% hold.branchcode | html %]">[% Branches.GetName(hold.branchcode) | html %]</option>
                             <option value="" disabled="disabled" class="loading">Loading...</option>
-                            [% PROCESS ungrouped_options_for_libraries libraries => Branches.pickup_locations( { search_params => { item => hold.itemnumber, biblio => hold.biblionumber, patron => hold.patron }, selected => hold.branchcode }) %]
                         </select>
                         <img class="loading_[% hold.reserve_id | html %]" src="[% interface | html %]/[% theme | html %]/img/spinner-small.gif" alt="" style="display:none;"/>
                     [%- END -%]
