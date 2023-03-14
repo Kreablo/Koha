@@ -16,7 +16,7 @@
     responses:
       "200":
         description: Successful fetch
-        schema
+        schema:
           $ref: "../swagger.yaml#/definitions/form_completion"
       "400":
         description: Bad request
