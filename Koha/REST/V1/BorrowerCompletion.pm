@@ -21,7 +21,7 @@ use Mojo::Base 'Mojolicious::Controller';
 use DateTime;
 use DateTime::Format::Builder;
 use DateTime::Format::Strptime;
-use Koha::DateUtils;
+use Koha::DateUtils qw( output_pref );
 use Koha::Completion::BorrowerCompletion;
 use C4::Context;
 
