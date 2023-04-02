@@ -106,6 +106,7 @@ sub send_sms {
         my $conf = YAML::XS::LoadFile( $conf_file );
         %args = map { q{_} . $_ => $conf->{$_} } keys %$conf;
     }
+    $args{_platformPartnerId} = sub { return $params->{patron}->branchcode };
 
     eval {
         # Create a sender
