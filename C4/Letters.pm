@@ -1527,6 +1527,7 @@ sub _send_message_by_sms {
         {
             destination => $patron->smsalertnumber,
             message     => $message->{'content'},
+	    patron      => $patron,
         }
     );
 
