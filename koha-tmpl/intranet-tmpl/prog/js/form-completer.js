@@ -82,7 +82,7 @@
             $input.val(val);
             return false;
           }
-        })
+        });
       }
     });
     var submit = function submit (event) {
@@ -118,7 +118,7 @@
 
     $modal_form.on("submit", submit);
     $button.click(submit);
-  }
+  };
 
   p.done = function done (data, textStatus, jqXHR) {
     $(this.opts.modal).modal('hide');
@@ -130,10 +130,15 @@
       $input.each(function (index, element) {
         var old = $(element).val();
         if (old != f.value) {
-          $(element).val(f.value);
-          $(element).addClass('form-completer-updated');
+          if (element.classList.contains("flatpickr-input")) {
+            element._flatpickr.setDate(f.value, true);
+            $(element).parent().find('input').addClass('form-completer-updated');
+          } else {
+            $(element).val(f.value);
+            $(element).addClass('form-completer-updated');
+          }
         }
-      })
+      });
     }
   };
 
@@ -163,7 +168,7 @@
     } else {
       return $form.find('[name="' + f.name + '"]');
     }
-  }
+  };
 
   var displayError = function (msg, jqXHR, textStatus, errorThrown) {
     var msg = "<h3>" + msg + "</h3>";
@@ -171,33 +176,33 @@
       msg += "<p>" + jqXHR.responseJSON.error + "</p>";
     }
     humanMsg.displayMsg( msg, { className: "humanError"} );
-  }
+  };
 
   p.fail = function fail (jqXHR, textStatus, errorThrown) {
-  }
+  };
 
   p.handle400 = function handle400 (jqXHR, textStatus, errorThrown) {
     displayError(MSG_BAD_REQUEST, jqXHR, textStatus, errorThrown);
-  }
+  };
   p.handle401 = function handle401 (jqXHR, textStatus, errorThrown) {
     displayError(MSG_UNAUTHORIZED, jqXHR, textStatus, errorThrown);
-  }
+  };
   p.handle403 = function handle403 (jqXHR, textStatus, errorThrown) {
     displayError(MSG_FORBIDDEN, jqXHR, textStatus, errorThrown);
-  }
+  };
   p.handle404 = function handle404 (jqXHR, textStatus, errorThrown) {
     displayError(MSG_NOT_FOUND, jqXHR, textStatus, errorThrown);
-  }
+  };
   p.handle500 = function handle500 (jqXHR, textStatus, errorThrown) {
     displayError(MSG_INTERNAL_SERVER_ERROR, jqXHR, textStatus, errorThrown);
-  }
+  };
   p.handle503 = function handle503 (jqXHR, textStatus, errorThrown) {
     displayError(MSG_SERVICE_UNAVAILABLE, jqXHR, textStatus, errorThrown);
-  }
+  };
 
   p.always = function always () {
       KOHA.AJAX.MarkDone(this.opts.modal);
-  }
+  };
 
   window.FormCompleter = FormCompleter;
 
