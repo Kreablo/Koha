@@ -11,6 +11,8 @@ patchflags=
 help=
 quiet=no
 
+shopt -s extglob
+
 fp=$(git describe | awk -F- '{ print $1 }')
 
 msg () {
@@ -101,10 +103,22 @@ if (( $(git log --pretty=oneline $fp..HEAD -- koha-tmpl/intranet-tmpl | wc -l) >
     git diff $fp..HEAD -- koha-tmpl/intranet-tmpl > $intratmplpatch
 fi
 
-if (( $(git log --pretty=oneline $fp..HEAD -- misc | wc -l) > 0 )); then
+if (( $(git log --pretty=oneline $fp..HEAD -- misc/!(translator|bin) | wc -l) > 0 )); then
+    msg "Creating bin patch 1."
+    binpatch1=$(mktemp -p $TMPDIR  XXXXXXX.patch)
+    git diff $fp..HEAD -- misc/!(translator|bin) > $binpatch1
+fi
+
+if (( $(git log --pretty=oneline $fp..HEAD -- misc/bin | wc -l) > 0 )); then
+    msg "Creating bin patch 2."
+    binpatch2=$(mktemp -p $TMPDIR  XXXXXXX.patch)
+    git diff $fp..HEAD -- misc/bin > $binpatch2
+fi
+
+if (( $(git log --pretty=oneline $fp..HEAD -- misc/translator | wc -l) > 0 )); then
     msg "Creating misc patch."
     miscpatch=$(mktemp -p $TMPDIR  XXXXXXX.patch)
-    git diff $fp..HEAD -- misc > $miscpatch
+    git diff $fp..HEAD -- misc/translator > $miscpatch
 fi
 
 declare -a intra=()
@@ -235,6 +249,18 @@ if [[ -n "$intrapatch" ]]; then
     echo "patch \$patchflags -p1 -d \"\$kohadir\"/intranet/cgi-bin <<'EINTRAPATCH'" >> "$patchscript"
     cat "$intrapatch"         >> "$patchscript"
     echo "EINTRAPATCH" >> "$patchscript"
+fi
+
+if [[ -n "$binpatch1" ]]; then
+    echo "patch \$patchflags -p2 -d \"\$kohadir\"/bin <<'EBINPATCH1'" >> "$patchscript"
+    cat "$binpatch1" >> "$patchscript"
+    echo "EBINPATCH1" >> "$patchscript"
+fi
+
+if [[ -n "$binpatch2" ]]; then
+    echo "patch \$patchflags -p3 -d \"\$kohadir\"/bin <<'EBINPATCH2'" >> "$patchscript"
+    cat "$binpatch2" >> "$patchscript"
+    echo "EBINPATCH2" >> "$patchscript"
 fi
 
 cp "$patchscript" /tmp/koha-patch-prod.sh
