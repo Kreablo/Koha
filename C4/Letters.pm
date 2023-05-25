@@ -1074,10 +1074,10 @@ sub SendQueuedMessages {
                 _update_message_to_address($message->{'message_id'}, $message->{to_address});
                 my $rv = _send_message_by_email( $message, $params->{'username'}, $params->{'password'}, $params->{'method'} );
                 $count_messages++ if $rv;
-            } else {
-                my $rv = _send_message_by_sms( $message );
-                $count_messages++ if $rv;
             }
+            #else {
+            #    _send_message_by_sms( $message );
+            #}
         }
     }
     return $count_messages;
