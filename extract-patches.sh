@@ -142,7 +142,7 @@ fi
 patchscript=$(mktemp -p $TMPDIR  XXXXXXX.sh)
 
 cat <<EOVARS >> "$patchscript"
-#!/bin/bash -e
+#!/bin/bash
 
 kohadir=$kohadir
 reverse=no
