@@ -1028,9 +1028,10 @@ sub SendQueuedMessages {
 
                 _update_message_to_address($message->{'message_id'}, $message->{to_address});
                 _send_message_by_email( $message, $params->{'username'}, $params->{'password'}, $params->{'method'} );
-            } else {
-                _send_message_by_sms( $message );
             }
+            #else {
+            #    _send_message_by_sms( $message );
+            #}
         }
     }
     return scalar( @$unsent_messages );
