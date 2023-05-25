@@ -2848,7 +2848,7 @@ sub GetUpcomingDueIssues {
         LEFT JOIN branches ON branches.branchcode =
     };
     $statement .= $params->{'owning_library'} ? " items.homebranch " : " issues.branchcode ";
-    $statement .= " WHERE returndate is NULL AND TO_DAYS( date_due )-TO_DAYS( NOW() ) BETWEEN 0 AND ?";
+    $statement .= " WHERE returndate is NULL AND TO_DAYS( date_due )-TO_DAYS( NOW() ) BETWEEN 0 AND ? AND items.itype NOT IN ('11','12')";
     my @bind_parameters = ( $params->{'days_in_advance'} );
     
     my $sth = $dbh->prepare( $statement );
