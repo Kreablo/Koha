@@ -61,7 +61,7 @@ parse_arguments () {
 parse_arguments "$@"
 
 if [[ -n "$help" ]]; then
-    echo "$0: [--reverse] [--kohadir=<kohadir>]"
+    echo "$0: [--reverse] [--kohadir=<kohadir>] [--forkpoint=<forkpoint>]"
     exit 0
 fi
 
@@ -101,20 +101,26 @@ if (( $(git log --pretty=oneline $fp..HEAD -- koha-tmpl/intranet-tmpl | wc -l) >
     git diff $fp..HEAD -- koha-tmpl/intranet-tmpl > $intratmplpatch
 fi
 
+if (( $(git log --pretty=oneline $fp..HEAD -- misc | wc -l) > 0 )); then
+    msg "Creating misc patch."
+    miscpatch=$(mktemp -p $TMPDIR  XXXXXXX.patch)
+    git diff $fp..HEAD -- misc > $miscpatch
+fi
+
 declare -a intra=()
 readarray -t intra < <(for filename in $(git diff --numstat $fp..HEAD | awk '{ print $3 }') ; do
-                           if [[ ! $filename =~ ^opac/|koha-tmpl/|C4/|Koha/|CGI/|(Koha.pm$)|(cpanfile$)|api/|(extract-patches.sh$) ]]; then
-                               msg $filename
+                           if [[ ! $filename =~ ^((opac/)|(koha-tmpl/)|(C4/)|(Koha/)|(CGI/)|(t/)|(Koha.pm$)|(cpanfile$)|(misc/)|(api/)|(extract-patches.sh$)) ]]; then
+                               echo "$filename"
                            fi
                       done)
 
-if (( $(git log $fp..HEAD -- "${intra[@]}" | wc -l) > 0 )); then
+if (( ${#intra[@]} > 0 && $(git log $fp..HEAD -- "${intra[@]}" | wc -l) > 0 )); then
     msg "Creating intra patch."
     intrapatch=$(mktemp -p $TMPDIR  XXXXXXX.patch)
     git diff $fp..HEAD -- "${intra[@]}" > $intrapatch
 fi
 
-if [[ -z "$opacpatch" && -z "$opactmplpatch" && -z "$libpatch" && -z "$apipatch" && -z "$intratmplpatch" && -z "$intrapatch" ]] ; then
+if [[ -z "$opacpatch" && -z "$opactmplpatch" && -z "$libpatch" && -z "$apipatch" && -z "$intratmplpatch" && -z "$intrapatch" && -z "$miscpatch" ]] ; then
     msg "Nothing to do!"
     exit 0
 fi
@@ -217,6 +223,12 @@ if [[ -n "$intratmplpatch" ]]; then
     echo "patch \$patchflags -p2 -d \"\$kohadir\"/intranet/htdocs <<'EINTRATMPLPATCH'" >> "$patchscript"
     cat "$intratmplpatch"         >> "$patchscript"
     echo "EINTRATMPLPATCH" >> "$patchscript"
+fi
+
+if [[ -n "$miscpatch" ]]; then
+    echo "patch \$patchflags -p2 -d \"\$kohadir\"/misc <<'MISCPATCH'" >> "$patchscript"
+    cat "$miscpatch"         >> "$patchscript"
+    echo "MISCPATCH" >> "$patchscript"
 fi
 
 if [[ -n "$intrapatch" ]]; then
