@@ -42,6 +42,8 @@ use Koha::Subscriptions;
 
 use constant SERIALIZED_EMAIL_CONTENT_TYPE => 'message/rfc822';
 
+require Number::Format;
+
 our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
@@ -802,6 +804,9 @@ sub _parseletter {
         my $todaysdate = output_pref( dt_from_string() );
         $letter->{content} =~ s/<<today>>/$todaysdate/go;
     }
+
+    my $nf = new Number::Format(-thousands_sep   => ' ');
+    $values->{'borrowernumber'} = $nf->format_number($values->{'borrowernumber'});
 
     while ( my ($field, $val) = each %$values ) {
         $val =~ s/\p{P}$// if $val && $table=~/biblio/;
