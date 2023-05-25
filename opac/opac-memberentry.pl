@@ -186,6 +186,7 @@ if ( $action eq 'create' ) {
             }
 
             $borrower{password}          = Koha::AuthUtils::generate_password(Koha::Patron::Categories->find($borrower{categorycode})) unless $borrower{password};
+            $borrower{userid}            = $borrower{'cardnumber'};
             $borrower{verification_token} = $verification_token;
 
             $borrower{extended_attributes} = to_json($attributes);

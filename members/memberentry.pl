@@ -83,7 +83,7 @@ my $check_member   = $input->param('check_member');
 my $nodouble       = $input->param('nodouble');
 my $duplicate      = $input->param('duplicate');
 my $quickadd       = $input->param('quickadd');
-$nodouble = 1 if ($op eq 'modify' or $op eq 'duplicate');    # FIXME hack to represent fact that if we're
+$nodouble = 1; # if ($op eq 'modify' or $op eq 'duplicate');    # FIXME hack to represent fact that if we're
                                      # modifying an existing patron, it ipso facto
                                      # isn't a duplicate.  Marking FIXME because this
                                      # script needs to be refactored.
@@ -278,7 +278,9 @@ $newdata{'lang'}    = $input->param('lang')    if defined($input->param('lang'))
 if ( ( defined $newdata{'userid'} && $newdata{'userid'} eq '' ) || $check_BorrowerUnwantedField =~ /userid/ && !defined $data{'userid'} ) {
     my $fake_patron = Koha::Patron->new;
     $fake_patron->userid($patron->userid) if $patron; # editing
-    if ( ( defined $newdata{'firstname'} || $category->category_type eq 'I' ) && ( defined $newdata{'surname'} ) ) {
+    if ( defined $cardnumber ) {
+        $newdata{'userid'} = $newdata{'userid'} = $cardnumber;
+    } elsif ( ( defined $newdata{'firstname'} || $category->category_type eq 'I' ) && ( defined $newdata{'surname'} ) ) {
         # Full page edit, firstname and surname input zones are present
         $fake_patron->firstname($newdata{firstname});
         $fake_patron->surname($newdata{surname});
