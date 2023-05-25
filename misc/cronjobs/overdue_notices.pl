@@ -474,6 +474,7 @@ SELECT biblio.*, items.*, issues.*, biblioitems.itemtype, branchname
     AND issues.borrowernumber = ?
     AND items.itemlost = 0
     AND TO_DAYS($date)-TO_DAYS(issues.date_due) >= 0
+    AND items.itype NOT IN ('11','12')
 END_SQL
 
     if($owning_library) {

@@ -253,6 +253,7 @@ SELECT biblio.*, items.*, issues.*
     AND issues.borrowernumber = ?
     AND issues.itemnumber = ?
     AND (TO_DAYS(date_due)-TO_DAYS(NOW()) = ?)
+    AND items.itype NOT IN ('11','12')
 END_SQL
 
 my $admin_adress = C4::Context->preference('KohaAdminEmailAddress');
