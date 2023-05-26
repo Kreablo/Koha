@@ -285,9 +285,11 @@ sub check_password {
     if ( C4::Context->preference('SIPPasswordFromAttribute') &&
          C4::Context->preference('SIPPasswordAttribute')) {
         ($ret) = checkattributepw( $self->{userid}, $pwd, C4::Context->preference('SIPPasswordAttribute')); # userid, attribute
-    } else {
-        ($ret) = checkpw( $self->{userid}, $pwd, undef, undef, 1 ); # userid, query, type, no_set_userenv
     }
+    if ( $ret ) {
+        return $ret;
+    }
+    ($ret) = checkpw( $self->{userid}, $pwd, undef, undef, 1 ); # userid, query, type, no_set_userenv
     return $ret;
 }
 
