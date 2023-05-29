@@ -494,7 +494,7 @@ foreach my $biblioNum (@biblionumbers) {
             $numCopiesAvailable++;
 
             unless ( $can_place_hold_if_available_at_pickup ) {
-                if ( ItemsAnyAvailableAndNotRestricted({ biblionumber => $itemInfo->{biblionumber}, patron => $patron, holdingbranch => $itemInfo->{holdingbranch}}) ) {
+                if ( ItemsAnyAvailableAndNotRestricted({ biblionumber => $item_info->{biblionumber}, patron => $patron, holdingbranch => $item_info->{holdingbranch}}) ) {
                     push @not_available_at, $item->holdingbranch;
                 }
             }
