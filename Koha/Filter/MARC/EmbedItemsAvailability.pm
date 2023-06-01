@@ -72,6 +72,11 @@ sub _processrecord {
     my $record = shift;
 
     my ($biblionumber_field, $biblionumber_subfield) = GetMarcFromKohaField( "biblio.biblionumber" );
+
+    if (!defined $record->field($biblionumber_field) || !defined $record->field($biblionumber_field)->subfield($biblionumber_subfield)) {
+        return;
+    }
+
     my $biblionumber  = ( $biblionumber_field > 9 )
                       ? $record->field($biblionumber_field)->subfield($biblionumber_subfield)
                       : $record->field($biblionumber_field)->data();
