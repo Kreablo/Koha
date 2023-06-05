@@ -140,8 +140,8 @@ sub build_package {
     sys_command_output( qq{git archive --format=tar --prefix="koha-$newversion/" HEAD | gzip -9 > "../koha_$newversion.orig.tar.gz"} );
 
     my $pdebuildopts = $buildresult ? "--buildresult $buildresult" : "";
-    my $pdebuildbasetgz = $basetgz ? "-- --use-network yes --basetgz /var/cache/pbuilder/" . $basetgz . ".tgz" : "";
-    sys_command_output_screen( "pdebuild $pdebuildbasetgz $pdebuildopts" );
+    my $pdebuildbasetgz = $basetgz ? "-- --basetgz /var/cache/pbuilder/" . $basetgz . ".tgz" : "";
+    sys_command_output_screen( "pdebuild $pdebuildbasetgz $pdebuildopts -- --use-network yes" );
 }
 
 everything_is_committed() or die "cannot build: uncommited changes";
