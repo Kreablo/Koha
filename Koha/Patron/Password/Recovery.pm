@@ -86,7 +86,7 @@ sub GetValidLinkInfo {
     my ($uniqueKey) = @_;
     my $dbh         = C4::Context->dbh;
     my $query       = '
-    SELECT borrower_password_recovery.borrowernumber, userid
+    SELECT borrower_password_recovery.borrowernumber, userid, cardnumber
     FROM borrower_password_recovery, borrowers
     WHERE borrowers.borrowernumber = borrower_password_recovery.borrowernumber
     AND NOW() < valid_until
