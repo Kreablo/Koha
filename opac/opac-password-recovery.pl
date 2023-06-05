@@ -35,6 +35,7 @@ my $id             = $query->param('id');
 my $uniqueKey      = $query->param('uniqueKey');
 my $username       = $query->param('username') // q{};
 my $borrower_number;
+my $cardnumber;
 
 #errors
 my $hasError;
@@ -148,7 +149,7 @@ if ( $query->param('sendEmail') || $query->param('resendEmail') ) {
     }
 }
 elsif ( $query->param('passwordReset') ) {
-    ( $borrower_number, $username ) = GetValidLinkInfo($uniqueKey);
+    ( $borrower_number, $username, $cardnumber ) = GetValidLinkInfo($uniqueKey);
 
     my $error;
     my $min_password_length = C4::Context->preference('minPasswordPreference');
@@ -167,7 +168,8 @@ elsif ( $query->param('passwordReset') ) {
             CompletePasswordRecovery($uniqueKey);
             $template->param(
                 password_reset_done => 1,
-                username            => $username
+                username            => $username,
+                cardnumber          => $cardnumber
             );
         }
         catch {
@@ -196,7 +198,7 @@ elsif ( $query->param('passwordReset') ) {
 }
 elsif ($uniqueKey) {    #reset password form
                         #check if the link is valid
-    ( $borrower_number, $username ) = GetValidLinkInfo($uniqueKey);
+    ( $borrower_number, $username, $cardnumber ) = GetValidLinkInfo($uniqueKey);
 
     if ( !$borrower_number ) {
         $errLinkNotValid = 1;
@@ -209,6 +211,7 @@ elsif ($uniqueKey) {    #reset password form
         email           => $email,
         uniqueKey       => $uniqueKey,
         username        => $username,
+        cardnumber      => $cardnumber,
         errLinkNotValid => $errLinkNotValid,
         hasError        => ( $errLinkNotValid ? 1 : 0 ),
         minPasswordLength => $borrower ? $borrower->category->effective_min_password_length : undef,
