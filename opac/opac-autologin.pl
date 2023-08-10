@@ -46,7 +46,6 @@ if (defined $config) {
     my $userinfo = $usermap{$query->remote_addr()};
 
     if (defined $userinfo) {
-        warn Dumper($userinfo);
         $query->param('userid', $userinfo->{userid});
         $query->param('password', $userinfo->{password});
 
