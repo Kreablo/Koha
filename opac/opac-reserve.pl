@@ -298,7 +298,7 @@ if ( $op eq 'cud-place_reserve' ) {
 
         unless ( $can_place_hold_if_available_at_pickup ) {
             if ( ItemsAnyAvailableAndNotRestricted({ biblionumber => $biblioNum, patron => $patron, holdingbranch => $branch}) ) {
-                $canreserve = 0
+                $canreserve = 0;
                 push @failed_holds, 'items_available';
             }
         }
@@ -493,7 +493,8 @@ foreach my $biblioNum (@biblionumbers) {
             $numCopiesAvailable++;
 
             unless ( $can_place_hold_if_available_at_pickup ) {
-                if ( ItemsAnyAvailableAndNotRestricted({ biblionumber => $item_info->{biblionumber}, patron => $patron, holdingbranch => $item_info->{holdingbranch}}) ) {
+
+                if ( ItemsAnyAvailableAndNotRestricted({ biblionumber => $item_info->{biblionumber}, patron => $patron, holdingbranch => $item->holdingbranch }) ) {
                     push @not_available_at, $item->holdingbranch;
                 }
             }
