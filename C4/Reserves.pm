@@ -1448,7 +1448,7 @@ sub ItemsAnyAvailableAndNotRestricted {
             || $branchitemrule->{holdallowed} eq 'from_home_library' && $param->{patron}->branchcode ne $i->homebranch
             || $branchitemrule->{holdallowed} eq 'from_local_hold_group' && ! $item_library->validate_hold_sibling( { branchcode => $param->{patron}->branchcode } )
             || CanItemBeReserved( $param->{patron}, $i )->{status} ne 'OK'
-            || Koha::Item::Transfers->search({ itemnumber => $i->itemnumber, datearrived => undef })->count > 0;
+            || Koha::Item::Transfers->search({ itemnumber => $i->itemnumber, datearrived => undef, datecancelled => undef })->count > 0;
     }
 
     return 0;
