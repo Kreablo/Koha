@@ -2,7 +2,7 @@
 
 # This file is part of Koha.
 #
-# Copyright (C) 2015  Viktor Sarge
+# Copyright (C) 2023 Andreas Jonsson
 #
 # Koha is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -33,7 +33,11 @@ if (defined $config) {
 
     for my $ui (ref $config->{item} eq 'ARRAY' ? @{$config->{item}} : ($config->{item})) {
         if (defined $ui->{ip} && defined $ui->{userid} && defined $ui->{password} && defined $ui->{target}) {
-            $usermap{$ui->{ip}} = {
+            my $name = $ui->{ip};
+            if (defined $ui->{'autologin_id'} && $ui->{'autologin_id'} ne '') {
+                $name .= '-' . $ui->{'autologin_id'};
+            }
+            $usermap{$name} = {
                 'userid' => $ui->{userid},
                 'password' => $ui->{password},
                 'target' => $ui->{target}
@@ -43,7 +47,14 @@ if (defined $config) {
         }
     }
 
-    my $userinfo = $usermap{$query->remote_addr()};
+    my $autologin_id = $query->param('autologin-id');
+
+    my $name = $query->remote_addr();
+    if (defined $autologin_id && $autologin_id ne '') {
+        $name .= '-' . $autologin_id;
+    }
+
+    my $userinfo = $usermap{$name};
 
     if (defined $userinfo) {
         $query->param('userid', $userinfo->{userid});
