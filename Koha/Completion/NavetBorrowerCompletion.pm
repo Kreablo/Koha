@@ -61,7 +61,7 @@ sub fetch_completions {
         $logger->warn(Dumper($self->{config}));
         $logger->warn(Dumper($ssl_opts));
 
-        my $url = $self->{config}->{test} ? "https://www2.test.skatteverket.se/na/na_epersondata/V2/personpostXML" : "https://www2.skatteverket.se/na/na_epersondata/V2/personpostXML";
+        my $url = $self->{config}->{test} ? "https://www2.test.skatteverket.se/na/na_epersondata/V4/personpostXML" : "https://www2.skatteverket.se/na/na_epersondata/V4/personpostXML";
         
         my $soap = SOAP::Lite->proxy($url, ssl_opts => $ssl_opts);
 
