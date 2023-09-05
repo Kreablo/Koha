@@ -22,6 +22,7 @@ use CGI;
 use C4::Context;
 use C4::Auth qw( check_api_auth );
 use Koha::Logger;
+use Net::Netmask;
 
 my $query = CGI->new;
 my $logger = Koha::Logger->get({ interface => 'opac', category => 'opac-autologin.pl' });
@@ -29,19 +30,20 @@ my $logger = Koha::Logger->get({ interface => 'opac', category => 'opac-autologi
 my $config = C4::Context->config('opac_autologin');
 
 if (defined $config) {
-    my %usermap = ();
+    my @usermap = ();
 
     for my $ui (ref $config->{item} eq 'ARRAY' ? @{$config->{item}} : ($config->{item})) {
         if (defined $ui->{ip} && defined $ui->{userid} && defined $ui->{password} && defined $ui->{target}) {
-            my $name = $ui->{ip};
-            if (defined $ui->{'autologin_id'} && $ui->{'autologin_id'} ne '') {
-                $name .= '-' . $ui->{'autologin_id'};
-            }
-            $usermap{$name} = {
+
+            my $userobj = {
                 'userid' => $ui->{userid},
                 'password' => $ui->{password},
-                'target' => $ui->{target}
-            }
+                'target' => $ui->{target},
+                'autologin_id' => $ui->{'autologin_id'}
+            };
+
+            my $block = Net::Netmask->new2($ui->{ip}, shortnet => 1);
+            push @usermap, [$block, $userobj];
         } else {
             $logger->error("Invalid entry in opac_autologin configuration.");
         }
@@ -49,12 +51,17 @@ if (defined $config) {
 
     my $autologin_id = $query->param('autologin-id');
 
-    my $name = $query->remote_addr();
-    if (defined $autologin_id && $autologin_id ne '') {
-        $name .= '-' . $autologin_id;
-    }
+    my $userinfo;
 
-    my $userinfo = $usermap{$name};
+    for my $var (@usermap) {
+        my ($block, $userobj) = @$var;
+        if ($block->match($query->remote_addr())) {
+            if (!(defined $autologin_id && $autologin_id ne '') || $userobj->{'autologin_id'} eq $autologin_id) {
+                $userinfo = $userobj;
+                last;
+            }
+        }
+    }
 
     if (defined $userinfo) {
         $query->param('userid', $userinfo->{userid});
