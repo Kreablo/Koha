@@ -55,8 +55,8 @@ if (defined $config) {
 
     for my $var (@usermap) {
         my ($block, $userobj) = @$var;
-        if ($block->match($query->remote_addr())) {
-            if (!(defined $autologin_id && $autologin_id ne '') || $userobj->{'autologin_id'} eq $autologin_id) {
+        if (((!defined $autologin_id || $autologin_id eq '') && !defined $userobj->{'autologin_id'}) || (defined $userobj->{'autologin_id'} && defined $autologin_id && $userobj->{'autologin_id'} eq $autologin_id)) {
+            if ($block->match($query->remote_addr())) {
                 $userinfo = $userobj;
                 last;
             }
@@ -68,8 +68,6 @@ if (defined $config) {
         $query->param('password', $userinfo->{password});
 
         my ($status, $cookie, $sessionId) = check_api_auth($query);
-
-        warn "status: '$status'";
 
         if ($status eq "ok") {
             print $query->redirect(
