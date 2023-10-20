@@ -83,9 +83,9 @@ sub fetch_completions {
     if (defined $pnrn) {
 
 	my $soap = SOAP::Lite->proxy("https://adresservice.ltv.se/csp/population/LTV.AddressService.Service.GetAddressResponderBinding.cls", ssl_opts => {
-	    SSL_cert_file => "/etc/ssl/certs/kovast-addressservice.cert.pem",
-	    SSL_key_file => "/etc/ssl/private/kovast-addressservice.key2.pem",
-	    SSL_ca_file => "/etc/ssl/certs/SITHS-cacerts.pem",
+            SSL_cert_file => "/etc/koha/sites/bv/populationclient.regionvastmanland.se-cert.pem",
+            SSL_key_file => "/etc/koha/sites/bv/populationclient.regionvastmanland.se-key.pem",
+            SSL_ca_file => "/etc/koha/sites/bv/populationclient.regionvastmanland.se-cacert.pem",
 	    SSL_use_cert => 1
         });
 
