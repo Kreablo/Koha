@@ -2,17 +2,17 @@
 type: object
 properties:
   name:
-    description: the field name
     type: string
+    description: the field name
   attrname:
     description: optional name of patron attribute
     type:
-      - "string"
+      - string
       - "null"
   value:
     description: the completed field value
     type:
-      - "string"
+      - string
       - "null"
 additionalProperties: false
 required:
