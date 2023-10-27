@@ -75,16 +75,16 @@ Koha::Logger->_init;
 
 
 my $loan_status = new KohaServices::LoanStatus({
-                record_matcher => 'KohaServices::RecordMatcher::KBiblioId',
+                record_matcher => 'KohaServices::RecordMatcher::SearchEngine',
                 output_format => 'KohaServices::OutputFormat::LibrisXml'
         });
 
 my $redirect_bibitem = new KohaServices::RedirectBibitem({
-                record_matcher => 'KohaServices::RecordMatcher::KBiblioId',
+                record_matcher => 'KohaServices::RecordMatcher::SearchEngine',
         });
 
 my $redirect_reserve = new KohaServices::RedirectReserve({
-                record_matcher => 'KohaServices::RecordMatcher::KBiblioId',
+                record_matcher => 'KohaServices::RecordMatcher::SearchEngine',
         });
 
 builder {
