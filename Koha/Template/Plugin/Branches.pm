@@ -324,6 +324,7 @@ sub GetBranchSpecificCSS {
     my $opacusercss = $library ? $library->opacusercss : q{};
 
     return $opacusercss;
+}
 
 sub pickup_locations_grouped {
     my ($self, $params) = @_;
