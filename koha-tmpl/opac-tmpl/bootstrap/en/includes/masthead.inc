@@ -232,7 +232,7 @@
 
                                                         [% IF LibrarySearchGroups %]<optgroup label="Libraries">[% END %]
 
-                                                        [% PROCESS options_for_libraries prefix => "branch:", params => { search_params => { public => 1 }, selected => opac_name } %]
+                                                        [% PROCESS options_for_libraries params => { prefix => "branch:", search_params => { public => 1 }, selected => opac_name } %]
 
                                                         [% IF LibrarySearchGroups %]
                                                             </optgroup>
