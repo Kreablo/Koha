@@ -35,10 +35,14 @@ enable_instance()
     if ! is_enabled $instancename; then
         sed -i 's:^\(\s*Include /etc/koha/apache-shared-disable.conf\)$:#\1:' \
             "$instancefile"
-        sed -i 's:^\(\s*Include /etc/koha/apache-shared-disable.conf\)$:#\1:' \
-            /etc/vhost.d/${instancename}-opac/*
-        sed -i 's:^\(\s*Include /etc/koha/apache-shared-disable.conf\)$:#\1:' \
-            /etc/vhost.d/${instancename}-intra/*
+        if test -e /etc/vhost.d/${instancename}-opac/; then
+            sed -i 's:^\(\s*Include /etc/koha/apache-shared-disable.conf\)$:#\1:' \
+                /etc/vhost.d/${instancename}-opac/*
+        fi
+        if test -e /etc/vhost.d/${instancename}-intra/; then
+            sed -i 's:^\(\s*Include /etc/koha/apache-shared-disable.conf\)$:#\1:' \
+                /etc/vhost.d/${instancename}-intra/*
+        fi
         return 0
     else
         return 1
