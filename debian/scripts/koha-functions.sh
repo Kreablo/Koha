@@ -92,11 +92,20 @@ is_enabled()
         return 1
     fi
 
-    if grep -q '^[[:space:]]*Include /etc/koha/apache-shared-disable.conf' \
-            "$instancefile" ; then
-        return 1
+    if test -d /etc/apache/vhost.d/${instance}-opac; then
+        if grep -q '^[[:space:]]*Include /etc/koha/apache-shared-disable.conf' \
+                "$instancefile" /etc/apache/vhost.d/${instance}-opac/* /etc/apache/vhost.d/${instance}-intra/*; then
+            return 1
+        else
+            return 0
+        fi
     else
-        return 0
+        if grep -q '^[[:space:]]*Include /etc/koha/apache-shared-disable.conf' \
+                "$instancefile" ; then
+            return 1
+        else
+            return 0
+        fi
     fi
 }
 
