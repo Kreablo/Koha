@@ -8,17 +8,22 @@ index:
         tokenizer: keyword
         filter:
           - swedish_folding
+          - lowercase
         char_filter:
+          - nor2swe
           - punctuation
       analyzer_standard:
         tokenizer: icu_tokenizer
         filter:
           - swedish_folding
+          - lowercase
         char_filter:
+          - nor2swe
       analyzer_stdno:
         tokenizer: whitespace
         filter:
           - swedish_folding
+          - lowercase
         char_filter:
           - punctuation
     filter:
@@ -46,6 +51,14 @@ index:
         type: pattern_replace
         pattern: '\s*(?<!\p{Lu})[.\-,;]*\s*$'
         replacement: ''
+      nor2swe:
+        type: mapping
+        mappings:
+          - \u00D8 => \u00D6
+          - \u00F8 => \u00F6
+          - \u00E6 => \u00E4
+          - \u00C6 => \u00C4
+
 index.mapping.total_fields.limit: 10000
 index.max_result_window: 1000000
 index.number_of_replicas: 1
