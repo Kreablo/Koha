@@ -1536,7 +1536,8 @@
                 this.form.submit();
             });
             $('.cancel-hold').on("click",function(e){
-                let cancel_reason = document.getElementById('cancellation-reason').value;
+                const r = document.getElementById('cancellation-reason');
+                let cancel_reason = r ? r.value : 'Manually cancelled';
                 this.form.cancel_reserve.value = 1;
                 this.form.cancel_reason.value = cancel_reason;
                 this.form.submit();
