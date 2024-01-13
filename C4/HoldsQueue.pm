@@ -573,7 +573,7 @@ sub MapItemsToHoldRequests {
             }
             $holdingbranch = $pickup_branch;
         }
-        elsif ($transport_cost_matrix) {
+        if (!defined $itemnumber && defined $transport_cost_matrix) {
             $pull_branches = [keys %items_by_branch];
             $holdingbranch = least_cost_branch( $pickup_branch, $pull_branches, $transport_cost_matrix );
             if ( $holdingbranch ) {
