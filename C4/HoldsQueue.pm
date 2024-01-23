@@ -742,17 +742,12 @@ sub MapItemsToHoldRequests {
     if ( $LocalHoldsPriority ne 'None' ) {
         my $LocalHoldsPriorityPatronControl = C4::Context->preference('LocalHoldsPriorityPatronControl');
         my $LocalHoldsPriorityItemControl   = C4::Context->preference('LocalHoldsPriorityItemControl');
+      REQUEST1:
         foreach my $request (@$hold_requests) {
             last if $num_items_remaining == 0;
-            my $patron = Koha::Patrons->find( $request->{borrowernumber} );
-            next if $patron->category->exclude_from_local_holds_priority;
             if ( $LocalHoldsPriority eq 'GiveLibrary' || $LocalHoldsPriority eq 'GiveLibraryAndGroup' ) {
                 my $local_hold_match;
                 foreach my $item (@$available_items) {
-                    next if $item->{_object}->exclude_from_local_holds_priority;
-
-                    next unless _can_item_fill_request( $item, $request, $libraries );
-
                     next if $request->{itemnumber} && $request->{itemnumber} != $item->{itemnumber};
 
                     my $local_holds_priority_item_branchcode = $item->{$LocalHoldsPriorityItemControl};
@@ -770,6 +765,11 @@ sub MapItemsToHoldRequests {
                             and not exists $allocated_items{ $item->{itemnumber} }
                             and not $request->{allocated} )
                         {
+                            next if $item->{_object}->exclude_from_local_holds_priority;
+
+                            next unless _can_item_fill_request( $item, $request, $libraries );
+                            my $patron = Koha::Patrons->find( $request->{borrowernumber} );
+                            next REQUEST1 if $patron->category->exclude_from_local_holds_priority;
                             $item_map{ $item->{itemnumber} } = {
                                 borrowernumber => $request->{borrowernumber},
                                 biblionumber   => $request->{biblionumber},
@@ -793,15 +793,11 @@ sub MapItemsToHoldRequests {
         # Look for local group matches if no library matches were found
         if ( $LocalHoldsPriority eq 'GiveLibraryGroup' || $LocalHoldsPriority eq 'GiveLibraryAndGroup' ) {
             my $local_hold_group_match;
+
+          REQUEST2:
             foreach my $request (@$hold_requests) {
                 last if $num_items_remaining == 0;
-                my $patron = Koha::Patrons->find( $request->{borrowernumber} );
-                next if $patron->category->exclude_from_local_holds_priority;
                 foreach my $item (@$available_items) {
-                    next if $item->{_object}->exclude_from_local_holds_priority;
-
-                    next unless _can_item_fill_request( $item, $request, $libraries );
-
                     next if $request->{itemnumber} && $request->{itemnumber} != $item->{itemnumber};
 
                     my $local_holds_priority_item_branchcode = $item->{$LocalHoldsPriorityItemControl};
@@ -820,6 +816,12 @@ sub MapItemsToHoldRequests {
                             and not exists $allocated_items{ $item->{itemnumber} }
                             and not $request->{allocated} )
                         {
+                            next if $item->{_object}->exclude_from_local_holds_priority;
+
+                            next unless _can_item_fill_request( $item, $request, $libraries );
+
+                            my $patron = Koha::Patrons->find( $request->{borrowernumber} );
+                            next REQUEST2 if $patron->category->exclude_from_local_holds_priority;
                             $item_map{ $item->{itemnumber} } = {
                                 borrowernumber => $request->{borrowernumber},
                                 biblionumber   => $request->{biblionumber},
