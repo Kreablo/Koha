@@ -21,6 +21,7 @@ use Koha::DateUtils qw( dt_from_string );
 use Koha::Items;
 use Koha::Holds;
 use Koha::CirculationRules;
+use Koha::Cache::Memory::Lite;
 
 use t::lib::TestBuilder;
 use t::lib::Mocks;
@@ -39,6 +40,7 @@ my $schema = Koha::Database->schema;
 $schema->storage->txn_begin;
 my $dbh = C4::Context->dbh;
 $dbh->do("DELETE FROM circulation_rules");
+Koha::Cache::Memory::Lite->flush();
 
 my $builder = t::lib::TestBuilder->new;
 
@@ -224,6 +226,7 @@ $schema->txn_begin;
 
 # Clear out existing rules relating to holdallowed
 $dbh->do("DELETE FROM circulation_rules");
+Koha::Cache::Memory::Lite->flush();
 
 t::lib::Mocks::mock_preference( 'UseTransportCostMatrix', 0 );
 
@@ -365,6 +368,7 @@ $sth->execute( $borrower3->{borrowernumber}, $biblionumber, $branchcodes[0], 3 )
 my $holds_queue;
 
 $dbh->do("DELETE FROM circulation_rules");
+Koha::Cache::Memory::Lite->flush();
 Koha::CirculationRules->set_rule(
     {
         rule_name  => 'holdallowed',
@@ -412,6 +416,7 @@ is( scalar(@$holds_queue), 1, "Holds not filled with items from closed libraries
 t::lib::Mocks::mock_preference( 'HoldsQueueSkipClosed', 0 );
 
 $dbh->do("DELETE FROM circulation_rules");
+Koha::Cache::Memory::Lite->flush();
 Koha::CirculationRules->set_rule(
     {
         rule_name  => 'holdallowed',
@@ -439,6 +444,7 @@ t::lib::Mocks::mock_preference( 'HoldsQueueSkipClosed', 0 );
 t::lib::Mocks::mock_preference( 'LocalHoldsPriority', 'GiveLibrary' );
 
 $dbh->do("DELETE FROM circulation_rules");
+Koha::Cache::Memory::Lite->flush();
 Koha::CirculationRules->set_rule(
     {
         rule_name  => 'holdallowed',
@@ -745,6 +751,7 @@ $dbh->do( "
 
 # With hold_fulfillment_policy = homebranch, hold should only be picked up if pickup branch = homebranch
 $dbh->do("DELETE FROM circulation_rules");
+Koha::Cache::Memory::Lite->flush();
 Koha::CirculationRules->set_rules(
     {
         branchcode => undef,
@@ -805,6 +812,7 @@ Koha::Holds->find($reserve_id)->cancel;
 
 # With hold_fulfillment_policy = holdingbranch, hold should only be picked up if pickup branch = holdingbranch
 $dbh->do("DELETE FROM circulation_rules");
+Koha::Cache::Memory::Lite->flush();
 Koha::CirculationRules->set_rules(
     {
         branchcode => undef,
@@ -863,6 +871,7 @@ Koha::Holds->find($reserve_id)->cancel;
 
 # With hold_fulfillment_policy = any, hold should be picked regardless of matching home or holding branch
 $dbh->do("DELETE FROM circulation_rules");
+Koha::Cache::Memory::Lite->flush();
 Koha::CirculationRules->set_rules(
     {
         branchcode => undef,
@@ -954,6 +963,7 @@ $dbh->do( "
 
 # With hold_fulfillment_policy = homebranch, hold should only be picked up if pickup branch = homebranch
 $dbh->do("DELETE FROM circulation_rules");
+Koha::Cache::Memory::Lite->flush();
 Koha::CirculationRules->set_rules(
     {
         branchcode => undef,
@@ -1314,6 +1324,7 @@ subtest "Test Local Holds Priority - Ensure no duplicate requests in holds queue
     $dbh->do("DELETE FROM hold_fill_targets");
     $dbh->do("DELETE FROM reserves");
     $dbh->do("DELETE FROM circulation_rules");
+    Koha::Cache::Memory::Lite->flush();
     Koha::Biblios->delete();
 
     t::lib::Mocks::mock_preference( 'LocalHoldsPriority',              'GiveLibrary' );
@@ -1383,6 +1394,7 @@ subtest "Item level holds info is preserved (Bug 25738)" => sub {
     $dbh->do("DELETE FROM hold_fill_targets");
     $dbh->do("DELETE FROM reserves");
     $dbh->do("DELETE FROM circulation_rules");
+    Koha::Cache::Memory::Lite->flush();
 
     my $library  = $builder->build_object( { class => 'Koha::Libraries' } );
     my $category = $builder->build_object(
@@ -1610,6 +1622,7 @@ subtest "Test item group holds" => sub {
     $dbh->do("DELETE FROM hold_fill_targets");
     $dbh->do("DELETE FROM reserves");
     $dbh->do("DELETE FROM circulation_rules");
+    Koha::Cache::Memory::Lite->flush();
 
     t::lib::Mocks::mock_preference( 'HoldsQueueSkipClosed', 0 );
     t::lib::Mocks::mock_preference( 'LocalHoldsPriority',   'None' );
