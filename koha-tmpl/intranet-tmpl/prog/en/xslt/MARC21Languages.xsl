@@ -17,6 +17,7 @@
             <xsl:when test="$code='ain'"><xsl:text>Ainu</xsl:text></xsl:when>
             <xsl:when test="$code='aka'"><xsl:text>Akan</xsl:text></xsl:when>
             <xsl:when test="$code='akk'"><xsl:text>Akkadian</xsl:text></xsl:when>
+            <xsl:when test="$code='sia'"><xsl:text>Akkalasamiska</xsl:text></xsl:when>
             <xsl:when test="$code='alb'"><xsl:text>Albanian</xsl:text></xsl:when>
             <xsl:when test="$code='ale'"><xsl:text>Aleut</xsl:text></xsl:when>
             <xsl:when test="$code='alg'"><xsl:text>Algonquian (Other)</xsl:text></xsl:when>
@@ -24,6 +25,7 @@
             <xsl:when test="$code='tut'"><xsl:text>Altaic (Other)</xsl:text></xsl:when>
             <xsl:when test="$code='amh'"><xsl:text>Amharic</xsl:text></xsl:when>
             <xsl:when test="$code='anp'"><xsl:text>Angika</xsl:text></xsl:when>
+            <xsl:when test="$code='9an'"><xsl:text>Angloromani</xsl:text></xsl:when>
             <xsl:when test="$code='apa'"><xsl:text>Apache languages</xsl:text></xsl:when>
             <xsl:when test="$code='ara'"><xsl:text>Arabic</xsl:text></xsl:when>
             <xsl:when test="$code='arg'"><xsl:text>Aragonese</xsl:text></xsl:when>
@@ -31,6 +33,7 @@
             <xsl:when test="$code='arp'"><xsl:text>Arapaho</xsl:text></xsl:when>
             <xsl:when test="$code='arw'"><xsl:text>Arawak</xsl:text></xsl:when>
             <xsl:when test="$code='arm'"><xsl:text>Armenian</xsl:text></xsl:when>
+            <xsl:when test="$code='9ar'"><xsl:text>Arli</xsl:text></xsl:when>
             <xsl:when test="$code='rup'"><xsl:text>Aromanian</xsl:text></xsl:when>
             <xsl:when test="$code='art'"><xsl:text>Artificial (Other)</xsl:text></xsl:when>
             <xsl:when test="$code='asm'"><xsl:text>Assamese</xsl:text></xsl:when>
@@ -69,10 +72,12 @@
             <xsl:when test="$code='bra'"><xsl:text>Braj</xsl:text></xsl:when>
             <xsl:when test="$code='bre'"><xsl:text>Breton</xsl:text></xsl:when>
             <xsl:when test="$code='bug'"><xsl:text>Bugis</xsl:text></xsl:when>
+            <xsl:when test="$code='9bu'"><xsl:text>Bugurdži</xsl:text></xsl:when>
             <xsl:when test="$code='bul'"><xsl:text>Bulgarian</xsl:text></xsl:when>
             <xsl:when test="$code='bua'"><xsl:text>Buriat</xsl:text></xsl:when>
             <xsl:when test="$code='bur'"><xsl:text>Burmese</xsl:text></xsl:when>
             <xsl:when test="$code='cad'"><xsl:text>Caddo</xsl:text></xsl:when>
+            <xsl:when test="$code='9ca'"><xsl:text>Caló</xsl:text></xsl:when>
             <xsl:when test="$code='car'"><xsl:text>Carib</xsl:text></xsl:when>
             <xsl:when test="$code='cat'"><xsl:text>Catalan</xsl:text></xsl:when>
             <xsl:when test="$code='cau'"><xsl:text>Caucasian (Other)</xsl:text></xsl:when>
@@ -169,6 +174,7 @@
             <xsl:when test="$code='gre'"><xsl:text>Greek, Modern (1453- )</xsl:text></xsl:when>
             <xsl:when test="$code='grn'"><xsl:text>Guarani</xsl:text></xsl:when>
             <xsl:when test="$code='guj'"><xsl:text>Gujarati</xsl:text></xsl:when>
+            <xsl:when test="$code='9gu'"><xsl:text>Gurbeti</xsl:text></xsl:when>
             <xsl:when test="$code='gwi'"><xsl:text>Gwich'in</xsl:text></xsl:when>
             <xsl:when test="$code='hai'"><xsl:text>Haida</xsl:text></xsl:when>
             <xsl:when test="$code='hat'"><xsl:text>Haitian French Creole</xsl:text></xsl:when>
@@ -212,6 +218,7 @@
             <xsl:when test="$code='kab'"><xsl:text>Kabyle</xsl:text></xsl:when>
             <xsl:when test="$code='kac'"><xsl:text>Kachin</xsl:text></xsl:when>
             <xsl:when test="$code='kal'"><xsl:text>Kalâtdlisut</xsl:text></xsl:when>
+            <xsl:when test="$code='9ke'"><xsl:text>Kalé</xsl:text></xsl:when>
             <xsl:when test="$code='kam'"><xsl:text>Kamba</xsl:text></xsl:when>
             <xsl:when test="$code='kan'"><xsl:text>Kannada</xsl:text></xsl:when>
             <xsl:when test="$code='kau'"><xsl:text>Kanuri</xsl:text></xsl:when>
@@ -223,11 +230,14 @@
             <xsl:when test="$code='csb'"><xsl:text>Kashubian</xsl:text></xsl:when>
             <xsl:when test="$code='kaw'"><xsl:text>Kawi</xsl:text></xsl:when>
             <xsl:when test="$code='kaz'"><xsl:text>Kazakh</xsl:text></xsl:when>
+            <xsl:when test="$code='9kd'"><xsl:text>Kelderash</xsl:text></xsl:when>
+            <xsl:when test="$code='sjk'"><xsl:text>Kemisamiska</xsl:text></xsl:when>
             <xsl:when test="$code='kha'"><xsl:text>Khasi</xsl:text></xsl:when>
             <xsl:when test="$code='khm'"><xsl:text>Khmer</xsl:text></xsl:when>
             <xsl:when test="$code='khi'"><xsl:text>Khoisan (Other)</xsl:text></xsl:when>
             <xsl:when test="$code='kho'"><xsl:text>Khotanese</xsl:text></xsl:when>
             <xsl:when test="$code='kik'"><xsl:text>Kikuyu</xsl:text></xsl:when>
+            <xsl:when test="$code='9ki'"><xsl:text>Kildinsamiska</xsl:text></xsl:when>
             <xsl:when test="$code='kmb'"><xsl:text>Kimbundu</xsl:text></xsl:when>
             <xsl:when test="$code='kin'"><xsl:text>Kinyarwanda</xsl:text></xsl:when>
             <xsl:when test="$code='tlh'"><xsl:text>Klingon (Artificial language)</xsl:text></xsl:when>
@@ -255,6 +265,7 @@
             <xsl:when test="$code='lin'"><xsl:text>Lingala</xsl:text></xsl:when>
             <xsl:when test="$code='lit'"><xsl:text>Lithuanian</xsl:text></xsl:when>
             <xsl:when test="$code='jbo'"><xsl:text>Lojban (Artificial language)</xsl:text></xsl:when>
+            <xsl:when test="$code='9lo'"><xsl:text>Lovari</xsl:text></xsl:when>
             <xsl:when test="$code='nds'"><xsl:text>Low German</xsl:text></xsl:when>
             <xsl:when test="$code='dsb'"><xsl:text>Lower Sorbian</xsl:text></xsl:when>
             <xsl:when test="$code='loz'"><xsl:text>Lozi</xsl:text></xsl:when>
@@ -317,6 +328,7 @@
             <xsl:when test="$code='nic'"><xsl:text>Niger-Kordofanian (Other)</xsl:text></xsl:when>
             <xsl:when test="$code='ssa'"><xsl:text>Nilo-Saharan (Other)</xsl:text></xsl:when>
             <xsl:when test="$code='niu'"><xsl:text>Niuean</xsl:text></xsl:when>
+            <xsl:when test="$code='9mk'"><xsl:text>Meänkieli</xsl:text></xsl:when>
             <xsl:when test="$code='nqo'"><xsl:text>N'Ko</xsl:text></xsl:when>
             <xsl:when test="$code='nog'"><xsl:text>Nogai</xsl:text></xsl:when>
             <xsl:when test="$code='zxx'"><xsl:text>No linguistic content</xsl:text></xsl:when>
@@ -352,10 +364,12 @@
             <xsl:when test="$code='pap'"><xsl:text>Papiamento</xsl:text></xsl:when>
             <xsl:when test="$code='paa'"><xsl:text>Papuan (Other)</xsl:text></xsl:when>
             <xsl:when test="$code='per'"><xsl:text>Persian</xsl:text></xsl:when>
+            <xsl:when test="$code='9sj'"><xsl:text>Pitesamiska</xsl:text></xsl:when>
             <xsl:when test="$code='phi'"><xsl:text>Philippine (Other)</xsl:text></xsl:when>
             <xsl:when test="$code='phn'"><xsl:text>Phoenician</xsl:text></xsl:when>
             <xsl:when test="$code='pon'"><xsl:text>Pohnpeian</xsl:text></xsl:when>
             <xsl:when test="$code='pol'"><xsl:text>Polish</xsl:text></xsl:when>
+            <xsl:when test="$code='9pr'"><xsl:text>Polsk romani</xsl:text></xsl:when>
             <xsl:when test="$code='por'"><xsl:text>Portuguese</xsl:text></xsl:when>
             <xsl:when test="$code='pra'"><xsl:text>Prakrit languages</xsl:text></xsl:when>
             <xsl:when test="$code='pro'"><xsl:text>Provençal (to 1500)</xsl:text></xsl:when>
@@ -396,6 +410,7 @@
             <xsl:when test="$code='snd'"><xsl:text>Sindhi</xsl:text></xsl:when>
             <xsl:when test="$code='sin'"><xsl:text>Sinhalese</xsl:text></xsl:when>
             <xsl:when test="$code='sit'"><xsl:text>Sino-Tibetan (Other)</xsl:text></xsl:when>
+            <xsl:when test="$code='9si'"><xsl:text>Sinte romani</xsl:text></xsl:when>
             <xsl:when test="$code='sio'"><xsl:text>Siouan (Other)</xsl:text></xsl:when>
             <xsl:when test="$code='sms'"><xsl:text>Skolt Sami</xsl:text></xsl:when>
             <xsl:when test="$code='den'"><xsl:text>Slavey</xsl:text></xsl:when>
@@ -416,6 +431,7 @@
             <xsl:when test="$code='sux'"><xsl:text>Sumerian</xsl:text></xsl:when>
             <xsl:when test="$code='sun'"><xsl:text>Sundanese</xsl:text></xsl:when>
             <xsl:when test="$code='sus'"><xsl:text>Susu</xsl:text></xsl:when>
+            <xsl:when test="$code='9sr'"><xsl:text>Svensk romani</xsl:text></xsl:when>
             <xsl:when test="$code='swa'"><xsl:text>Swahili</xsl:text></xsl:when>
             <xsl:when test="$code='ssw'"><xsl:text>Swazi</xsl:text></xsl:when>
             <xsl:when test="$code='swe'"><xsl:text>Swedish</xsl:text></xsl:when>
@@ -432,6 +448,7 @@
             <xsl:when test="$code='tel'"><xsl:text>Telugu</xsl:text></xsl:when>
             <xsl:when test="$code='tem'"><xsl:text>Temne</xsl:text></xsl:when>
             <xsl:when test="$code='ter'"><xsl:text>Terena</xsl:text></xsl:when>
+            <xsl:when test="$code='9te'"><xsl:text>Tersamiska</xsl:text></xsl:when>
             <xsl:when test="$code='tet'"><xsl:text>Tetum</xsl:text></xsl:when>
             <xsl:when test="$code='tha'"><xsl:text>Thai</xsl:text></xsl:when>
             <xsl:when test="$code='tib'"><xsl:text>Tibetan</xsl:text></xsl:when>
@@ -459,6 +476,7 @@
             <xsl:when test="$code='uig'"><xsl:text>Uighur</xsl:text></xsl:when>
             <xsl:when test="$code='ukr'"><xsl:text>Ukrainian</xsl:text></xsl:when>
             <xsl:when test="$code='umb'"><xsl:text>Umbundu</xsl:text></xsl:when>
+            <xsl:when test="$code='9su'"><xsl:text>Umesamiska</xsl:text></xsl:when>
             <xsl:when test="$code='und'"><xsl:text>Undetermined</xsl:text></xsl:when>
             <xsl:when test="$code='hsb'"><xsl:text>Upper Sorbian</xsl:text></xsl:when>
             <xsl:when test="$code='urd'"><xsl:text>Urdu</xsl:text></xsl:when>
