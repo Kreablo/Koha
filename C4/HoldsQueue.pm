@@ -30,6 +30,7 @@ use Koha::Items;
 use Koha::Libraries;
 use Koha::Logger;
 use Koha::Patrons;
+use Koha::Cache::Memory::Lite;
 
 use List::Util         qw( shuffle );
 use List::MoreUtils    qw( any );
@@ -331,6 +332,28 @@ to fill a hold request if and only if:
 
 =cut
 
+sub _getBranchItemRule {
+    my ( $branchcode, $itemtype ) = @_;
+
+    my $memory_cache = Koha::Cache::Memory::Lite->get_instance();
+    my $key =
+          '_getBranchItemRule:'
+        . (defined $branchcode ? $branchcode : '*') . ':'
+        . (defined $itemtype   ? $itemtype   : '*');
+
+    my $result = $memory_cache->get_from_cache( $key );
+
+    if ( defined $result ) {
+        return $result;
+    }
+
+    $result = C4::Circulation::GetBranchItemRule( $branchcode, $itemtype );
+
+    $memory_cache->set_in_cache( $key, $result );
+
+    return $result;
+}
+
 sub GetItemsAvailableToFillHoldRequestsForBib {
     my ( $biblionumber, $branches_to_use ) = @_;
 
@@ -381,11 +404,11 @@ sub GetItemsAvailableToFillHoldRequestsForBib {
     my $itm = $sth->fetchall_arrayref( {} );
     return [
         grep {
-            my $rule = C4::Circulation::GetBranchItemRule( $_->{homebranch}, $_->{itype} );
+            my $rule = _getBranchItemRule($_->{homebranch}, $_->{itype});
             $_->{holdallowed}             = $rule->{holdallowed};
             $_->{hold_fulfillment_policy} = $rule->{hold_fulfillment_policy};
         } @{$itm}
-    ];
+   ];
 }
 
 =head2 _checkHoldPolicy
