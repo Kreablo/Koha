@@ -77,7 +77,7 @@ if ( $backends_available ) {
         my $notices = Koha::Notice::Templates->search(
             {
                 module => 'ill',
-                code => { -in => [ 'ILL_PICKUP_READY' ,'ILL_REQUEST_UNAVAIL' ] },
+                code => { -in => [ 'ILL_REQUEST_UPDATE', 'ILL_PICKUP_READY' ,'ILL_REQUEST_UNAVAIL' ] },
             },
             {
                 columns => [ qw/code name/ ],
