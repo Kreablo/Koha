@@ -97,6 +97,8 @@ sub search {
     }
     my $elasticsearch = $self->get_elasticsearch();
 
+    $query->{_source} = ['marc_data', 'marc_format'];
+
     my $results = eval {
         $elasticsearch->search(
             index            => $self->index_name,
