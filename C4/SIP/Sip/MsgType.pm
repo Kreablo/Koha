@@ -1079,7 +1079,7 @@ sub summary_info {
 }
 
 sub _check_attribute {
-    my ($server, $patron);
+    my ($server, $patron) = @_;
 
     if (defined $patron) {
         my $koha_patron;
@@ -1088,7 +1088,9 @@ sub _check_attribute {
 
             $koha_patron = Koha::Patrons->find($patron->{borrowernumber});
 
-            for my $attr ($koha_patron->extended_attributes->search({ code => $server->{account}->{authorize_on_patron_attribute} })) {
+            my $attr_rs = $kp->extended_attributes->search({ code => $server->{account}->{authorize_on_patron_attribute} });
+
+            while (my $attr = $attr_rs->next) {
                 my $val = defined $server->{account}->{authorize_on_patron_attribute_value} ? $server->{account}->{authorize_on_patron_attribute_value} : '1';
                 if (defined $attr && $attr->attribute eq $val) {
                     $authorize = 1;
