@@ -97,7 +97,7 @@ sub connect {
             undef $stomp;
         }
     } catch {
-        warn sprintf "Cannot connect to broker (%s)", $_;
+        # warn sprintf "Cannot connect to broker (%s)", $_;
         undef $stomp;
     };
 
