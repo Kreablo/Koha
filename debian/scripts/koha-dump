@@ -153,6 +153,12 @@ dump_instance()
 
         set -e
 
+        if [ "$?" != "1" -a "$?" != "0" ]; then
+            exit $?
+        fi
+
+        set -e
+
         chown "root:$name-koha" "$metadump"
         chmod g+r "$metadump"
 
