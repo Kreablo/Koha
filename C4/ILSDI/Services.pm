@@ -408,12 +408,12 @@ sub AuthenticatePatron {
     my $username = $cgi->param('username');
     my $password = $cgi->param('password');
     my ( $status, $cardnumber, $userid, $patron ) = C4::Auth::checkpw( $username, $password );
-    if ( $status == 1 ) {
+    if ( defined $status && $status == 1 ) {
 
         # Track the login
         $patron->update_lastseen('connection');
         return { id => $patron->borrowernumber };
-    } elsif ( $status == -2 ) {
+    } elsif ( defined $status && $status == -2 ) {
         return { code => 'PasswordExpired' };
     } else {
         return { code => 'PatronNotFound' };
