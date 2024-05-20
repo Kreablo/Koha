@@ -135,7 +135,7 @@ sub add_update_matching_rule {
             foreach my $comp_num (@comp_nums) {
                 my $component = { 'norms' => [] };
                 my $p         = "mc_${mc_num}_${which}_c_${comp_num}_";
-                map { $component->{$_} = $input->param("${p}$_") } qw(tag subfields offset length);
+                map { $component->{$_} = $input->param("${p}$_") } qw(tag subfields offset length constant type);
                 # norms
                 my @norm_nums = sort map { /^${p}n_(\d+)_norm/ ? int($1) : () } $input->multi_param;
                 foreach my $norm_num (@norm_nums) {
@@ -144,7 +144,7 @@ sub add_update_matching_rule {
                 push @$components, $component;
             }
         }
-        $matcher->add_required_check( $src_components, $tgt_components );
+        $matcher->add_required_check( $src_components, $tgt_components, $input->param("mc_${mc_num}_operator") );
     }
 
     if ( defined $matcher_id and $matcher_id =~ /^\d+/ ) {
@@ -216,6 +216,7 @@ sub edit_matching_rule_form {
         my @tgt_components = _parse_components( $matchcheck->{'target_matchpoint'}->{'components'} );
         push @matchchecks, {
             mc_num         => $mc_num,
+            operator       => $matchcheck->{'operator'},
             src_components => \@src_components,
             tgt_components => \@tgt_components
         };
@@ -251,6 +252,8 @@ sub _parse_components {
             subfields => join( "", sort keys %{ $component->{'subfields'} } ),
             offset    => $component->{'offset'},
             'length'  => $component->{'length'},
+            constant  => $component->{'constant'},
+            type      => $component->{'type'},
             norms     => \@norms
         };
     }

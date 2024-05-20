@@ -44,32 +44,30 @@
     [% END %]
 [% END %]
 
+[% BLOCK operator_select %]
+[%# PARAMS: operator, id, name  %]
+    <label for="[% id | html %]">Operator: </label>
+    <select id="[% id | html %]" name="[% name | html %]">
+        <option value="eq" [% IF operator == 'eq' %] selected="selected" [% END %]>source = target (case sensitive string equality)</option>
+        <option value="ne" [% IF operator == 'ne' %] selected="selected" [% END %]>source ≠ target (case sensitive string inequality)</option>
+    </select>
+[% END %]
+
 [% BLOCK match_check_component %]
     [%# PARAMS mc_num, which, components %]
     [% IF (!components) %]
-        [% SET components = [
-            {
-                comp_num => 1, norms => [
-                    {
-                        norm_num => 1,
-                        norm = "none"
-                    }
-                ],
-                tag => '',
-                subfields => '',
-                offset => '',
-                length => ''
-            }
-         ] %]
+        [% SET components = [ { comp_num => 1, norms => [ { norm_num => 1, norm = "none" } ], tag => '', subfields => '', offset => '', length => '', type => 'field', constant => '' } ] %]
     [% END %]
     [% FOREACH component IN components %]
         [% SET pc = "mc_${mc_num}_${which}_c_${component.comp_num}" %]
         <fieldset class="rows" id="mc_[% component.mc_num | html %]_src_c_[% component.comp_num | html %]">
+            <legend><input type="radio" name="[% pc | html %]_type" id="[% pc | html %]_type_field" value="field" [% IF component.type != 'constant' %]checked="checked"[% END %] />
             [% IF (which == 'src') %]
-            <legend>Source (incoming) record check field</legend>
+            Source (incoming) record check field
             [% ELSE %]
-            <legend>Target (database) record check field</legend>
+            Target (database) record check field
             [% END %]
+            </legend>
             <ol>
                 <li>
                     <label for="[% pc | html %]_tag">Tag: </label>
@@ -94,6 +92,19 @@
                         [% PROCESS norms_select selected_norm=norm.norm id="${pc}_n_${norm.norm_num}_norm" name="${pc}_n_${norm.norm_num}_norm" %]
                     </li>
                 [% END %]
+            </ol>
+            <legend><input type="radio" name="[% pc | html %]_type" id="[% pc | html %]_type_field" value="constant" [% IF component.type == 'constant' %]checked="checked"[% END %] />
+            [% IF (which == 'src') %]
+            Compare to constant value instead of source field
+            [% ELSE %]
+            Compare to constant value instead of target field
+            [% END %]
+            </legend>
+            <ol>
+                <li>
+                    <label for="[% pc | html %]_constant">Constant value: </label>
+                    <input type="text" id="[% pc | html %]_constant" name="[% pc | html %]_constant" value="[% component.constant | html %]" size="50" />
+                </li>
             </ol>
         </fieldset> <!-- /#mc_[% component.mc_num | html %]_src_c_[% component.comp_num | html %] -->
     [% END # /FOREACH component %]
@@ -121,6 +132,74 @@
     </select>
 [% END %]
 
+<<<<<<< HEAD
+=======
+[% BLOCK operator_select %]
+[%# PARAMS: operator, id, name  %]
+    <label for="[% id | html %]">Operator: </label>
+    <select id="[% id | html %]" name="[% name | html %]">
+        <option value="eq" [% IF operator == 'eq' %] selected="selected" [% END %]>source = target (case sensitive string equality)</option>
+        <option value="ne" [% IF operator == 'ne' %] selected="selected" [% END %]>source ≠ target (case sensitive string inequality)</option>
+    </select>
+[% END %]
+
+[% BLOCK match_check_component %]
+    [%# PARAMS mc_num, which, components %]
+    [% IF (!components) %]
+        [% SET components = [ { comp_num => 1, norms => [ { norm_num => 1, norm = "none" } ], tag => '', subfields => '', offset => '', length => '', type => 'field', constant => '' } ] %]
+    [% END %]
+    [% FOREACH component IN components %]
+        [% SET pc = "mc_${mc_num}_${which}_c_${component.comp_num}" %]
+        <fieldset class="rows" id="[% pc | html %]">
+            <legend><input type="radio" name="[% pc | html %]_type" id="[% pc | html %]_type_field" value="field" [% IF component.type != 'constant' %]checked="checked"[% END %] />
+            [% IF (which == 'src') %]
+            Source (incoming) record check field
+            [% ELSE %]
+            Target (database) record check field
+            [% END %]
+            </legend>
+            <ol>
+                <li>
+                    <label for="[% pc | html %]_tag">Tag: </label>
+                    <input type="text" id="[% pc | html %]_tag" name="[% pc | html %]_tag" value="[% component.tag | html %]" size="3" maxlength="3" />
+                </li>
+                <li>
+                    <label for="[$ pc | html %]_subfields">Subfields: </label>
+                    <input type="text" id="[% pc | html %]_subfields" name="[% pc | html %]_subfields" value="[% component.subfields | html %]" size="10" maxlength="40" />
+                </li>
+                <li>
+                    <label for="[% pc | html %]_offset">Offset: </label>
+                    <input type="text" id="[% pc | html %]_offset" name="[% pc | html %]_offset" value="[% component.offset | html %]" size="5" maxlength="5" />
+                </li>
+                <li>
+                    <label for="[% pc | html %]_length">Length: </label>
+                    <input type="text" id="[% pc | html %]_length" name="[% pc | html %]_length" value="[% component.length | html %]" size="5" maxlength="5" />
+                </li>
+                [% FOREACH norm IN component.norms %]
+                    <li id="[% pc | html %]_n_[% norm.norm_num | html %]">
+                        <label for="[% pc | html %]_n_[% norm.norm_num | html %]_norm">Normalization rule: </label>
+                        [% PROCESS norms_select selected_norm=norm.norm id="${pc}_n_${norm.norm_num}_norm" name="${pc}_n_${norm.norm_num}_norm" %]
+                    </li>
+                [% END %]
+            </ol>
+            <legend><input type="radio" name="[% pc | html %]_type" id="[% pc | html %]_type_field" value="constant" [% IF component.type == 'constant' %]checked="checked"[% END %] />
+            [% IF (which == 'src') %]
+            Compare to constant value instead of source field
+            [% ELSE %]
+            Compare to constant value instead of target field
+            [% END %]
+            </legend>
+            <ol>
+                <li>
+                    <label for="[% pc | html %]_constant">Constant value: </label>
+                    <input type="text" id="[% pc | html %]_constant" name="[% pc | html %]_constant" value="[% component.constant | html %]" size="50" />
+                </li>
+            </ol>
+        </fieldset> <!-- /#[% pc | html %] -->
+    [% END #/FOREACH component %]
+[% END %]
+
+>>>>>>> 9573f54248e (Bug 15536: ui and store/fetch for new columns)
 <style>
     fieldset.rows fieldset.rows {
         border-width: 0;
@@ -401,6 +480,7 @@
                                     ><a href="#" class="btn btn-link" onclick="InsertMatchcheck('mc_[% matchcheck.mc_num | html %]', 'mc_template'); return false;"><i class="fa fa-plus" aria-hidden="true"></i> New match check</a> |
                                     <a href="#" class="btn btn-link" onclick="DeleteMatchcheck(this); return false;"><i class="fa fa-trash-can" aria-hidden="true"></i> Remove this match check</a></p
                                 >
+                                [% PROCESS operator_select id="mc_${matchcheck.mc_num}_operator" name="mc_${matchcheck.mc_num}_operator" operator=matchcheck.operator %]
                                 <input type="hidden" id="mc_[% matchcheck.mc_num | html %]_id" name="mc_[% matchcheck.mc_num | html %]_id" value="1" />
                                [% PROCESS match_check_component mc_num=matchcheck.mc_num which="src" components=matchcheck.src_components %]
                                [% PROCESS match_check_component mc_num=matchcheck.mc_num which="tgt" components=matchcheck.tgt_components %]
@@ -418,6 +498,7 @@
                                 ><a href="#" class="btn btn-link" onclick="InsertMatchcheck('mc_1', 'mc_template'); return false;"><i class="fa fa-plus" aria-hidden="true"></i> New match check</a> |
                                 <a href="#" class="btn btn-link" onclick="DeleteMatchcheck(this); return false;"><i class="fa fa-trash-can" aria-hidden="true"></i> Remove this match check</a></p
                             >
+                            [% PROCESS operator_select id="mc_1_operator" name="mc_1_operator" %]
                             <input type="hidden" id="mc_1_id" name="mc_1_id" value="1" />
 
                             [% PROCESS match_check_component mc_num=1 which="src" components=0 %]
@@ -557,6 +638,7 @@
                 <p
                     ><a href="#" class="button" onclick="DeleteMatchcheck(this); return false;"><i class="fa fa-trash-can" aria-hidden="true"></i> Remove this match check</a></p
                 >
+                [% PROCESS operator_select id="mc_num_operator" name="mc_num_operator" %]
                 <input type="hidden" id="mc_num_id" name="mc_num_id" value="1" />
                 [% PROCESS match_check_component mc_num=matchcheck.mc_num which="src" components=matchcheck.src_components %]
                 [% PROCESS match_check_component mc_num=matchcheck.mc_num which="tgt" components=matchcheck.tgt_components %]
@@ -597,7 +679,7 @@
                     $(this).attr("id",s.replace(/mp_num/, 'mp_' + maxMatchPoint));
                 }
             });
-            $("input",clone).each(function(){
+            $("input, select",clone).each(function(){
                 var s = $(this).attr("id");
                 if(s.match(/mp_num/)){
                   $(this).attr("id",s.replace(/mp_num/, 'mp_' + maxMatchPoint));
@@ -633,7 +715,7 @@
                     $(this).attr("id",s.replace(/mc_num/, 'mc_' + maxMatchCheck));
                 }
             });
-            $("input",clone).each(function(){
+            $("input, select",clone).each(function(){
                 var s = $(this).attr("id");
                 if(s.match(/mc_num/)){
                   $(this).attr("id",s.replace(/mc_num/, 'mc_' + maxMatchCheck));

@@ -198,6 +198,7 @@ sub fetch {
         my $matchcheck        = {};
         $matchcheck->{'source_matchpoint'} = $source_matchpoint;
         $matchcheck->{'target_matchpoint'} = $target_matchpoint;
+        $matchcheck->{'operator'}          = $row->{'operator'};
         push @{ $self->{'required_checks'} }, $matchcheck;
     }
 
@@ -227,6 +228,8 @@ sub _fetch_matchpoint {
         $component->{'offset'}    = int( $row->{'offset'} );
         $component->{'length'}    = int( $row->{'length'} );
         $component->{'norms'}     = [];
+        $component->{'constant'}  = $row->{'constant'};
+        $component->{'type'}      = defined $row->{'constant'} ? 'constant' : 'field';
         my $sth2 = $dbh->prepare_cached(
             "SELECT * 
                                          FROM matchpoint_component_norms 
@@ -335,10 +338,10 @@ sub _store_matcher_components {
         my $target_matchpoint_id = $self->_store_matchpoint( $matchcheck->{'target_matchpoint'} );
         $sth = $dbh->prepare_cached(
             "INSERT INTO matchchecks
-                                     (matcher_id, source_matchpoint_id, target_matchpoint_id)
-                                     VALUES (?, ?, ?)"
+                                     (matcher_id, source_matchpoint_id, target_matchpoint_id, operator)
+                                     VALUES (?, ?, ?, ?)"
         );
-        $sth->execute( $matcher_id, $source_matchpoint_id, $target_matchpoint_id );
+        $sth->execute( $matcher_id, $source_matchpoint_id, $target_matchpoint_id, $matchcheck->{'operator'} );
     }
 
 }
@@ -362,8 +365,8 @@ sub _store_matchpoint {
         $seqnum++;
         $sth = $dbh->prepare_cached(
             "INSERT INTO matchpoint_components 
-                                     (matchpoint_id, sequence, tag, subfields, `offset`, length)
-                                     VALUES (?, ?, ?, ?, ?, ?)"
+                                     (matchpoint_id, sequence, tag, subfields, `offset`, length, `constant`)
+                                     VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
         $sth->bind_param( 1, $matchpoint_id );
         $sth->bind_param( 2, $seqnum );
@@ -371,6 +374,7 @@ sub _store_matchpoint {
         $sth->bind_param( 4, join "", sort keys %{ $component->{'subfields'} } );
         $sth->bind_param( 5, $component->{'offset'} || 0 );
         $sth->bind_param( 6, $component->{'length'} );
+        $sth->bind_param( 7, $component->{'constant'} );
         $sth->execute();
         my $matchpoint_component_id = $dbh->{'mysql_insertid'};
         my $normseq                 = 0;
@@ -579,9 +583,9 @@ to the source string.
 
 sub add_required_check {
     my $self = shift;
-    my ( $source_matchpoint, $target_matchpoint ) = @_;
+    my ( $source_matchpoint, $target_matchpoint, $operator ) = @_;
 
-    my $matchcheck = {};
+    my $matchcheck = { 'operator' => $operator };
     $matchcheck->{'source_matchpoint'}->{'index'}      = '';
     $matchcheck->{'source_matchpoint'}->{'score'}      = 0;
     $matchcheck->{'source_matchpoint'}->{'components'} = [];
@@ -949,11 +953,21 @@ sub _parse_match_component {
     my $input_component = shift;
 
     my $component = {};
-    $component->{'tag'}       = $input_component->{'tag'};
-    $component->{'subfields'} = { map { $_ => 1 } split( //, $input_component->{'subfields'} ) };
-    $component->{'offset'}    = exists( $input_component->{'offset'} ) ? $input_component->{'offset'} : -1;
-    $component->{'length'}    = $input_component->{'length'}           ? $input_component->{'length'} : 0;
-    $component->{'norms'}     = $input_component->{'norms'}            ? $input_component->{'norms'}  : [];
+    if ( $input_component->{'type'} eq 'constant' ) {
+        $component->{'tag'}       = '';
+        $component->{'subfields'} = {};
+        $component->{'offset'}    = 0;
+        $component->{'length'}    = 0;
+        $component->{'norms'}     = [];
+        $component->{'constant'}  = $input_component->{'constant'};
+    } else {
+        $component->{'tag'}       = $input_component->{'tag'};
+        $component->{'subfields'} = { map { $_ => 1 } split( //, $input_component->{'subfields'} ) };
+        $component->{'offset'}    = exists( $input_component->{'offset'} ) ? $input_component->{'offset'} : -1;
+        $component->{'length'}    = $input_component->{'length'}           ? $input_component->{'length'} : 0;
+        $component->{'norms'}     = $input_component->{'norms'}            ? $input_component->{'norms'}  : [];
+        $component->{'constant'}  = undef;
+    }
 
     return $component;
 }
