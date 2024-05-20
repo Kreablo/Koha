@@ -127,47 +127,22 @@ sub add_update_matching_rule {
     # match checks
     my @mc_nums = sort map { /^mc_(\d+)_id/ ? int($1) : () } $input->multi_param;
     foreach my $mc_num (@mc_nums) {
-
-        # source components
         my $src_components = [];
-        my @src_comp_nums  = sort map { /^mc_${mc_num}_src_c_(\d+)_tag/ ? int($1) : () } $input->multi_param;
-        foreach my $comp_num (@src_comp_nums) {
-            my $component = {};
-            $component->{'tag'}       = $input->param("mc_${mc_num}_src_c_${comp_num}_tag");
-            $component->{'subfields'} = $input->param("mc_${mc_num}_src_c_${comp_num}_subfields");
-            $component->{'offset'}    = $input->param("mc_${mc_num}_src_c_${comp_num}_offset");
-            $component->{'length'}    = $input->param("mc_${mc_num}_src_c_${comp_num}_length");
-
-            # norms
-            $component->{'norms'} = [];
-            my @norm_nums =
-                sort map { /^mc_${mc_num}_src_c_${comp_num}_n_(\d+)_norm/ ? int($1) : () } $input->multi_param;
-            foreach my $norm_num (@norm_nums) {
-                push @{ $component->{'norms'} },
-                    $input->multi_param("mc_${mc_num}_src_c_${comp_num}_n_${norm_num}_norm");
-            }
-            push @$src_components, $component;
-        }
-
-        # target components
         my $tgt_components = [];
-        my @tgt_comp_nums  = sort map { /^mc_${mc_num}_tgt_c_(\d+)_tag/ ? int($1) : () } $input->multi_param;
-        foreach my $comp_num (@tgt_comp_nums) {
-            my $component = {};
-            $component->{'tag'}       = $input->param("mc_${mc_num}_tgt_c_${comp_num}_tag");
-            $component->{'subfields'} = $input->param("mc_${mc_num}_tgt_c_${comp_num}_subfields");
-            $component->{'offset'}    = $input->param("mc_${mc_num}_tgt_c_${comp_num}_offset");
-            $component->{'length'}    = $input->param("mc_${mc_num}_tgt_c_${comp_num}_length");
-
-            # norms
-            $component->{'norms'} = [];
-            my @norm_nums =
-                sort map { /^mc_${mc_num}_tgt_c_${comp_num}_n_(\d+)_norm/ ? int($1) : () } $input->multi_param;
-            foreach my $norm_num (@norm_nums) {
-                push @{ $component->{'norms'} },
-                    $input->multi_param("mc_${mc_num}_tgt_c_${comp_num}_n_${norm_num}_norm");
+        foreach my $w (['src', $src_components], ['tgt', $tgt_components]) {
+            my ( $which, $components ) = @$w;
+            my @comp_nums = sort map { /^mc_${mc_num}_${which}_c_(\d+)_tag/ ? int($1) : () } $input->multi_param;
+            foreach my $comp_num (@comp_nums) {
+                my $component = { 'norms' => [] };
+                my $p         = "mc_${mc_num}_${which}_c_${comp_num}_";
+                map { $component->{$_} = $input->param("${p}$_") } qw(tag subfields offset length);
+                # norms
+                my @norm_nums = sort map { /^${p}n_(\d+)_norm/ ? int($1) : () } $input->multi_param;
+                foreach my $norm_num (@norm_nums) {
+                    push @{ $component->{'norms'} }, $input->multi_param("${p}n_${norm_num}_norm");
+                }
+                push @$components, $component;
             }
-            push @$tgt_components, $component;
         }
         $matcher->add_required_check( $src_components, $tgt_components );
     }

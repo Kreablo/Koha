@@ -44,6 +44,61 @@
     [% END %]
 [% END %]
 
+[% BLOCK match_check_component %]
+    [%# PARAMS mc_num, which, components %]
+    [% IF (!components) %]
+        [% SET components = [
+            {
+                comp_num => 1, norms => [
+                    {
+                        norm_num => 1,
+                        norm = "none"
+                    }
+                ],
+                tag => '',
+                subfields => '',
+                offset => '',
+                length => ''
+            }
+         ] %]
+    [% END %]
+    [% FOREACH component IN components %]
+        [% SET pc = "mc_${mc_num}_${which}_c_${component.comp_num}" %]
+        <fieldset class="rows" id="mc_[% component.mc_num | html %]_src_c_[% component.comp_num | html %]">
+            [% IF (which == 'src') %]
+            <legend>Source (incoming) record check field</legend>
+            [% ELSE %]
+            <legend>Target (database) record check field</legend>
+            [% END %]
+            <ol>
+                <li>
+                    <label for="[% pc | html %]_tag">Tag: </label>
+                    <input type="text" id="[% pc | html %]_tag" name="[% pc | html %]_tag" value="[% component.tag | html %]" size="3" maxlength="3" />
+                </li>
+                <li>
+                    <label for="[% pc | html %]_subfields">Subfields: </label>
+                    <input type="text" id="[% pc | html %]_subfields" name="[% pc | html %]_subfields" value="[% component.subfields | html %]" size="10" maxlength="40" />
+                </li>
+                <li>
+                    <label for="[% pc | html %]_offset">Offset: </label>
+                    <input type="text" id="[% pc | html %]_offset" name="[% pc | html %]_offset" value="[% component.offset | html %]" size="5" maxlength="5" />
+                </li>
+                <li>
+                    <label for="[% pc | html %]_length">Length: </label>
+                    <input type="text" id="[% pc | html %]_length" name="[% pc | html %]_length" value="[% component.length | html %]" size="5" maxlength="5" />
+                </li>
+                [% FOREACH norm IN component.norms %]
+                    <li id="[% pc | html %]_n_[% norm.norm_num | html %]">
+                        <label for="[% pc | html %]_n_[% norm.norm_num | html %]_norm">Normalization rule: </label>
+                        [%# Note: Following directive in one line, otherwise we have translatabiltiy problems %]
+                        [% PROCESS norms_select selected_norm=norm.norm id="${pc}_n_${norm.norm_num}_norm" name="${pc}_n_${norm.norm_num}_norm" %]
+                    </li>
+                [% END %]
+            </ol>
+        </fieldset> <!-- /#mc_[% component.mc_num | html %]_src_c_[% component.comp_num | html %] -->
+    [% END # /FOREACH component %]
+[% END %]
+
 [% BLOCK norms_options %]
     [%# PARAMS: selected_norm %]
     [% FOREACH norm IN valid_norms %]
@@ -347,125 +402,8 @@
                                     <a href="#" class="btn btn-link" onclick="DeleteMatchcheck(this); return false;"><i class="fa fa-trash-can" aria-hidden="true"></i> Remove this match check</a></p
                                 >
                                 <input type="hidden" id="mc_[% matchcheck.mc_num | html %]_id" name="mc_[% matchcheck.mc_num | html %]_id" value="1" />
-                                [% FOREACH src_component IN matchcheck.src_components %]
-                                    <fieldset class="rows" id="mc_[% src_component.mc_num | html %]_src_c_[% src_component.comp_num | html %]">
-                                        <legend>Source (incoming) record check field</legend>
-                                        <ol>
-                                            <li>
-                                                <label for="mc_[% src_component.mc_num | html %]_src_c_[% src_component.comp_num | html %]_tag">Tag: </label>
-                                                <input
-                                                    type="text"
-                                                    id="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_tag"
-                                                    name="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_tag"
-                                                    value="[% src_component.tag | html %]"
-                                                    size="3"
-                                                    maxlength="3"
-                                                />
-                                            </li>
-                                            <li>
-                                                <label for="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_subfields">Subfields: </label>
-                                                <input
-                                                    type="text"
-                                                    id="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_subfields"
-                                                    name="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_subfields"
-                                                    value="[% src_component.subfields | html %]"
-                                                    size="10"
-                                                    maxlength="40"
-                                                />
-                                            </li>
-                                            <li>
-                                                <label for="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_offset">Offset: </label>
-                                                <input
-                                                    type="text"
-                                                    id="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_offset"
-                                                    name="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_offset"
-                                                    value="[% src_component.offset | html %]"
-                                                    size="5"
-                                                    maxlength="5"
-                                                />
-                                            </li>
-                                            <li>
-                                                <label for="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_length">Length: </label>
-                                                <input
-                                                    type="text"
-                                                    id="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_length"
-                                                    name="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_length"
-                                                    value="[% src_component.length | html %]"
-                                                    size="5"
-                                                    maxlength="5"
-                                                />
-                                            </li>
-                                            [% FOREACH norm IN src_component.norms %]
-                                                <li id="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_n_[% norm.norm_num | html %]">
-                                                    <label for="mc_[% matchcheck.mc_num | html %]_src_c_[% src_component.comp_num | html %]_n_[% norm.norm_num | html %]_norm">Normalization rule: </label>
-                                                    [%# Note: Following directive in one line, otherwise we have translatabiltiy problems %]
-                                                    [% PROCESS norms_select selected_norm=norm.norm id="mc_${matchcheck.mc_num}_src_c_${src_component.comp_num}_n_${norm.norm_num}_norm" name="mc_${matchcheck.mc_num}_src_c_${src_component.comp_num}_n_${norm.norm_num}_norm" %]
-                                                </li>
-                                            [% END %]
-                                        </ol>
-                                    </fieldset>
-                                    <!-- /#mc_[% src_component.mc_num | html %]_src_c_[% src_component.comp_num | html %] -->
-                                [% END # /FOREACH src_component %]
-
-                                [% FOREACH tgt_component IN matchcheck.tgt_components %]
-                                    <fieldset class="rows" id="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]">
-                                        <legend>Target (database) record check field</legend>
-                                        <ol>
-                                            <li>
-                                                <label for="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_tag">Tag: </label>
-                                                <input
-                                                    type="text"
-                                                    id="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_tag"
-                                                    name="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_tag"
-                                                    value="[% tgt_component.tag | html %]"
-                                                    size="3"
-                                                    maxlength="3"
-                                                />
-                                            </li>
-                                            <li>
-                                                <label for="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_subfields">Subfields: </label>
-                                                <input
-                                                    type="text"
-                                                    id="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_subfields"
-                                                    name="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_subfields"
-                                                    value="[% tgt_component.subfields | html %]"
-                                                    size="10"
-                                                    maxlength="40"
-                                                />
-                                            </li>
-                                            <li>
-                                                <label for="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_offset">Offset: </label>
-                                                <input
-                                                    type="text"
-                                                    id="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_offset"
-                                                    name="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_offset"
-                                                    value="[% tgt_component.offset | html %]"
-                                                    size="5"
-                                                    maxlength="5"
-                                                />
-                                            </li>
-                                            <li>
-                                                <label for="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_length">Length: </label>
-                                                <input
-                                                    type="text"
-                                                    id="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_length"
-                                                    name="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_length"
-                                                    value="[% tgt_component.length | html %]"
-                                                    size="5"
-                                                    maxlength="5"
-                                                />
-                                            </li>
-                                            [% FOREACH norm IN tgt_component.norms %]
-                                                <li id="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_n_[% norm.norm_num | html %]">
-                                                    <label for="mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %]_n_[% norm.norm_num | html %]_norm">Normalization rule: </label>
-                                                    [%# Note: Following directive in one line, otherwise we have translatabiltiy problems %]
-                                                    [% PROCESS norms_select selected_norm=norm.norm id="mc_${matchcheck.mc_num}_tgt_c_${tgt_component.comp_num}_n_${norm.norm_num}_norm" name="mc_${matchcheck.mc_num}_tgt_c_${tgt_component.comp_num}_n_${norm.norm_num}_norm" %]
-                                                </li>
-                                            [% END %]
-                                        </ol>
-                                    </fieldset>
-                                    <!-- /#mc_[% matchcheck.mc_num | html %]_tgt_c_[% tgt_component.comp_num | html %] -->
-                                [% END # /FOREACH tgt_component %]
+                               [% PROCESS match_check_component mc_num=matchcheck.mc_num which="src" components=matchcheck.src_components %]
+                               [% PROCESS match_check_component mc_num=matchcheck.mc_num which="tgt" components=matchcheck.tgt_components %]
                             </fieldset>
                             <!-- /.rows -->
                             <br style="clear:both;" />
@@ -481,58 +419,9 @@
                                 <a href="#" class="btn btn-link" onclick="DeleteMatchcheck(this); return false;"><i class="fa fa-trash-can" aria-hidden="true"></i> Remove this match check</a></p
                             >
                             <input type="hidden" id="mc_1_id" name="mc_1_id" value="1" />
-                            <fieldset class="rows" id="mc_1_src_c_1">
-                                <legend>Source (incoming) record check field</legend>
-                                <ol>
-                                    <li>
-                                        <label for="mc_1_src_c_1_tag">Tag: </label>
-                                        <input type="text" id="mc_1_src_c_1_tag" name="mc_1_src_c_1_tag" size="3" maxlength="3" />
-                                    </li>
-                                    <li>
-                                        <label for="mc_1_src_c_1_subfields">Subfields: </label>
-                                        <input type="text" id="mc_1_src_c_1_subfields" name="mc_1_src_c_1_subfields" size="10" maxlength="40" />
-                                    </li>
-                                    <li>
-                                        <label for="mc_1_src_c_1_offset">Offset: </label>
-                                        <input type="text" id="mc_1_src_c_1_offset" name="mc_1_src_c_1_offset" size="5" maxlength="5" />
-                                    </li>
-                                    <li>
-                                        <label for="mc_1_src_c_1_length">Length: </label>
-                                        <input type="text" id="mc_1_src_c_1_length" name="mc_1_src_c_1_length" size="5" maxlength="5" />
-                                    </li>
-                                    <li id="mc_1_src_c_1_n_1">
-                                        <label for="mc_1_src_c_1_n_1_norm">Normalization rule: </label>
-                                        [% PROCESS norms_select selected_norm="none" id="mc_1_src_c_1_n_1_norm" name="mc_1_src_c_1_n_1_norm" %]
-                                    </li>
-                                </ol>
-                            </fieldset>
 
-                            <fieldset class="rows" id="mc_1_tgt_c_1">
-                                <legend>Target (database) record check field</legend>
-                                <ol>
-                                    <li>
-                                        <label for="mc_1_tgt_c_1_tag">Tag: </label>
-                                        <input type="text" id="mc_1_tgt_c_1_tag" name="mc_1_tgt_c_1_tag" size="3" maxlength="3" />
-                                    </li>
-                                    <li>
-                                        <label for="mc_1_tgt_c_1_subfields">Subfields: </label>
-                                        <input type="text" id="mc_1_tgt_c_1_subfields" name="mc_1_tgt_c_1_subfields" size="10" maxlength="40" />
-                                    </li>
-                                    <li>
-                                        <label for="mc_1_tgt_c_1_offset">Offset: </label>
-                                        <input type="text" id="mc_1_tgt_c_1_offset" name="mc_1_tgt_c_1_offset" size="5" maxlength="5" />
-                                    </li>
-                                    <li>
-                                        <label for="mc_1_tgt_c_1_length">Length: </label>
-                                        <input type="text" id="mc_1_tgt_c_1_length" name="mc_1_tgt_c_1_length" size="5" maxlength="5" />
-                                    </li>
-                                    <li id="mc_1_tgt_c_1_n_1">
-                                        <label for="mc_1_tgt_c_1_n_1_norm">Normalization rule: </label>
-                                        [% PROCESS norms_select selected_norm="none" id="mc_1_tgt_c_1_n_1_norm" name="mc_1_tgt_c_1_n_1_norm" %]
-                                    </li>
-                                </ol>
-                            </fieldset>
-                            <!-- /#mc_1_tgt_c_1 -->
+                            [% PROCESS match_check_component mc_num=1 which="src" components=0 %]
+                            [% PROCESS match_check_component mc_num=1 which="tgt" components=0 %]
                         </fieldset>
                         <!-- /.rows -->
                         <br style="clear:both;" />
@@ -669,58 +558,9 @@
                     ><a href="#" class="button" onclick="DeleteMatchcheck(this); return false;"><i class="fa fa-trash-can" aria-hidden="true"></i> Remove this match check</a></p
                 >
                 <input type="hidden" id="mc_num_id" name="mc_num_id" value="1" />
-                <fieldset class="rows" id="mc_num_src_c_1">
-                    <legend>Source (incoming) record check field</legend>
-                    <ol>
-                        <li>
-                            <label for="mc_num_src_c_1_tag">Tag: </label>
-                            <input type="text" id="mc_num_src_c_1_tag" name="mc_num_src_c_1_tag" size="3" maxlength="3" />
-                        </li>
-                        <li>
-                            <label for="mc_num_src_c_1_subfields">Subfields: </label>
-                            <input type="text" id="mc_num_src_c_1_subfields" name="mc_num_src_c_1_subfields" size="10" maxlength="40" />
-                        </li>
-                        <li>
-                            <label for="mc_num_src_c_1_offset">Offset: </label>
-                            <input type="text" id="mc_num_src_c_1_offset" name="mc_num_src_c_1_offset" size="5" maxlength="5" />
-                        </li>
-                        <li>
-                            <label for="mc_num_src_c_1_length">Length: </label>
-                            <input type="text" id="mc_num_src_c_1_length" name="mc_num_src_c_1_length" size="5" maxlength="5" />
-                        </li>
-                        <li id="mc_num_src_c_1_n_1">
-                            <label for="mc_num_src_c_1_n_1_norm">Normalization rule: </label>
-                            [% PROCESS norms_select selected_norm="none" id="mc_num_src_c_1_n_1_norm" name="mc_num_src_c_1_n_1_norm" %]
-                        </li>
-                    </ol>
-                </fieldset>
-                <!-- /#mc_num_src_c_1 -->
-                <fieldset class="rows" id="mc_num_tgt_c_1">
-                    <legend>Target (database) record check field</legend>
-                    <ol>
-                        <li>
-                            <label for="mc_num_tgt_c_1_tag">Tag: </label>
-                            <input type="text" id="mc_num_tgt_c_1_tag" name="mc_num_tgt_c_1_tag" size="3" maxlength="3" />
-                        </li>
-                        <li>
-                            <label for="mc_num_tgt_c_1_subfields">Subfields: </label>
-                            <input type="text" id="mc_num_tgt_c_1_subfields" name="mc_num_tgt_c_1_subfields" size="10" maxlength="40" />
-                        </li>
-                        <li>
-                            <label for="mc_num_tgt_c_1_offset">Offset: </label>
-                            <input type="text" id="mc_num_tgt_c_1_offset" name="mc_num_tgt_c_1_offset" size="5" maxlength="5" />
-                        </li>
-                        <li>
-                            <label for="mc_num_tgt_c_1_length">Length: </label>
-                            <input type="text" id="mc_num_tgt_c_1_length" name="mc_num_tgt_c_1_length" size="5" maxlength="5" />
-                        </li>
-                        <li id="mc_num_tgt_c_1_n_1">
-                            <label for="mc_num_tgt_c_1_n_1_norm">Normalization rule: </label>
-                            [% PROCESS norms_select selected_norm="none" id="mc_num_tgt_c_1_n_1_norm" name="mc_num_tgt_c_1_n_1_norm" %]
-                        </li>
-                    </ol>
-                </fieldset>
-                <!-- #mc_num_tgt_c_1 -->
+                [% PROCESS match_check_component mc_num=matchcheck.mc_num which="src" components=matchcheck.src_components %]
+                [% PROCESS match_check_component mc_num=matchcheck.mc_num which="tgt" components=matchcheck.tgt_components %]
+
             </fieldset>
             <!-- /.rows -->
             <br style="clear:both;" />
