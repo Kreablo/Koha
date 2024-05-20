@@ -42,6 +42,11 @@ __PACKAGE__->table("matchpoint_components");
   default_value: 0
   is_nullable: 0
 
+=head2 constant
+
+  data_type: 'mediumtext'
+  is_nullable: 1
+
 =head2 tag
 
   data_type: 'varchar'
@@ -82,6 +87,8 @@ __PACKAGE__->add_columns(
     default_value => 0,
     is_nullable   => 0,
   },
+  "constant",
+  { data_type => "mediumtext", is_nullable => 1 },
   "tag",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 3 },
   "subfields",

@@ -47,6 +47,12 @@ __PACKAGE__->table("matchchecks");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 operator
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 32
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -58,6 +64,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "target_matchpoint_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "operator",
+  { data_type => "varchar", is_nullable => 1, size => 32 },
 );
 
 =head1 PRIMARY KEY

@@ -4761,6 +4761,7 @@ CREATE TABLE `matchchecks` (
   `matchcheck_id` int(11) NOT NULL AUTO_INCREMENT,
   `source_matchpoint_id` int(11) NOT NULL,
   `target_matchpoint_id` int(11) NOT NULL,
+  `operator` varchar(32) NOT NULL DEFAULT 'eq',
   PRIMARY KEY (`matchcheck_id`),
   KEY `matcher_matchchecks_ifbk_1` (`matcher_id`),
   KEY `matcher_matchchecks_ifbk_2` (`source_matchpoint_id`),
@@ -4814,6 +4815,7 @@ DROP TABLE IF EXISTS `matchpoint_components`;
 CREATE TABLE `matchpoint_components` (
   `matchpoint_id` int(11) NOT NULL,
   `matchpoint_component_id` int(11) NOT NULL AUTO_INCREMENT,
+  `constant` mediumtext DEFAULT NULL,
   `sequence` int(11) NOT NULL DEFAULT 0,
   `tag` varchar(3) NOT NULL DEFAULT '',
   `subfields` varchar(40) NOT NULL DEFAULT '',
