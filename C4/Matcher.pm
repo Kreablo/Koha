@@ -22,6 +22,7 @@ use Modern::Perl;
 use Koha::SearchEngine;
 use Koha::SearchEngine::Search;
 use Koha::SearchEngine::QueryBuilder;
+use Koha::Logger;
 use Koha::Util::Normalize qw(
     ISBN
     legacy_default
@@ -845,6 +846,21 @@ sub dump {
     return $result;
 }
 
+sub _passes_required_check {
+    my ( $s, $t, $op ) = @_;
+
+    if ( $op eq 'eq' ) {
+        return $s eq $t;
+    }
+
+    if ( $op eq 'ne' ) {
+        return $s ne $t;
+    }
+
+    Koha::Logger->get->error( "Unknown match control operator: '$op'!" );
+    return 0;
+}
+
 sub _passes_required_checks {
     my ( $source_record, $target_record, $matchchecks ) = @_;
 
@@ -854,7 +870,7 @@ sub _passes_required_checks {
     foreach my $matchcheck ( @{$matchchecks} ) {
         my $source_key = join "", _get_match_keys( $source_record, $matchcheck->{'source_matchpoint'} );
         my $target_key = join "", _get_match_keys( $target_record, $matchcheck->{'target_matchpoint'} );
-        return 0 unless $source_key eq $target_key;
+        return 0 unless _passes_required_check( $source_key, $target_key, $matchcheck->{'operator'} );
     }
     return 1;
 }
@@ -883,6 +899,10 @@ sub _get_match_keys {
     my @keys = ();
     for ( my $i = 0 ; $i <= $#{ $matchpoint->{'components'} } ; $i++ ) {
         my $component = $matchpoint->{'components'}->[$i];
+        if ( defined $component->{'type'} && $component->{'type'} eq 'constant' ) {
+            push @keys, $component->{'constant'};
+            next;
+        }
         my $j         = -1;
 
         my @fields = ();

@@ -144,6 +144,7 @@ sub add_update_matching_rule {
                 push @$components, $component;
             }
         }
+        my $operator = $input->param( "mc_${mc_num}_operator" );
         $matcher->add_required_check( $src_components, $tgt_components, $input->param("mc_${mc_num}_operator") );
     }
 
