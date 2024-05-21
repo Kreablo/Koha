@@ -1165,7 +1165,7 @@ sub _field_mappings {
             my ($value) = @_;
 
             # Replace "u" with "0" for sorting
-            return map { s/[u\s]/0/gr } ( $value =~ /[0-9u\s]{4}/g );
+            return map { /[0-9u]{4}/g } ( $value =~ s/u/0/gr );
         };
     }
 
