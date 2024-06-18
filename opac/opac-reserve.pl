@@ -25,7 +25,7 @@ use CGI qw ( -utf8 );
 use C4::Auth qw( get_template_and_user );
 use C4::Koha qw( getitemtypeimagelocation getitemtypeimagesrc );
 use C4::Circulation qw( GetBranchItemRule );
-use C4::Reserves qw( CanItemBeReserved CanBookBeReserved AddReserve IsAvailableForItemLevelRequest GetReserveFee );
+use C4::Reserves qw( CanItemBeReserved CanBookBeReserved AddReserve IsAvailableForItemLevelRequest GetReserveFee ItemsAnyAvailableAndNotRestricted );
 use C4::Biblio qw( GetBiblioData GetFrameworkCode );
 use C4::Output qw( output_html_with_http_headers );
 use C4::Context;
