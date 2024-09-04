@@ -317,7 +317,7 @@ sub status_update {    # FIXME: this looks unimplemented
 
 sub title_id {
     my $self = shift;
-    return $self->{title};
+    return $self->{title} . ($self->{author} ? ' / ' . $self->{author} : '');
 }
 
 sub sip_circulation_status {
