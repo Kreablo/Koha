@@ -2736,9 +2736,28 @@ sub AddReturn {
         $validTransfer = 0;
     }
 
+    if ( $validTransfer && C4::RotatingCollections::isItemInAnyCollection( $item->itemnumber ) ) {
+        if ( C4::Context->preference('RotatingCollectionReturnBranch') ) {
+            # The item should only be a member of at most one rotating collection, although the data model
+            # allows for it to be a member of several.
+            my $sth = C4::Context->dbh->prepare("SELECT DISTINCT colId FROM collections_tracking WHERE itemnumber = ? LIMIT 1");
+            $sth->execute( $item->itemnumber );
+
+            while ( my $row = $sth->fetchrow_arrayref() ) {
+                my ($colId, $colTitle, $colDesc, $colBranchcode) = C4::RotatingCollections::GetCollection( $row->[0] );
+                if ( $colBranchcode ) {
+                    $returnbranch = $colBranchcode;
+                    $transfer_trigger = 'RotatingCollection';
+                    last;
+                }
+            }
+        } else {
+            $validTransfer = 0;
+        }
+    }
+
     # Transfer to returnbranch if Automatic transfer set or append message NeedsTransfer
     if (   $validTransfer
-        && !C4::RotatingCollections::isItemInAnyCollection( $item->itemnumber )
         && ( $doreturn or $messages->{'NotIssued'} )
         and !$resfound
         and ( $branch ne $returnbranch )

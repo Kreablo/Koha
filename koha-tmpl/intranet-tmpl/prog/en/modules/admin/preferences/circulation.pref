@@ -271,6 +271,12 @@ Circulation:
                   0: "Don't"
             - automatically transfer items to their home library when they are checked in.
         -
+            - pref: RotatingCollectionReturnBranch
+              choices:
+                  1: Do
+                  0: "Don't"
+            - transfer items in rotating collections to the collection's branch when checked in.
+        -
             - pref: UseBranchTransferLimits
               choices:
                   1: Enforce
