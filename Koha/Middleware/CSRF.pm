@@ -58,10 +58,6 @@ sub call {
         #NOTE: Ignore path exceptions for CSRF
         return $self->app->($env);
     }
-    elsif ( $path_exceptions{$request_path} ){
-        #NOTE: Ignore path exceptions for CSRF
-        return $self->app->($env);
-    }
 
     my ($error);
     if ( $stateless_methods{$request_method} && defined $original_op && $original_op =~ m{^cud-} ) {
