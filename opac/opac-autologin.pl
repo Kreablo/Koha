@@ -64,8 +64,8 @@ if (defined $config) {
     }
 
     if (defined $userinfo) {
-        $query->param('userid', $userinfo->{userid});
-        $query->param('password', $userinfo->{password});
+        $query->param('login_userid', $userinfo->{userid});
+        $query->param('login_password', $userinfo->{password});
 
         my ($status, $cookie, $sessionId) = check_api_auth($query);
 
@@ -88,7 +88,7 @@ if (defined $config) {
 sub deny {
     my $query = shift;
     my $logger = shift;
-    
+
     print $query->header(
         -status => '403 Unauthorized'
         );
