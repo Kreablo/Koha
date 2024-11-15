@@ -900,7 +900,7 @@ END_SQL
         }
     }
 
-    if (@output_chunks) {
+    if (0 && @output_chunks) {
         if ( defined $csvfilename ) {
             print $csv_fh @output_chunks;
         } elsif ( defined $htmlfilename ) {
