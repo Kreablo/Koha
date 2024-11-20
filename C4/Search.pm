@@ -1957,8 +1957,8 @@ sub searchResults {
                 # is item a waiting recall?
                 my $recallstatus = '';
 
-                unless (
-                       $item->{withdrawn}
+                unless ($is_opac
+                    || $item->{withdrawn}
                     || $item->{itemlost}
                     || $item->{damaged}
                     || $item->{notforloan}
