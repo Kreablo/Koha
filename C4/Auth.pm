@@ -1058,6 +1058,8 @@ sub checkauth {
         #we initiate a session prior to checking for a username to allow for anonymous sessions...
         if ( !$session or !$sessionID ) {    # if we cleared sessionID, we need a new session
             $session = get_session() or die "Auth ERROR: Cannot get_session()";
+            $session->param( 'lasttime',     time() );
+            $session->param( 'ip',           $session->remote_addr() );
         }
 
         # Save anonymous search history in new session so it can be retrieved
