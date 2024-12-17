@@ -295,6 +295,7 @@ $(document).ready(function () {
                 "id_prefix",
                 "patron",
             ],
+            "lengthMenu": [ 10, 20, 50, 100 ],
             order: [[0, "desc"]],
             stateSave: true, // remember state on page reload
             columns: [
