@@ -1459,6 +1459,9 @@ sub checkauth {
             $uri->query_param_delete('login_password');
             $uri->query_param_delete('koha_login_context');
             $uri->query_param_delete('op');
+            if ($query->request_uri() eq '/opac/opac-illrequests.pl' && $query->param('openurl')) {
+                $uri->query_param('op', 'create');
+            }
             $uri->query_param_delete('csrf_token');
             unless ( $params->{do_not_print} ) {
                 print $query->redirect( -uri => $uri->as_string, -cookie => $cookie, -status => '303 See other' );
