@@ -10,9 +10,9 @@ return {
         $dbh->do(
             q{DELETE FROM collections_tracking WHERE itemnumber NOT IN (SELECT itemnumber FROM items WHERE items.itemnumber = collections_tracking.itemnumber)}
         );
-        $dbh->do(q{ALTER TABLE collections_tracking ADD KEY `collectionst_ibfk_2` (`itemnumber`)});
+        $dbh->do(q{ALTER TABLE collections_tracking ADD KEY IF NOT EXISTS `collectionst_ibfk_2` (`itemnumber`)});
         $dbh->do(
-            q{ALTER TABLE collections_tracking ADD CONSTRAINT FOREIGN KEY `collectionst_ibfk_2` (itemnumber) REFERENCES items (itemnumber) ON DELETE CASCADE ON UPDATE CASCADE}
+            q{ALTER TABLE collections_tracking ADD CONSTRAINT FOREIGN KEY IF NOT EXISTS  `collectionst_ibfk_2` (itemnumber) REFERENCES items (itemnumber) ON DELETE CASCADE ON UPDATE CASCADE}
         );
     },
 };
