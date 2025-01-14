@@ -1909,7 +1909,7 @@ sub UpsertMarcControlField {
 sub GetFrameworkCode {
     my ($biblionumber) = @_;
     my $cache          = Koha::Cache::Memory::Lite->get_instance();
-    my $cache_key      = "FrameworkCode-$biblionumber";
+    my $cache_key      = "FrameworkCode-" . (defined $biblionumber ? $biblionumber : '');
     my $frameworkcode  = $cache->get_from_cache($cache_key);
     unless ( defined $frameworkcode ) {
         my $dbh = C4::Context->dbh;
