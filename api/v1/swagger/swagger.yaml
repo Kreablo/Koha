@@ -192,6 +192,8 @@ definitions:
     $ref: ./definitions/file_transport.yaml
   suggestion:
     $ref: ./definitions/suggestion.yaml
+  system_preference:
+    $ref: ./definitions/system_preference.yaml
   ticket:
     $ref: ./definitions/ticket.yaml
   ticket_update:
@@ -621,6 +623,8 @@ paths:
     $ref: "./paths/suggestions.yaml#/~1suggestions~1{suggestion_id}"
   /suggestions/managers:
     $ref: "./paths/suggestions.yaml#/~1suggestions~1managers"
+  /system_preferences:
+    $ref: ./paths/system_preferences.yaml#/~1system_preferences
   "/tickets":
     $ref: "./paths/tickets.yaml#/~1tickets"
   "/tickets/{ticket_id}":

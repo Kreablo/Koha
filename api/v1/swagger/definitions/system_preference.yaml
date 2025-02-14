@@ -1,0 +1,32 @@
+---
+type: object
+properties:
+  variable:
+    type: string
+    description: system preference name
+    readOnly: true
+    maxLength: 50
+    minLength: 1
+  value:
+    type:
+      - string
+      - "null"
+    description: system preference value
+  options:
+    type:
+      - string
+      - "null"
+    description: "options for multiple choice system preferences"
+  explanation:
+    type:
+      - string
+      - "null"
+    description: "descriptive text for the system preference"
+  type:
+    type:
+      - string
+      - "null"
+    description: "type of question this preference asks (multiple choice, plain text, yes or no, etc)"
+additionalProperties: false
+required:
+  - variable
