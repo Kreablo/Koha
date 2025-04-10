@@ -79,13 +79,14 @@ sub fetch_completions {
     my $logger = Koha::Logger->get({ category => 'Koha.Completion.AddressServiceBorrowerCompletion'});
 
     my ($pnrd, $pnrn, $dob) = normalize_pnr($id);
+    my $dir = dirname(C4::Config->guess_koha_conf());
 
     if (defined $pnrn) {
 
 	my $soap = SOAP::Lite->proxy("https://adresservice.ltv.se/csp/population/LTV.AddressService.Service.GetAddressResponderBinding.cls", ssl_opts => {
-            SSL_cert_file => "/etc/koha/sites/bv/populationclient.regionvastmanland.se-cert.pem",
-            SSL_key_file => "/etc/koha/sites/bv/populationclient.regionvastmanland.se-key.pem",
-            SSL_ca_file => "/etc/koha/sites/bv/populationclient.regionvastmanland.se-cacert.pem",
+            SSL_cert_file => "${dir}/borrower-completion-cert.pem",
+            SSL_key_file => "${dir}/borrower-completion-key.pem",
+            SSL_ca_file => "${dir}/borrower-completion-cacert.pem",
 	    SSL_use_cert => 1
         });
 
