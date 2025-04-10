@@ -28,8 +28,8 @@
     });
 </script>
 <form>
-  <div id="fetch-borrower-data-modal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+  <div id="fetch-borrower-data-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="fetch-borrower-data">
+    <div class="modal-dialog">
       <div class="modal-content">
 	<div class="modal-header">
           <button type="button" class="closebtn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
