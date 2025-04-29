@@ -21,6 +21,8 @@ use IO::Socket::SSL;
 use SOAP::Lite;
 use DateTime;
 use Koha::Logger;
+use Koha::Config;
+use File::Basename qw( dirname );
 
 require Exporter;
 our @ISA = qw( Exporter );
@@ -79,7 +81,7 @@ sub fetch_completions {
     my $logger = Koha::Logger->get({ category => 'Koha.Completion.AddressServiceBorrowerCompletion'});
 
     my ($pnrd, $pnrn, $dob) = normalize_pnr($id);
-    my $dir = dirname(C4::Config->guess_koha_conf());
+    my $dir = dirname(Koha::Config->guess_koha_conf());
 
     if (defined $pnrn) {
 
