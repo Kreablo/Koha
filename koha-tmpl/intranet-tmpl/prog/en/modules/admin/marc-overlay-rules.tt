@@ -1,5 +1,6 @@
 [% USE raw %]
 [% USE To %]
+[% USE AuthorisedValues %]
 [% USE Asset %]
 [% USE Koha %]
 [% USE KohaSpan %]
@@ -496,6 +497,7 @@
             // Note: This allows displaying a sorted list of categories later, but we still depend on an object!
             categories.unshift({ categorycode: '*', description: '*'});
             categories = categories.reduce( ( a,c ) => ( { ...a, [c.categorycode]: c.description } ), {} );
+            var custom_sources = [% To.json(AuthorisedValues.Get("OVERLAYSRC")) | $raw %];
 
             var module_filter_options = {
             source: {
@@ -510,6 +512,12 @@
 
                 categorycode: categories,
             };
+
+            for (const cs of custom_sources) {
+                if (!module_filter_options.source.hasOwnProperty(cs.authorised_value)) {
+                    module_filter_options.source[cs.authorised_value] = cs.lib ? cs.lib : cs.authorised_value;
+                }
+            }
 
             //Kind of hack: Replace filter value with label when one exist
             $('.rule-module').each(function() {

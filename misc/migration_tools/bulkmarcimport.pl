@@ -73,6 +73,7 @@ my $sourcesubfield;
 my $idmapfl;
 my $dedup_barcode;
 my $framework = '';
+my $importsource = 'bulkmarcimport';
 my $localcust;
 my $marc_mod_template    = '';
 my $marc_mod_template_id = -1;
@@ -112,6 +113,7 @@ GetOptions(
     'yaml:s'              => \$yamlfile,
     'dedupbarcode'        => \$dedup_barcode,
     'framework=s'         => \$framework,
+    'source:s'            => \$importsource,
     'custom:s'            => \$localcust,
     'marcmodtemplate:s'   => \$marc_mod_template,
     'si|skip_indexing'    => \$skip_indexing,
@@ -134,7 +136,7 @@ my $using_elastic_search = ( C4::Context->preference('SearchEngine') eq 'Elastic
 my $mod_biblio_options   = {
     disable_autolink  => $using_elastic_search,
     skip_record_index => $using_elastic_search || $skip_indexing,
-    overlay_context   => { source => 'bulkmarcimport' }
+    overlay_context   => { source => $importsource }
 };
 my $add_biblio_options = {
     disable_autolink  => $using_elastic_search,
@@ -1033,6 +1035,11 @@ is useful when something has set barcodes to be a biblio ID, or similar
 This is the code for the framework that the requested records will have attached
 to them when they are created. If not specified, then the default framework
 will be used.
+
+=item B<--source>
+
+The source name for looking up MARC overlay rules.  Custom source names can be added
+as authorised values in the category OVERLAYSRC.
 
 =item B<--custom>=I<MODULE>
 

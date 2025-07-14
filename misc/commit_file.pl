@@ -22,11 +22,13 @@ my $list_batches = 0;
 my $revert       = 0;
 my $want_help    = 0;
 my $framework    = '';
+my $source       = 'batchimport';
 
 my $result = GetOptions(
     'batch-number:s' => \$batch_number,
     'list-batches'   => \$list_batches,
     'framework:s'    => \$framework,
+    'source:s'       => \$source,
     'revert'         => \$revert,
     'h|help'         => \$want_help
 );
@@ -95,7 +97,8 @@ sub process_batch {
             batch_id          => $import_batch_id,
             framework         => $framework,
             progress_interval => 100,
-            progress_callback => \&print_progress
+            progress_callback => \&print_progress,
+            source => $source
         }
         );
     print "... finished importing MARC records\n";
@@ -158,6 +161,8 @@ Parameters:
                          to import
     --framework <code>   add new records using this framework.  If
                          omitted, the default framework is used.
+    --source <source>    custom source for applying marc overlay rules.
+                         default: batchimport.
     --list-batches       print a list of record batches
                          available to commit
     --revert             revert a batch instead of importing it

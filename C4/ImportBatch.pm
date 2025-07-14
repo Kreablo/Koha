@@ -535,6 +535,7 @@ sub BatchCommitRecords {
     my $overlay_framework = $params->{overlay_framework};
     my $progress_interval = $params->{progress_interval} // 0;
     my $progress_callback = $params->{progress_callback};
+    my $source            = $params->{source} // 'batchimport';
     $progress_interval = 0 unless $progress_interval && $progress_interval =~ /^\d+$/;
     $progress_interval = 0 unless ref($progress_callback) eq 'CODE';
 
@@ -658,7 +659,7 @@ sub BatchCommitRecords {
                 }
                 $oldxml = $old_marc->as_xml($marc_type);
 
-                my $context = { source => 'batchimport' };
+                my $context = { source => $source };
                 if ($logged_in_patron) {
                     $context->{categorycode} = $logged_in_patron->categorycode;
                     $context->{userid}       = $logged_in_patron->userid;
