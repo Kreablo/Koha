@@ -535,7 +535,7 @@ sub BatchCommitRecords {
     my $overlay_framework = $params->{overlay_framework};
     my $progress_interval = $params->{progress_interval} // 0;
     my $progress_callback = $params->{progress_callback};
-    my $source            = $params->{source} // 'batchimport';
+    my $source            = $params->{source} || 'batchimport';
     $progress_interval = 0 unless $progress_interval && $progress_interval =~ /^\d+$/;
     $progress_interval = 0 unless ref($progress_callback) eq 'CODE';
 

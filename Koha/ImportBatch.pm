@@ -65,6 +65,7 @@ sub new_from_file {
     my $filepath                   = $args->{filepath};
     my $filename                   = $args->{filename};
     my $marc_modification_template = $args->{marc_modification_template};
+    my $marc_overlay_source        = $args->{marc_overlay_source};
     my $comments                   = $args->{comments};
     my $parse_items                = $args->{parse_items};
     my $matcher_id                 = $args->{matcher_id};
