@@ -91,7 +91,7 @@ sub context_rules {
                 unless ( exists $rules->{ $rule{module} }->{ $rule{filter} }->{'*'} ) {
                     $rules->{ $rule{module} }->{ $rule{filter} }->{'*'} = $operations;
                 }
-            } elsif ( $rule{tag} =~ /^(\d{3})$/ ) {
+            } elsif ( $rule{tag} =~ /^(?:\d{3})(?:\^..)?$/ ) {
                 unless ( exists $rules->{ $rule{module} }->{ $rule{filter} }->{tags}->{ $rule{tag} } ) {
                     $rules->{ $rule{module} }->{ $rule{filter} }->{tags}->{ $rule{tag} } = $operations;
                 }
@@ -207,11 +207,18 @@ sub merge_records {
     return $incoming_record unless $rules;
 
     my $fields_by_tag = sub {
-        my ($record) = @_;
+        my ($record, $needs_indicators) = @_;
         my $fields = {};
         foreach my $field ( $record->fields() ) {
-            $fields->{ $field->tag() } //= [];
-            push @{ $fields->{ $field->tag() } }, $field;
+            my $tag;
+            foreach my $n ( @$needs_indicators ) {
+                if ($n->{tag} eq $field->tag() && $n->{ind1} eq $field->indicator(1) && $n->{ind2} eq $field->indicator(2)) {
+                    $tag = $n->{tag} . '^' . $n->{ind1} . $n->{ind2};
+                }
+            }
+            $tag = $field->tag() if !defined $tag;
+            $fields->{$tag} //= [];
+            push @{ $fields->{$tag} }, $field;
         }
         return $fields;
     };
@@ -248,6 +255,8 @@ sub merge_records {
         remove => { allow => 1, 'rule' => 0 },
     };
 
+    my @needs_indicators = map { { tag => substr($_, 0, 3), ind1 => substr($_, 4, 1), ind2 => substr($_, 5, 1) } } (grep { /^(\d{3})\^..$/ } (keys %{$rules->{tags}}));
+
     # Precompile regexps
     my @regexp_rules = map { { regexp => qr/^$_->[0]$/, actions => $_->[1] } } @{ $rules->{regexps} // [] };
 
@@ -261,8 +270,8 @@ sub merge_records {
 
     my %merged_record_fields;
 
-    my $current_fields  = $fields_by_tag->($old_record);
-    my $incoming_fields = $fields_by_tag->($incoming_record);
+    my $current_fields  = $fields_by_tag->($old_record, \@needs_indicators);
+    my $incoming_fields = $fields_by_tag->($incoming_record, \@needs_indicators);
 
     # First we get all new incoming fields
     my @new_field_tags = grep { !( exists $current_fields->{$_} ) } keys %{$incoming_fields};
@@ -288,10 +297,10 @@ sub merge_records {
     # current and incoming record (possibly to be overwritten)
     my @common_field_tags = grep { exists $incoming_fields->{$_} } keys %{$current_fields};
     foreach my $tag (@common_field_tags) {
-        my $rule = $get_matching_field_rule->($tag);
+        my $rule = $get_matching_field_rule->($tag, $current_fields->{$tag});
 
         # Special handling for control fields
-        if ( $tag < 10 ) {
+        if ( length $tag <= 3 && $tag < 10 ) {
             if ( $rule->{append}->{allow}
                 && !$rule->{remove}->{allow} )
             {
