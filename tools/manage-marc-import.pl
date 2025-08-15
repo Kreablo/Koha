@@ -37,6 +37,7 @@ use C4::Labels::Batch;
 use Koha::BiblioFrameworks;
 use Koha::BackgroundJob::MARCImportCommitBatch;
 use Koha::BackgroundJob::MARCImportRevertBatch;
+use Koha::AuthorisedValues;
 
 use Koha::Logger;
 
@@ -98,13 +99,15 @@ if ( $op eq "" ) {
 } elsif ( $op eq "cud-commit-batch" ) {
     my $frameworkcode     = $input->param('framework');
     my $overlay_framework = $input->param('overlay_framework');
+    my $marc_overlay_source = $input->param('marc_overlay_source');
     $overlay_framework = undef if $overlay_framework eq '_USE_ORIG_';
     try {
         my $job_id = Koha::BackgroundJob::MARCImportCommitBatch->new->enqueue(
             {
                 import_batch_id   => $import_batch_id,
                 frameworkcode     => $frameworkcode,
-                overlay_framework => $overlay_framework
+                overlay_framework => $overlay_framework,
+                marc_overlay_source => $marc_overlay_source,
             }
         );
         if ($job_id) {
@@ -291,6 +294,16 @@ sub import_records_list {
     my $item_action = GetImportBatchItemAction($import_batch_id);
     $template->param( "item_action_${item_action}" => 1 );
     $template->param( item_action                  => $item_action );
+
+    my @overlaysrcs = ();
+    my $src_avs = Koha::AuthorisedValues->search( { category => 'OVERLAYSRC' } );
+    while ( my $src = $src_avs->next ) {
+        push @overlaysrcs, {
+            src_id   => $src->authorised_value,
+            src_name => $src->lib,
+        };
+    };
+    $template->param( MarcOverlayCustomSourcesLoop => \@overlaysrcs );
 
     batch_info( $template, $batch );
 

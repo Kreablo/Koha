@@ -60,6 +60,7 @@ sub process {
     my $import_batch_id       = $args->{import_batch_id};
     my $frameworkcode         = $args->{frameworkcode};
     my $overlay_frameworkcode = $args->{overlay_framework};
+    my $marc_overlay_source = $args->{marc_overlay_source};
 
     my @messages;
     my $job_progress = 0;
@@ -80,6 +81,7 @@ sub process {
                 batch_id          => $import_batch_id,
                 framework         => $frameworkcode,
                 overlay_framework => $overlay_frameworkcode,
+                source => $marc_overlay_source,
                 progress_interval => 50,
                 progress_callback => sub { my $job_progress = shift; $self->progress($job_progress)->store },
             }

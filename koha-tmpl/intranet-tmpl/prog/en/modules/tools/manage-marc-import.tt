@@ -251,6 +251,17 @@
                                         </select>
                                         <div class="hint">Replacement records will use this framework</div>
                                     </li>
+                                    [% IF MarcOverlayCustomSourcesLoop %]
+                                    <li>
+                                        <label for="marc_overlay_source">Custom source for matching overlay rules: </label>
+                                        <select name="marc_overlay_source" id="marc_overlay_source">
+                                            <option value="">Stage</option>
+                                           [% FOREACH mos IN MarcOverlayCustomSourcesLoop %]
+                                               <option value="[% mos.src_id | html %]">[% mos.src_name | html %]</option>
+                                           [% END %]
+                                        </select>
+                                    </li>
+                                   [% END %]
                                 </ol>
                             </fieldset>
                         [% END %]
