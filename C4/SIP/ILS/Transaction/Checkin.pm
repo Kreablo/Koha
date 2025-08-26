@@ -168,7 +168,8 @@ sub do_checkin {
             if !C4::Context->preference('AutomaticItemReturn');
     }
     if ( $messages->{WasTransfered} ) {    # set into transit so tell unit
-        $self->{item}->destination_loc( $item->homebranch );
+        my $returnto = exists $messages->{TransferTo} ? $messages->{TransferTo} : $item->homebranch;
+        $self->{item}->destination_loc( $returnto );
         $self->alert_type('04');           # send to other branch
     }
     if ( $messages->{ResFound} || $checkin_blocked_by_holds ) {
