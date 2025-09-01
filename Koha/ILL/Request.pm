@@ -2390,13 +2390,17 @@ sub get_op_param_deprecation {
         $op = $params->{'op'} // $params->{'method'} // 'list';
         $op = 'cud-create' if $op eq 'create' || $op eq 'add_form';
     } elsif ( $interface eq 'intranet' ) {
-        $op = $params->{op} // $params->{method} // 'illlist';
-        $op = 'cud-create'          if $op eq 'create';
-        $op = 'cud-edit_action'     if $op eq 'edit_action';
-        $op = 'cud-generic_confirm' if $op eq 'generic_confirm';
-        $op = 'cud-cancel'          if $op eq 'cancel';
-        $op = 'cud-delete'          if $op eq 'delete';
-        $op = 'cud-check_out'       if $op eq 'check_out';
+        if ( $params->{op} eq 'cud-login' && $params->{method} eq 'create' ) {
+            $op = 'cud-create';
+        } else {
+            $op = $params->{op} // $params->{method} // 'illlist';
+            $op = 'cud-create'          if $op eq 'create';
+            $op = 'cud-edit_action'     if $op eq 'edit_action';
+            $op = 'cud-generic_confirm' if $op eq 'generic_confirm';
+            $op = 'cud-cancel'          if $op eq 'cancel';
+            $op = 'cud-delete'          if $op eq 'delete';
+            $op = 'cud-check_out'       if $op eq 'check_out';
+        }
     }
     return $op;
 }
