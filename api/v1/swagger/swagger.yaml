@@ -136,6 +136,10 @@ definitions:
     $ref: ./definitions/library.yaml
   list:
     $ref: ./definitions/list.yaml
+  list_content:
+    $ref: ./definitions/list_content.yaml
+  list_contents:
+    $ref: ./definitions/list_contents.yaml
   merge_biblios:
     $ref: ./definitions/merge_biblios.yaml
   order:
@@ -529,6 +533,8 @@ paths:
     $ref: "./paths/libraries.yaml#/~1public~1libraries~1{library_id}"
   "/public/lists":
     $ref: "./paths/lists.yaml#/~1public~1lists"
+  "/public/lists/{list_id}":
+    $ref: "./paths/lists.yaml#/~1public~1lists~1{list_id}"
   "/public/oauth/login/{provider_code}/{interface}":
     $ref: ./paths/public_oauth.yaml#/~1public~1oauth~1login~1{provider_code}~1{interface}
   "/public/patrons/{patron_id}/article_requests/{article_request_id}":
@@ -822,6 +828,12 @@ parameters:
     description: License internal identifier
     in: path
     name: license_id
+    required: true
+    type: integer
+  list_id_pp:
+    description: Internal list identifier
+    in: path
+    name: list_id
     required: true
     type: integer
   match:

@@ -1,0 +1,17 @@
+---
+type: object
+properties:
+  borrower_id:
+    type: integer
+    description: Internal borrower id
+  biblio_id:
+    type: integer
+    description: Internal biblio identifier
+  added_date:
+    type: string
+    format: date-time
+    description: Date when item was added
+  list_id:
+    type: integer
+    description: The list identification
+additionalProperties: false

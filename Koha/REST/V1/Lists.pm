@@ -20,6 +20,7 @@ use Modern::Perl;
 use Mojo::Base 'Mojolicious::Controller';
 
 use Koha::Virtualshelves;
+use Koha::Virtualshelfcontents;
 
 use Try::Tiny qw( catch try );
 
@@ -68,6 +69,46 @@ sub list_public {
         return $c->render(
             status  => 200,
             openapi => $c->objects->search($lists_set),
+        );
+    } catch {
+        $c->unhandled_exception($_);
+    };
+}
+
+sub list_content {
+    my $c = shift->openapi->valid_input or return;
+
+    my $user    = $c->stash('koha.user');
+    my $list_id = $c->param("list_id");
+    my $list    = Koha::Virtualshelves->find($list_id);
+
+    unless ( $list->public ) {
+        if ( !defined $user ) {
+            return $c->render(
+                status  => 401,
+                openapi => {
+                    error      => "Unauthenticated",
+                    error_code => "unauthenticated"
+                }
+            );
+        } elsif ( $list->owner != $user->id ) {
+            return $c->render(
+                status  => 403,
+                openapi => {
+                    error      => "Unauthorized",
+                    error_code => "unauthorized"
+                }
+            );
+        }
+    }
+
+    my $contents = Koha::Virtualshelfcontents->search( { shelfnumber => $list_id } );
+
+    return try {
+        $c->res->headers->location( $c->req->url->to_string );
+        return $c->render(
+            status  => 200,
+            openapi => $contents->to_api,
         );
     } catch {
         $c->unhandled_exception($_);

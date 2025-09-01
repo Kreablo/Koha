@@ -32,6 +32,15 @@ Koha::Virtualshelfcontent - Koha Virtualshelfcontent Object class
 
 =cut
 
+sub to_api_mapping {
+    return {
+        biblionumber   => 'biblio_id',
+        borrowernumber => 'borrower_id',
+        dateadded      => 'added_date',
+        shelfnumber    => 'list_id',
+    };
+}
+
 =head3 type
 
 =cut
