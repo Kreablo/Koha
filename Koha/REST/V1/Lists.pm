@@ -82,6 +82,15 @@ sub list_content {
     my $list_id = $c->param("list_id");
     my $list    = Koha::Virtualshelves->find($list_id);
 
+    unless ( defined $list ) {
+        return $c->render(
+            status  => 404,
+            openapi => {
+                error      => "Not found",
+                error_code => "not_found"
+            }
+        );
+    }
     unless ( $list->public ) {
         if ( !defined $user ) {
             return $c->render(
