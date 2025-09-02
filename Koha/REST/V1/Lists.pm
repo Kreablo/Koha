@@ -75,6 +75,71 @@ sub list_public {
     };
 }
 
+sub create {
+    my $c = shift->openapi->valid_input or return;
+
+    my $user = $c->stash('koha.user');
+
+    if ( !defined $user ) {
+        return $c->render(
+            status  => 401,
+            openapi => {
+                error      => "Unauthenticated",
+                error_code => "unauthenticated"
+            }
+        );
+    }
+
+    my $public = $c->param("public") ? 1 : 0;
+
+    if ($public) {
+        my $may_create = $user->has_permission(
+            'lists' => { 'create_public_lists' => 1 },
+        );
+
+        unless ($may_create) {
+            return $c->render(
+                status  => 403,
+                openapi => {
+                    error      => "Unauthorized for public list creation",
+                    error_code => "unauthorized"
+                }
+            );
+        }
+    }
+
+    my $name = $c->param("name");
+
+    if ( defined Koha::Virtualshelves->find( { shelfname => $name } ) ) {
+        return $c->render(
+            status  => 409,
+            openapi => {
+                error      => "There is already a list with that name",
+                error_code => "conflict_in_creating_resource"
+            }
+        );
+    }
+
+    my $shelf = Koha::Virtualshelf->new(
+        {
+            shelfname => $name,
+            owner     => $user->id,
+            public    => $public
+        }
+    )->store;
+
+    return try {
+        my $loc = $c->req->url->base->to_string . $c->req->url->path->to_string . "/" . $shelf->id;
+        $c->res->headers->location($loc);
+        return $c->render(
+            status  => 201,
+            openapi => $shelf->to_api,
+        );
+    } catch {
+        $c->unhandled_exception($_);
+    }
+}
+
 sub list_content {
     my $c = shift->openapi->valid_input or return;
 
@@ -118,6 +183,74 @@ sub list_content {
         return $c->render(
             status  => 200,
             openapi => $contents->to_api,
+        );
+    } catch {
+        $c->unhandled_exception($_);
+    };
+}
+
+sub get_biblio {
+    my $c = shift->openapi->valid_input or return;
+
+    my $user      = $c->stash('koha.user');
+    my $list_id   = $c->param("list_id");
+    my $biblio_id = $c->param("biblio_id");
+
+    my $list = Koha::Virtualshelves->find($list_id);
+
+    unless ( defined $list ) {
+        return $c->render(
+            status  => 404,
+            openapi => {
+                error      => "Not found",
+                error_code => "not_found"
+            }
+        );
+    }
+    unless ( $list->public ) {
+        if ( !defined $user ) {
+            return $c->render(
+                status  => 401,
+                openapi => {
+                    error      => "Unauthenticated",
+                    error_code => "unauthenticated"
+                }
+            );
+        } elsif ( $list->owner != $user->id ) {
+            return $c->render(
+                status  => 403,
+                openapi => {
+                    error      => "Unauthorized",
+                    error_code => "unauthorized"
+                }
+            );
+        }
+    }
+
+    my $list_has_biblio = defined Koha::Virtualshelfcontents->find(
+        {
+            shelfnumber  => $list_id,
+            biblionumber => $biblio_id
+        }
+    );
+
+    my $biblio = Koha::Biblios->find( { biblionumber => $biblio_id } );
+
+    unless ( $list_has_biblio && defined $biblio ) {
+        return $c->render(
+            status  => 404,
+            openapi => {
+                error      => "Not found",
+                error_code => "item_not_found"
+            }
+        );
+    }
+
+    return try {
+        $c->res->headers->location( $c->req->url->to_string );
+        return $c->render(
+            status  => 200,
+            openapi => $biblio->to_api
         );
     } catch {
         $c->unhandled_exception($_);

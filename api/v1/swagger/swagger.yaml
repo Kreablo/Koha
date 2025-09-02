@@ -12,6 +12,8 @@ definitions:
     $ref: ./definitions/authorised_value.yaml
   authorised_value_category:
     $ref: ./definitions/authorised_value_category.yaml
+  biblio_item:
+    $ref: ./definitions/biblio_item.yaml
   circulation_rules:
     $ref: ./definitions/circulation_rules.yaml
   identity_provider:
@@ -535,6 +537,8 @@ paths:
     $ref: "./paths/lists.yaml#/~1public~1lists"
   "/public/lists/{list_id}":
     $ref: "./paths/lists.yaml#/~1public~1lists~1{list_id}"
+  "/public/lists/{list_id}/{biblio_id}":
+    $ref: "./paths/lists.yaml#/~1public~1lists~1{list_id}~1{biblio_id}"
   "/public/oauth/login/{provider_code}/{interface}":
     $ref: ./paths/public_oauth.yaml#/~1public~1oauth~1login~1{provider_code}~1{interface}
   "/public/patrons/{patron_id}/article_requests/{article_request_id}":
