@@ -165,7 +165,7 @@ sub list_contents {
                     error_code => "unauthenticated"
                 }
             );
-        } elsif ( $list->owner != $user->id ) {
+        } elsif ( !$list->can_be_viewed( $user->id ) ) {
             return $c->render(
                 status  => 403,
                 openapi => {
@@ -176,13 +176,11 @@ sub list_contents {
         }
     }
 
-    my $contents = Koha::Virtualshelfcontents->search( { shelfnumber => $list_id } );
-
     return try {
         $c->res->headers->location( $c->req->url->to_string );
         return $c->render(
             status  => 200,
-            openapi => $contents->to_api,
+            openapi => $list->get_contents->to_api
         );
     } catch {
         $c->unhandled_exception($_);
@@ -234,15 +232,7 @@ sub get_content {
         }
     );
 
-    unless ( defined $item ) {
-        return $c->render(
-            status  => 404,
-            openapi => {
-                error      => "Not found",
-                error_code => "item_not_found"
-            }
-        );
-    }
+    return $c->render_resource_not_found("Item") unless defined $item;
 
     return try {
         $c->res->headers->location( $c->req->url->to_string );
@@ -250,6 +240,42 @@ sub get_content {
             status  => 200,
             openapi => $item->to_api
         );
+    } catch {
+        $c->unhandled_exception($_);
+    };
+}
+
+sub delete {
+    my $c = shift->openapi->valid_input or return;
+
+    my $user    = $c->stash('koha.user');
+    my $list_id = $c->param("list_id");
+    my $list    = Koha::Virtualshelves->find($list_id);
+
+    return $c->render_resource_not_found("List") unless defined $list;
+
+    if ( !defined $user ) {
+        return $c->render(
+            status  => 401,
+            openapi => {
+                error      => "Unauthenticated",
+                error_code => "unauthenticated"
+            }
+        );
+    }
+    if ( !$list->can_be_deleted( $user->id ) ) {
+        return $c->render(
+            status  => 403,
+            openapi => {
+                error      => "Unauthorized",
+                error_code => "unauthorized"
+            }
+        );
+    }
+
+    return try {
+        my $deleted = $list->delete;
+        return $c->render_resource_deleted;
     } catch {
         $c->unhandled_exception($_);
     };
