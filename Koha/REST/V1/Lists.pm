@@ -140,7 +140,7 @@ sub create {
     }
 }
 
-sub list_content {
+sub list_contents {
     my $c = shift->openapi->valid_input or return;
 
     my $user    = $c->stash('koha.user');
@@ -189,7 +189,7 @@ sub list_content {
     };
 }
 
-sub get_biblio {
+sub get_content {
     my $c = shift->openapi->valid_input or return;
 
     my $user      = $c->stash('koha.user');
@@ -227,16 +227,14 @@ sub get_biblio {
         }
     }
 
-    my $list_has_biblio = defined Koha::Virtualshelfcontents->find(
+    my $item = Koha::Virtualshelfcontents->find(
         {
             shelfnumber  => $list_id,
             biblionumber => $biblio_id
         }
     );
 
-    my $biblio = Koha::Biblios->find( { biblionumber => $biblio_id } );
-
-    unless ( $list_has_biblio && defined $biblio ) {
+    unless ( defined $item ) {
         return $c->render(
             status  => 404,
             openapi => {
@@ -250,7 +248,7 @@ sub get_biblio {
         $c->res->headers->location( $c->req->url->to_string );
         return $c->render(
             status  => 200,
-            openapi => $biblio->to_api
+            openapi => $item->to_api
         );
     } catch {
         $c->unhandled_exception($_);

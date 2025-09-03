@@ -124,8 +124,8 @@
 
 "/public/lists/{list_id}":
   get:
-    x-mojo-to: Lists#list_content
-    operationId: listListContent
+    x-mojo-to: Lists#list_contents
+    operationId: listListContents
     tags:
       - lists
     summary: Show list contents
@@ -151,7 +151,6 @@
 
             * `bad_request`
             * `invalid_query`
-            * `only_mine_forbidden`
         schema:
           $ref: "../swagger.yaml#/definitions/error"
       "401":
@@ -179,11 +178,11 @@
           $ref: "../swagger.yaml#/definitions/error"
 "/public/lists/{list_id}/{biblio_id}":
   get:
-    x-mojo-to: Lists#get_biblio
-    operationId: listGetBiblio
+    x-mojo-to: Lists#get_content
+    operationId: getListContent
     tags:
       - lists
-    summary: Show list contents
+    summary: Show single list item
     parameters:
       - $ref: "../swagger.yaml#/parameters/list_id_pp"
       - $ref: "../swagger.yaml#/parameters/biblio_id_pp"
@@ -198,16 +197,15 @@
       - application/json
     responses:
       "200":
-        description: A biblio item
+        description: A single list_content
         schema:
-          $ref: "../swagger.yaml#/definitions/biblio_item"
+          $ref: "../swagger.yaml#/definitions/list_content"
       "400":
         description: |
           Bad request. Possible `error_code` attribute values:
 
             * `bad_request`
             * `invalid_query`
-            * `only_mine_forbidden`
         schema:
           $ref: "../swagger.yaml#/definitions/error"
       "401":
