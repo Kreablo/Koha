@@ -124,7 +124,7 @@
 
 "/public/lists/{list_id}":
   get:
-    x-mojo-to: Lists#list_contents
+    x-mojo-to: Lists::Content#list_contents
     operationId: listListContents
     tags:
       - lists
@@ -279,7 +279,7 @@
 
 "/public/lists/{list_id}/{biblio_id}":
   get:
-    x-mojo-to: Lists#get_content
+    x-mojo-to: Lists::Content#get_content
     operationId: getListContent
     tags:
       - lists
@@ -334,7 +334,7 @@
           $ref: "../swagger.yaml#/definitions/error"
 
   put:
-    x-mojo-to: Lists#add_content
+    x-mojo-to: Lists::Content#add_content
     operationId: addListContent
     tags:
       - lists
@@ -381,7 +381,7 @@
           $ref: "../swagger.yaml#/definitions/error"
 
   delete:
-    x-mojo-to: Lists#remove_content
+    x-mojo-to: Lists::Content#remove_content
     operationId: removeListContent
     tags:
       - lists
