@@ -146,6 +146,7 @@ sub list_contents {
     my $user    = $c->stash('koha.user');
     my $list_id = $c->param("list_id");
     my $list    = Koha::Virtualshelves->find($list_id);
+    $c->req->params->remove("list_id");
 
     unless ( defined $list ) {
         return $c->render(
@@ -245,6 +246,111 @@ sub get_content {
     };
 }
 
+sub add_content {
+    my $c         = shift->openapi->valid_input or return;
+    my $user      = $c->stash('koha.user');
+    my $list_id   = $c->param("list_id");
+    my $biblio_id = $c->param("biblio_id");
+
+    # my $body = $c->req->json;
+
+    unless ( defined $user ) {
+        return $c->render(
+            status  => 401,
+            openapi => {
+                error      => "Unauthenticated",
+                error_code => "unauthenticated"
+            }
+        );
+    }
+
+    my $list = Koha::Virtualshelves->find($list_id);
+
+    unless ( defined $list ) {
+        return $c->render(
+            status  => 404,
+            openapi => {
+                error      => "Not found",
+                error_code => "not_found"
+            }
+        );
+    }
+    unless ( $list->can_biblios_be_added( $user->id ) ) {
+        return $c->render(
+            status  => 403,
+            openapi => {
+                error      => "Not authorized to add biblios to this list",
+                error_code => "unauthorized"
+            }
+        );
+    }
+
+    return try {
+        my $newlist = $list->add_biblio( $biblio_id, $user->id );
+
+        return $c->render(
+            status  => 200,
+            openapi => $newlist->to_api
+        );
+    } catch {
+        $c->unhandled_exception($_);
+    }
+}
+
+sub remove_content {
+    my $c = shift->openapi->valid_input or return;
+
+    my $user      = $c->stash('koha.user');
+    my $list_id   = $c->param("list_id");
+    my $biblio_id = $c->param("biblio_id");
+
+    my $list = Koha::Virtualshelves->find($list_id);
+
+    return $c->render_resource_not_found("List") unless defined $list;
+
+    if ( !defined $user ) {
+        return $c->render(
+            status  => 401,
+            openapi => {
+                error      => "Unauthenticated",
+                error_code => "unauthenticated"
+            }
+        );
+    }
+
+    if ( !$list->can_biblios_be_removed( $user->id ) ) {
+        return $c->render(
+            status  => 403,
+            openapi => {
+                error      => "Unauthorized",
+                error_code => "unauthorized"
+            }
+        );
+    }
+
+    return try {
+        my $removed = $list->remove_biblios(
+            {
+                biblionumbers  => [$biblio_id],
+                borrowernumber => $user->id
+            }
+        );
+
+        if ( $removed > 0 ) {
+            return $c->render_resource_deleted;
+        }
+        return $c->render(
+            status  => 400,
+            openapi => {
+                error      => "Nothing to remove",
+                error_code => "bad_request"
+            }
+        );
+    } catch {
+        $c->unhandled_exception($_);
+    };
+}
+
 sub delete {
     my $c = shift->openapi->valid_input or return;
 
@@ -278,7 +384,69 @@ sub delete {
         return $c->render_resource_deleted;
     } catch {
         $c->unhandled_exception($_);
-    };
+    }
+}
+
+sub edit {
+    my $c       = shift->openapi->valid_input or return;
+    my $user    = $c->stash('koha.user');
+    my $list_id = $c->param("list_id");
+
+    my $body = $c->req->json;
+
+    unless ( defined $user ) {
+        return $c->render(
+            status  => 401,
+            openapi => {
+                error      => "Unauthenticated",
+                error_code => "unauthenticated"
+            }
+        );
+    }
+
+    my $list = Koha::Virtualshelves->find($list_id);
+
+    unless ( defined $list ) {
+        return $c->render(
+            status  => 404,
+            openapi => {
+                error      => "Not found",
+                error_code => "not_found"
+            }
+        );
+    }
+
+    unless ( $list->can_be_managed( $user->id ) ) {
+        return $c->render(
+            status  => 403,
+            openapi => {
+                error      => "Not authorized to manage this list",
+                error_code => "unauthorized"
+            }
+        );
+    }
+
+    if ( defined( my $req_public = $body->{public} ) ) {
+        unless ( $user->has_permission( 'lists' => { 'create_public_lists' => 1 } ) ) {
+            return $c->render(
+                status  => 403,
+                openapi => {
+                    error      => "Not authorized to change public status of this list.",
+                    error_code => "unauthorized",
+                }
+            );
+        }
+    }
+
+    return try {
+        my $newlist = $list->set_from_api($body)->store;
+        return $c->render(
+            status  => 200,
+            openapi => $c->objects->to_api($newlist),
+        );
+    } catch {
+        $c->unhandled_exception($_);
+    }
 }
 
 1;

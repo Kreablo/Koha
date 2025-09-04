@@ -176,6 +176,66 @@
         description: Under maintenance
         schema:
           $ref: "../swagger.yaml#/definitions/error"
+  put:
+    x-mojo-to: Lists#edit
+    operationId: editList
+    tags:
+      - lists
+    summary: Update list
+    description: "Update a lists metadata"
+    parameters:
+      - $ref: "../swagger.yaml#/parameters/list_id_pp"
+      - name: body
+        in: body
+        description: A JSON object containing fields to modify
+        required: true
+        schema:
+          type: object
+          properties:
+            name:
+              description: The name of this list
+              type: string
+            public:
+              description: List is public
+              type: boolean
+          additionalProperties: false
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: Updated list
+        schema:
+          $ref: "../swagger.yaml#/definitions/list"
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "401":
+        description: Authentication required
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "403":
+        description: Hold not allowed
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "404":
+        description: Hold not found
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "500":
+        description: |
+          Internal server error. Possible `error_code` attribute values:
+
+          * `internal_server_error`
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "503":
+        description: Under maintenance
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+
   delete:
     x-mojo-to: Lists#delete
     operationId: deleteList
@@ -259,6 +319,95 @@
           $ref: "../swagger.yaml#/definitions/error"
       "404":
         description: Not found
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "500":
+        description: |
+          Internal server error. Possible `error_code` attribute values:
+
+          * `internal_server_error`
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "503":
+        description: Under maintenance
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+
+  put:
+    x-mojo-to: Lists#add_content
+    operationId: addListContent
+    tags:
+      - lists
+    summary: Update list contents
+    description: "Update a lists content"
+    parameters:
+      - $ref: "../swagger.yaml#/parameters/list_id_pp"
+      - $ref: "../swagger.yaml#/parameters/biblio_id_pp"
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: New list content
+        schema:
+          $ref: "../swagger.yaml#/definitions/list_content"
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "401":
+        description: Authentication required
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "403":
+        description: Hold not allowed
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "404":
+        description: Hold not found
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "500":
+        description: |
+          Internal server error. Possible `error_code` attribute values:
+
+          * `internal_server_error`
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "503":
+        description: Under maintenance
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+
+  delete:
+    x-mojo-to: Lists#remove_content
+    operationId: removeListContent
+    tags:
+      - lists
+    summary: Remove list content
+    parameters:
+      - $ref: "../swagger.yaml#/parameters/biblio_id_pp"
+      - $ref: "../swagger.yaml#/parameters/list_id_pp"
+    produces:
+      - application/json
+    responses:
+      "204":
+        description: List deleted
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "401":
+        description: Authentication required
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "403":
+        description: Not allowed
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "404":
+        description: List not found
         schema:
           $ref: "../swagger.yaml#/definitions/error"
       "500":
