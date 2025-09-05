@@ -132,7 +132,7 @@ sub create {
         $c->res->headers->location($loc);
         return $c->render(
             status  => 201,
-            openapi => $shelf->to_api,
+            openapi => $c->objects->to_api($shelf)
         );
     } catch {
         $c->unhandled_exception($_);
@@ -214,8 +214,8 @@ sub edit {
         );
     }
 
-    if ( defined( my $req_public = $body->{public} ) ) {
-        unless ( $user->has_permission( 'lists' => { 'create_public_lists' => 1 } ) ) {
+    if ( defined $body->{public} && $body->{public} ) {
+        unless ( $user->has_permission( { 'lists' => 'create_public_lists' } ) ) {
             return $c->render(
                 status  => 403,
                 openapi => {
