@@ -151,12 +151,29 @@ sub add_content {
     }
 
     return try {
-        my $newlist = $list->add_biblio( $biblio_id, $user->id );
-
-        return $c->render(
-            status  => 200,
-            openapi => $c->objects->to_api($newlist)
-        );
+        my $newcontent = $list->add_biblio( $biblio_id, $user->id );
+        if ( defined $newcontent ) {
+            if ( ref($newcontent) ) {
+                return $c->render(
+                    status  => 200,
+                    openapi => $newcontent->discard_changes->to_api
+                );
+            } else {
+                return $c->render(
+                    status  => 403,
+                    openapi => {
+                        error      => "Not authorized for some reason..",
+                        error_code => "unauthorized"
+                    }
+                );
+            }
+        } else {
+            my $existing_content = $list->get_contents->find( { biblionumber => $biblio_id } );
+            return $c->render(
+                status  => 200,
+                openapi => $existing_content->to_api
+            );
+        }
     } catch {
         $c->unhandled_exception($_);
     }
