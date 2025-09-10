@@ -125,8 +125,6 @@ subtest 'list_public() tests' => sub {
 
 subtest 'create() tests' => sub {
 
-    # createNewList
-
     $schema->storage->txn_begin;
 
     my $password = 'thePassword123';
@@ -151,26 +149,24 @@ subtest 'create() tests' => sub {
     $patron_2->set_password( { password => $password, skip_validation => 1 } );
     my $patron_2_userid = $patron_2->userid;
 
-    $t->post_ok("//$patron_1_userid:$password@/api/v1/public/lists?name=list_1")
-        ->status_is( 201, "Creating a new list is ok" );
+    my $newlistname = 'list_1';
+
+    $t->post_ok("//$patron_1_userid:$password@/api/v1/public/lists?name=$newlistname")
+        ->status_is( 201, "Creating a new list is ok" )->json_is( '/name' => $newlistname )->json_is( '/public' => 0 );
 
     $t->post_ok("/api/v1/public/lists?name=list_2")->status_is( 401, "May not create without authentication" );
 
     $t->post_ok("//$patron_1_userid:$password@/api/v1/public/lists?name=list_3&public=true")
         ->status_is( 403, "May not create public lists without permission" );
 
-    # probably check the returned object
     $t->post_ok("//$patron_2_userid:$password@/api/v1/public/lists?name=list_4&public=true")
-        ->status_is( 201, "May create public lists with permission" );
-
-    # and maybe what lists are in the db now
+        ->status_is( 201, "May create public lists with permission" )->json_is( '/name' => 'list_4' )
+        ->json_is( '/public' => 1 );
 
     $schema->storage->txn_rollback;
 };
 
 subtest 'edit() tests' => sub {
-
-    # editList
 
     $schema->storage->txn_begin;
 
@@ -258,7 +254,6 @@ subtest 'edit() tests' => sub {
 
 subtest 'delete() tests' => sub {
 
-    # deleteList
     $schema->storage->txn_begin;
 
     our $password = 'thePassword123';
@@ -325,7 +320,8 @@ subtest 'delete() tests' => sub {
     $t->delete_ok("//$patron_2_userid:$password@/api/v1/public/lists/$list_id1")
         ->status_is( 204, "Authorized may remove public list" );
 
-    # test list state here.
+    $t->get_ok("//$patron_2_userid:$password@/api/v1/public/lists?q=$q")->status_is( 200, "Only one list remains." )
+        ->json_is( [ $list_4->to_api( { public => 1 } ) ] );
 
     $schema->storage->txn_rollback;
 };
