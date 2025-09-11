@@ -22,12 +22,14 @@ my $list_batches = 0;
 my $revert       = 0;
 my $want_help    = 0;
 my $framework    = '';
+my $overlay_framework;
 my $source       = 'batchimport';
 
 my $result = GetOptions(
     'batch-number:s' => \$batch_number,
     'list-batches'   => \$list_batches,
     'framework:s'    => \$framework,
+    'overlay-framework:s' => \$overlay_framework,
     'source:s'       => \$source,
     'revert'         => \$revert,
     'h|help'         => \$want_help
@@ -36,6 +38,12 @@ my $result = GetOptions(
 if ( $want_help or ( not $batch_number and not $list_batches ) ) {
     print_usage();
     exit 0;
+}
+
+if ( !defined $framework ) {
+    $framework = '';
+} elsif ( !defined $overlay_framework ) {
+    $overlay_framework = $framework;
 }
 
 if ($list_batches) {
@@ -90,17 +98,21 @@ sub list_batches {
 sub process_batch {
     my ($import_batch_id) = @_;
 
+    my $params = {
+        batch_id => $import_batch_id,
+        framework => $framework,
+        progress_interval => 100,
+        progress_callback => \&print_progress,
+        source => $source
+    };
+
+    if ( defined $overlay_framework ) {
+        $params->{overlay_framework} = $overlay_framework;
+    }
+
     print "... importing MARC records -- please wait\n";
     my ( $num_added, $num_updated, $num_items_added, $num_items_replaced, $num_items_errored, $num_ignored ) =
-        BatchCommitRecords(
-        {
-            batch_id          => $import_batch_id,
-            framework         => $framework,
-            progress_interval => 100,
-            progress_callback => \&print_progress,
-            source => $source
-        }
-        );
+        BatchCommitRecords( $params );
     print "... finished importing MARC records\n";
 
     print <<_SUMMARY_;
@@ -161,6 +173,9 @@ Parameters:
                          to import
     --framework <code>   add new records using this framework.  If
                          omitted, the default framework is used.
+    --overlay-framework <code>  updates framework on replaced records.
+                         If omitted, use --framework, if specified,
+                         otherwise use framework on existing record.
     --source <source>    custom source for applying marc overlay rules.
                          default: batchimport.
     --list-batches       print a list of record batches
