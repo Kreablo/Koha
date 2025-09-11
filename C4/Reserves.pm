@@ -2186,8 +2186,11 @@ sub MoveReserve {
     my ( $restype, $res, undef ) = CheckReserves( $item, $lookahead );
 
     if ( $res && $res->{borrowernumber} == $patron->borrowernumber ) {
-        my $hold = Koha::Holds->find( $res->{reserve_id} );
-        $hold->fill( { item_id => $item->id } );
+        my $result = CanItemBeReserved( $patron, $item, $res->{branchcode} );
+        if ( $result->{status} eq 'OK' ) {
+            my $hold = Koha::Holds->find( $res->{reserve_id} );
+            $hold->fill( { item_id => $item->id } );
+        }
     } else {
 
         # The item is reserved by someone else.
@@ -2211,14 +2214,21 @@ sub MoveReserve {
         if ($hold) {
 
             # The item is reserved by the current patron
-            $hold->fill( { item_id => $item->id } );
+            my $result = CanItemBeReserved( $patron, $item, $hold->branchcode );
+            if ( $result->{status} eq 'OK' ) {
+
+                # Only fill hold with actually reservable items
+                $hold->fill( { item_id => $item->id } );
+            }
         }
 
-        $hold = Koha::Holds->find( $res->{reserve_id} );
-        if ( $cancelreserve eq 'revert' ) {
-            $hold->revert_found();
-        } elsif ( $cancelreserve eq 'cancel' || $cancelreserve ) {    # cancel reserves on this item
-            $hold->cancel;
+        if ($res) {
+            $hold = Koha::Holds->find( $res->{reserve_id} );
+            if ( $cancelreserve eq 'revert' ) {
+                $hold->revert_found();
+            } elsif ( $cancelreserve eq 'cancel' || $cancelreserve ) {    # cancel reserves on this item
+                $hold->cancel;
+            }
         }
     }
 }
