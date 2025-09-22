@@ -118,6 +118,29 @@ sub all {
     return $libraries;
 }
 
+sub _array_bind {
+    my $key = shift;
+    my $array = shift;
+    my $binds = shift;
+    if (scalar @$array == 0) {
+        return '';
+    }
+    my $where = "$key IN (";
+    my $first = 1;
+    for my $b (@$array) {
+        if ($first) {
+            $first = 0;
+        } else {
+            $where .= ', ';
+        }
+        $where .= '?';
+        push @$binds, $b;
+    }
+
+    $where .= ")";
+    return $where;
+}
+
 sub all_grouped {
     my ( $self, $params ) = @_;
     my $selected = $params->{selected};
@@ -171,25 +194,12 @@ sub all_grouped {
         map { push @branchcodes, $_->branchcode } @libraries;
     }
 
-    
     my $where = '';
     my @binds = ();
 
     if (@branchcodes) {
-        $where = ' WHERE branches.branchcode IN (';
-        my $first = 1;
-        for my $b (@branchcodes) {
-            if ($first) {
-                $first = 0;
-            } else {
-                $where .= ', ';
-            }
-            $where .= '?';
-            push @binds, $b;
-        }
-        $where .= ') ';
+        $where = ' WHERE ' . _array_bind('branches.branchcode', \@branchcodes, \@binds);
     }
-    
     while (my ($key, $value)  = each %{$params->{search_params}}) {
         if ($where eq '') {
             $where .= ' WHERE ';
@@ -199,8 +209,12 @@ sub all_grouped {
         if ($key eq 'branchcode') {
             $key = 'branches.branchcode';
         }
-        $where .= "$key = ?";
-        push @binds, $value;
+        if (ref $value eq 'ARRAY') {
+            $where .= _array_bind($key, $value, \@binds);
+        } else {
+            $where .= "$key = ?";
+            push @binds, $value;
+        }
     }
 
     my $query = <<EOF;
@@ -242,7 +256,7 @@ EOF
         } else {
             $row->{selected} = 0;
         }
-        
+
         my $g = $row->{group} // '';
         if ($g ne $prevgroup) {
             $prevgroup = $g;
@@ -328,6 +342,10 @@ sub GetBranchSpecificCSS {
 
 sub pickup_locations_grouped {
     my ($self, $params) = @_;
+
+    my $libs = $self->pickup_locations( $params );
+
+    $params->{search_params} = { branchcode => [ map { $_->{branchcode} } @$libs ] };
 
     return $self->all_grouped($params);
 }
