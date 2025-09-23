@@ -403,7 +403,12 @@
                 },
                 [% END %]
                 {
+                    [% IF Koha.Preference('IntranetGroupedLibrarySelect') %]
+                    data: "holding_library.state:holding_library.name:me.holding_library_id",
+                    [% ELSE %]
                     data: "holding_library.name:me.holding_library_id",
+                    [% END %]
+
                     datatype: "coded_value:library",
                     dataFilter: "libraries",
                     className: "location",
@@ -414,7 +419,12 @@
                     }
                 },
                 {
+                    [% IF Koha.Preference('IntranetGroupedLibrarySelect') %]
+                    data: "home_library.state:home_library.name:me.home_library_id",
+                    [% ELSE %]
                     data: "home_library.name:me.home_library_id",
+                    [% END %]
+
                     datatype: "coded_value:library",
                     dataFilter: "libraries",
                     className: "homebranch",
