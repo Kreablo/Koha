@@ -33,6 +33,9 @@ use C4::Heading;
 use C4::AuthoritiesMarc qw( GuessAuthTypeCode );
 use C4::Biblio;
 
+use Search::Elasticsearch::Role::Cxn;
+$Search::Elasticsearch::Role::Cxn::PRODUCT_CHECK_VALUE = '';
+
 use Carp  qw( carp croak );
 use Clone qw( clone );
 use Modern::Perl;
