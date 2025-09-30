@@ -551,32 +551,8 @@ sub handle_patron_status {
 
     $ils->check_inst_id( $fields->{ (FID_INST_ID) }, "handle_patron_status" );
     $patron = $ils->find_patron( $fields->{ (FID_PATRON_ID) } );
-<<<<<<< HEAD
-    if (defined $patron) {
-        my $koha_patron;
-        if (defined $server->{account}->{authorize_on_patron_attribute}) {
-            my $authorize = 0;
-            $koha_patron = Koha::Patrons->find($patron->{borrowernumber});
-            for my $attr ($koha_patron->extended_attributes->search({ code => $server->{account}->{authorize_on_patron_attribute} })) {
-                my $val = defined $server->{account}->{authorize_on_patron_attribute_value} ? $server->{account}->{authorize_on_patron_attribute_value} : '1';
-                if (defined $attr && $attr->attribute eq $val) {
-                    $authorize = 1;
-                    last;
-                }
-            }
-            if (!$authorize) {
-                $patron = undef;
-            }
-        }
-        if ( C4::Context->preference('TrackLastPatronActivityTriggers') ) {
-            $koha_patron = Koha::Patrons->find($patron->{borrowernumber}) unless defined $koha_patron;
-            $koha_patron->update_lastseen('connection');
-        }
-    }
-=======
 
     $patron = _check_attribute($server, $patron);
->>>>>>> 316c1a9d99 (Fix authorize_on_patron_attribute for 23.11)
 
     $resp = build_patron_status( $patron, $lang, $fields, $server );
     $self->write_msg( $resp, $server );
