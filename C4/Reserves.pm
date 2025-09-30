@@ -2177,6 +2177,12 @@ Parameters are:
 
 =cut
 
+sub _fillableStatus {
+    my $result = shift;
+
+    return grep { $_ eq $result->{status} } ('OK', 'itemAlreadyOnHold');
+}
+
 sub MoveReserve {
     my ( $item, $patron, $cancelreserve ) = @_;
 
@@ -2187,7 +2193,7 @@ sub MoveReserve {
 
     if ( $res && $res->{borrowernumber} == $patron->borrowernumber ) {
         my $result = CanItemBeReserved( $patron, $item, $res->{branchcode} );
-        if ( $result->{status} eq 'OK' ) {
+        if ( _fillableStatus($result) ) {
             my $hold = Koha::Holds->find( $res->{reserve_id} );
             $hold->fill( { item_id => $item->id } );
         }
@@ -2215,7 +2221,7 @@ sub MoveReserve {
 
             # The item is reserved by the current patron
             my $result = CanItemBeReserved( $patron, $item, $hold->branchcode );
-            if ( $result->{status} eq 'OK' ) {
+            if ( _fillableStatus($result) ) {
 
                 # Only fill hold with actually reservable items
                 $hold->fill( { item_id => $item->id } );
