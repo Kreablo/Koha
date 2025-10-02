@@ -74,7 +74,7 @@ sub as_string {
     foreach my $e ( @{ $self->{elem_arr} } ) {
         $string .= q|+|;
         if ( ref $e eq 'ARRAY' ) {
-            $string .= join q{:}, @{$e};
+            $string .= join q{:}, (map { escape($_) } @{$e});
         } else {
             $string .= $e;
         }
@@ -121,6 +121,14 @@ sub _components {
     }
     @c = map { de_escape($_) } @c;
     return \@c;
+}
+
+sub escape {
+    my $string = shift;
+
+    $string =~ s/([:?+'])/?$1/g;
+
+    return $string;
 }
 
 sub de_escape {
