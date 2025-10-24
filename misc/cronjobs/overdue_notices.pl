@@ -887,7 +887,7 @@ END_SQL
                                      reply_address          => $library->inbound_email_address,
                                  }
                              ) unless $test_mode;
-
+                        }
                     }
                 }
                 $already_queued{"$borrowernumber$i"} = 1;
