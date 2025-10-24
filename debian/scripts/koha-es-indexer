@@ -163,7 +163,7 @@ set_action()
 
 op=""
 quiet="no"
-batch_size=10
+batch_size=500
 
 # Read command line parameters
 while [ $# -gt 0 ]; do
