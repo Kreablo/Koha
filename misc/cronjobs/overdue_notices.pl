@@ -865,7 +865,7 @@ END_SQL
                                 }
                                 );
                         }
-                        unless ( $effective_mtt eq 'print' and $mtt ne 'print' ) {
+                        if ( $effective_mtt eq 'print' and $mtt ne 'print' ) {
 
                             $print_fallback = {
                                 letter                 => $letter,
