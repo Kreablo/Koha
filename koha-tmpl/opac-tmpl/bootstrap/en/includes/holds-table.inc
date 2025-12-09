@@ -114,7 +114,7 @@
                                                 <div class="form-group">
                                                     <label for="new_branch[% HOLD.reserve_id | html %]">New pickup location:</label>
                                                     <select name="new_pickup_location" id="new_branch[% HOLD.reserve_id | html %]" class="form-select">
-                                                        [% PROCESS options_for_libraries pickup_location => 1, params => { search_params => { pickup_location => 1, biblio => HOLD.biblionumber, patron => HOLD.borrower }, selected => HOLD.branchcode }  %]
+                                                        [% PROCESS ungrouped_options_for_libraries libraries => Branches.pickup_locations({ search_params => { biblio => HOLD.biblionumber, patron => HOLD.borrower }, selected => HOLD.branchcode }) %]
                                                     </select>
                                                 </div>
                                                 <input type="hidden" name="reserve_id" value="[% HOLD.reserve_id | html %]" />
