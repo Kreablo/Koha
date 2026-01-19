@@ -215,6 +215,8 @@ sub _get_uri {
 
     $uri ||= "";
 
+    return $uri;
+
     if ( $uri =~ /(.*):\/\/(.*)/ ) {
         my $oldprotocol = $1;
         if ( $oldprotocol ne 'https' ) {
