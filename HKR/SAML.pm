@@ -59,6 +59,19 @@ sub user_is_marked {
     return $attr->count > 0 && $attr->next->attribute;
 }
 
+sub userid_is_marked {
+    my $userid = shift;
+
+    my $attr = Koha::Patron::Attributes->search({
+        userid => $userid,
+        code => MARK_ATTR,
+    }, {
+        join => 'borrowernumber',
+    });
+
+    return $attr->count > 0 && $attr->next->attribute;
+}
+
 sub _consent {
     my $borrowernumber = shift;
 

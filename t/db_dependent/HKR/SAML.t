@@ -22,6 +22,9 @@ subtest 'mark_patron() tests' => sub {
     my $p = $builder->build_object(
         {
             class => 'Koha::Patrons',
+            value => {
+                userid => 'iB1aedah Moi1iech',
+            },
         }
     );
 
@@ -40,11 +43,13 @@ subtest 'mark_patron() tests' => sub {
 
     ok(!HKR::SAML::patron_is_marked($p), 'patron is not marked');
     ok(!HKR::SAML::user_is_marked($p->borrowernumber), 'user is not marked');
+    ok(!HKR::SAML::userid_is_marked($p->userid), 'userid is not marked');
 
     HKR::SAML::mark_patron($p);
 
     ok(HKR::SAML::patron_is_marked($p), 'patron is marked');
     ok(HKR::SAML::user_is_marked($p->borrowernumber), 'user is marked');
+    ok(HKR::SAML::userid_is_marked($p->userid), 'userid is marked');
 
     $schema->storage->txn_rollback;
 };
