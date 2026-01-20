@@ -53,9 +53,9 @@ subtest 'mark_patron() tests' => sub {
 
     HKR::SAML::mark_patron($p);
 
-    is($p->extended_attributes->search({ code => HKR::SAML::MARK_ATTR() })->count, 1, 'Has exactly one attribute');
+    is( $p->extended_attributes->search( { code => HKR::SAML::MARK_ATTR() } )->count, 1, 'Has exactly one attribute' );
 
-    my $attr = $p->extended_attributes->search({ code => HKR::SAML::MARK_ATTR() })->next;
+    my $attr = $p->extended_attributes->search( { code => HKR::SAML::MARK_ATTR() } )->next;
     $attr->attribute('0')->store;
 
     ok( !HKR::SAML::patron_is_marked($p),                 'patron is not marked' );
@@ -64,7 +64,7 @@ subtest 'mark_patron() tests' => sub {
 
     HKR::SAML::mark_patron($p);
 
-    is($p->extended_attributes->search({ code => HKR::SAML::MARK_ATTR() })->count, 1, 'Has exactly one attribute');
+    is( $p->extended_attributes->search( { code => HKR::SAML::MARK_ATTR() } )->count, 1, 'Has exactly one attribute' );
 
     ok( HKR::SAML::patron_is_marked($p),                 'patron is marked' );
     ok( HKR::SAML::user_is_marked( $p->borrowernumber ), 'user is marked' );
@@ -119,6 +119,7 @@ subtest 'check_consent() tests' => sub {
             {
                 pce_password  => '1234',
                 pce_password2 => '1235',
+                pce_language  => 'sv-SE',
             }
         ),
         'password mismatch'
@@ -133,6 +134,7 @@ subtest 'check_consent() tests' => sub {
             {
                 pce_password  => '123',
                 pce_password2 => '123',
+                pce_language  => 'sv-SE',
             }
         ),
         'password too short'
@@ -147,6 +149,7 @@ subtest 'check_consent() tests' => sub {
             {
                 pce_password  => '1234',
                 pce_password2 => '1234',
+                pce_language  => 'sv-SE',
             }
         ),
         'check and store with valid password'
@@ -154,6 +157,7 @@ subtest 'check_consent() tests' => sub {
 
     ok( HKR::SAML::check_user_completion( $p2->borrowernumber ), 'user is completed' );
     ok( defined $p2->password,                                   'user has password' );
+    is( $p2->lang, 'sv-SE', 'language has been set' );
 
     $schema->storage->txn_rollback;
     }

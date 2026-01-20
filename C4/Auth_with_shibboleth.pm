@@ -201,7 +201,7 @@ sub _sync {
     my $patron = Koha::Patrons->find($borrowernumber);
     $patron->set( \%borrower )->store;
 
-    HKR::SAML::mark_patron( $patron );
+    HKR::SAML::mark_patron($patron);
 
 }
 

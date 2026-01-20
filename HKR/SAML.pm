@@ -28,7 +28,7 @@ sub mark_patron {
     my ($patron) = shift;
 
     if ( !patron_is_marked($patron) ) {
-        my $attr = $patron->extended_attributes->search({ code => HKR::SAML::MARK_ATTR() })->next;
+        my $attr = $patron->extended_attributes->search( { code => HKR::SAML::MARK_ATTR() } )->next;
         if ($attr) {
             $attr->attribute(1);
             $attr->store;
@@ -160,14 +160,18 @@ sub check_and_store_consent {
         return 1;
     }
 
-    my $pw1 = $vars->{pce_password};
-    my $pw2 = $vars->{pce_password2};
+    my $pw1    = $vars->{pce_password};
+    my $pw2    = $vars->{pce_password2};
+    my $result = 0;
 
     if ( length $pw1 >= 4 && $pw1 eq $pw2 ) {
         _set_password( $patron, $pw1 );
         _set_patron_complete($patron);
-        return 1;
+        $result = 1;
+    }
+    if ( $vars->{pce_language} && $vars->{pce_language} ne $patron->lang ) {
+        $patron->lang( $vars->{pce_language} )->store;
     }
 
-    return 0;
+    return $result;
 }

@@ -11,6 +11,42 @@
         <input class="form-control" type="password" id="password2" size="10" name="pce_password2" value="" autocomplete="off" />
         <div id="password2Feedback" class="invalid-feedback"> Please specify PIN code </div>
     </div>
+    <div class="has-validation">
+        <label for="language">Language for receiving messages:</label>
+        [% FOREACH languages_loo IN languages_loop %]
+            [% IF ( languages_loo.group_enabled ) %]
+                [% IF ( languages_loo.plural ) %]
+                    [% FOREACH sublanguages_loo IN languages_loo.sublanguages_loop %]
+                        [% IF ( sublanguages_loo.enabled ) %]
+                            <div>
+                                <input
+                                    type="radio"
+                                    name="pce_language"
+                                    value="[% sublanguages_loo.rfc4646_subtag | html %]"
+                                    id="language-[% sublanguages_loo.rfc4646_subtag | html %]"
+                                    [% IF ( sublanguages_loo.sublanguage_current ) %]checked[% END %]
+                                />
+                                <label for="language-[% sublanguages_loo.rfc4646_subtag | html %]">
+                                    [% sublanguages_loo.native_description | html %] [% sublanguages_loo.script_description | html %] [% sublanguages_loo.region_description | html %]
+                                    [% sublanguages_loo.variant_description | html %]
+                                </label>
+                            </div>
+                        [% END # / IF sublanguages_loo.enabled %]
+                    [% END # / FOREACH sublanguages_loo %]
+                [% ELSE %]
+                    [% IF ( languages_loo.group_enabled ) %]
+                        <div>
+                            <input type="radio" name="pce_language" value="[% languages_loo.rfc4646_subtag | html %]" id="language-[% languages_loo.rfc4646_subtag | html %]" [% IF ( languages_loo.current ) %]checked[% END %] />
+                            <label for="language-[% languages_loo.rfc4646_subtag | html %]">
+                                [% languages_loo.native_description | html %] [% languages_loo.script_description | html %] [% languages_loo.region_description | html %]
+                                [% languages_loo.variant_description | html %]
+                            </label>
+                        </div>
+                    [% END # / IF languages_loo.group_enabled %]
+                [% END # / IF ( languages_loo.plural ) %]
+            [% END # / IF ( languages_loo.group_enabled ) %]
+        [% END # / FOREACH languages_loo IN languages_loop %]
+    </div>
 </fieldset>
 <script>
     (() => {
