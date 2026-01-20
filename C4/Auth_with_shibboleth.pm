@@ -190,6 +190,7 @@ sub _sync {
     my ( $borrowernumber, $config, $match ) = @_;
     my %borrower;
     $borrower{'borrowernumber'} = $borrowernumber;
+
     while ( my ( $key, $entry ) = each %{ $config->{'mapping'} } ) {
         if ( C4::Context->psgi_env ) {
             $borrower{$key} = ( $entry->{'is'} && $ENV{ "HTTP_" . uc( $entry->{'is'} ) } ) || $entry->{'content'} || '';
@@ -199,6 +200,9 @@ sub _sync {
     }
     my $patron = Koha::Patrons->find($borrowernumber);
     $patron->set( \%borrower )->store;
+
+    HKR::SAML::mark_patron( $patron );
+
 }
 
 sub _get_uri {

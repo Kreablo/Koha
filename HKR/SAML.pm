@@ -28,12 +28,18 @@ sub mark_patron {
     my ($patron) = shift;
 
     if ( !patron_is_marked($patron) ) {
-        $patron->add_extended_attribute(
-            {
-                code      => MARK_ATTR,
-                attribute => 1,
-            }
-        );
+        my $attr = $patron->extended_attributes->search({ code => HKR::SAML::MARK_ATTR() })->next;
+        if ($attr) {
+            $attr->attribute(1);
+            $attr->store;
+        } else {
+            $patron->add_extended_attribute(
+                {
+                    code      => MARK_ATTR,
+                    attribute => 1,
+                }
+            );
+        }
     }
 }
 

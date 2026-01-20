@@ -51,6 +51,25 @@ subtest 'mark_patron() tests' => sub {
     ok( HKR::SAML::user_is_marked( $p->borrowernumber ), 'user is marked' );
     ok( HKR::SAML::userid_is_marked( $p->userid ),       'userid is marked' );
 
+    HKR::SAML::mark_patron($p);
+
+    is($p->extended_attributes->search({ code => HKR::SAML::MARK_ATTR() })->count, 1, 'Has exactly one attribute');
+
+    my $attr = $p->extended_attributes->search({ code => HKR::SAML::MARK_ATTR() })->next;
+    $attr->attribute('0')->store;
+
+    ok( !HKR::SAML::patron_is_marked($p),                 'patron is not marked' );
+    ok( !HKR::SAML::user_is_marked( $p->borrowernumber ), 'user is not marked' );
+    ok( !HKR::SAML::userid_is_marked( $p->userid ),       'userid is not marked' );
+
+    HKR::SAML::mark_patron($p);
+
+    is($p->extended_attributes->search({ code => HKR::SAML::MARK_ATTR() })->count, 1, 'Has exactly one attribute');
+
+    ok( HKR::SAML::patron_is_marked($p),                 'patron is marked' );
+    ok( HKR::SAML::user_is_marked( $p->borrowernumber ), 'user is marked' );
+    ok( HKR::SAML::userid_is_marked( $p->userid ),       'userid is marked' );
+
     $schema->storage->txn_rollback;
 };
 
