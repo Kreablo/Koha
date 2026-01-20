@@ -2088,12 +2088,11 @@ sub checkpw {
     my @return;
     my $patron;
     my $internal = 0;
-    if ( defined $userid ) {
-        $patron = Koha::Patrons->find( { userid     => $userid } );
-        $patron = Koha::Patrons->find( { cardnumber => $userid } ) unless $patron;
+    if ( defined $userid && $userid ne '' ) {
         # INTERNAL CHECK: users blocked login with
         # password (ie., shibboleth only) is disabled from SIP and
         # ILS-DI.  We rely on $no_set_userenv for this, note above.
+        warn "api_auth: $api_auth userid_is_marked ($userid) " . HKR::SAML::userid_is_marked( $userid );
         $internal = $api_auth || !HKR::SAML::userid_is_marked( $userid );
     }
     my $check_internal_as_fallback = $internal;
@@ -2114,7 +2113,6 @@ sub checkpw {
             @return    = ( $retval, $retcard, $retuserid, $patron );
             $passwd_ok = 1;
         }
-        $check_internal_as_fallback = 1 if $retval == 0;
 
     } elsif ( $cas && $query && $query->param('ticket') ) {
 
@@ -2145,13 +2143,12 @@ sub checkpw {
             my ( $retval, $retcard, $retuserid );
             ( $retval, $retcard, $retuserid, $patron ) =
                 C4::Auth_with_shibboleth::checkpw_shib($shib_login);    # EXTERNAL AUTH
+
             if ($retval) {
                 @return = ( $retval, $retcard, $retuserid, $patron );
             }
             $passwd_ok = $retval;
         }
-    } else {
-        $check_internal_as_fallback = 1;
     }
 
     if ($check_internal_as_fallback) {

@@ -52,6 +52,8 @@ foreach my $consent_type ( sort keys %$consent_types ) {
     push @consents, $patron->consent($consent_type);
 }
 
+my $needs_extra_consent = 0;
+
 if ( uc $query->request_method eq 'POST' )  {
     # Handle saves here
     my $needs_redirect;
@@ -74,7 +76,7 @@ if ( uc $query->request_method eq 'POST' )  {
     }
 
     if ( !HKR::SAML::check_and_store_consent( $patron, $vars ) ) {
-        $needs_redirect = 1;
+        $needs_extra_consent = 1;
     }
 
     # If user refused GDPR consent and we enforce GDPR, logout (when saving)
@@ -82,8 +84,10 @@ if ( uc $query->request_method eq 'POST' )  {
         print $query->redirect('/cgi-bin/koha/opac-main.pl?logout.x=1');
         exit;
     }
+} elsif ( !HKR::SAML::check_user_completion( $patron->borrowernumber ) ) {
+    $needs_extra_consent = 1;
 }
 
-$template->param( patron => $patron, consents => \@consents, consent_types => $consent_types, patron_is_marked => $patron_is_marked );
+$template->param( patron => $patron, consents => \@consents, consent_types => $consent_types, needs_extra_consent => $needs_extra_consent );
 
 output_html_with_http_headers $query, $cookie, $template->output, undef, { force_no_caching => 1 };

@@ -46,6 +46,7 @@
                 const feedback2 = document.querySelector('#password2Feedback');
 
                 let msg = "";
+                let valid = false;
                 if (!password1.value.match(/^\d{4}\d*$/)) {
                     msg = _("PIN code must consist of at least four digits and only digits.");
                     password1.classList.add("is-invalid");
@@ -59,10 +60,17 @@
                     password2.classList.add("is-invalid");
                     feedback2.textContent = msg;
                 } else {
+                    valid = true;
                     password1.setCustomValidity(msg);
                     password1.classList.remove("is-invalid");
                     password2.setCustomValidity(msg);
                     password2.classList.remove("is-invalid");
+                }
+                if (valid) {
+                    const button = document.querySelector('#saveconsent');
+                    if (button) {
+                        button.disabled = false;
+                    }
                 }
             };
             password1.addEventListener("blur", validatePassword);

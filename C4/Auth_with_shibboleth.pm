@@ -97,10 +97,10 @@ sub get_login_shib {
 # In our case : does the given attribute match one of our users ?
 sub checkpw_shib {
 
-    my ($match) = @_;
+     my ($match) = @_;
     my $config = _get_shib_config();
 
-    # Does the given shibboleth attribute value ($match) match a valid koha user ?
+   # Does the given shibboleth attribute value ($match) match a valid koha user ?
     my $borrowers = Koha::Patrons->search( { $config->{matchpoint} => $match } );
     if ( $borrowers->count > 1 ) {
 

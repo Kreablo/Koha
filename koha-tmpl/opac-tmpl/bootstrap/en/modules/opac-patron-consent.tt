@@ -81,7 +81,7 @@
                                 [% END %]
                             </fieldset>
                         [% END %]
-                        [% IF patron_is_marked %]
+                        [% IF needs_extra_consent %]
                           [% INCLUDE 'patron-consent-extra.inc' %]
                         [% END %]
                         <fieldset class="action">

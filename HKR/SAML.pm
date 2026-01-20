@@ -135,6 +135,10 @@ sub check_and_store_consent {
     my $patron = shift;
     my $vars = shift;
 
+    if (!patron_is_marked( $patron )) {
+        return 1;
+    }
+
     my $consent = _consent( $patron->borrowernumber );
 
     if ( _consent_valid( $consent ) ) {
