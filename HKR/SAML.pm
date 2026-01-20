@@ -1,5 +1,7 @@
 package HKR::SAML;
 
+use strict;
+
 use Koha::AuthUtils;
 use Koha::Patron::Consents;
 use Koha::DateUtils qw( dt_from_string );
@@ -18,30 +20,32 @@ our @EXPORT_OK = qw(
 );
 
 use constant {
-    MARK_ATTR => 'SAML_USER',
+    MARK_ATTR    => 'SAML_USER',
     CONSENT_TYPE => 'SAML_EXTRA_CONSENT',
 };
 
 sub mark_patron {
     my ($patron) = shift;
 
-    if (!patron_is_marked($patron)) {
-        $patron->add_extended_attribute({
-            code => MARK_ATTR,
-            attribute => 1,
-        });
+    if ( !patron_is_marked($patron) ) {
+        $patron->add_extended_attribute(
+            {
+                code      => MARK_ATTR,
+                attribute => 1,
+            }
+        );
     }
 }
 
 sub patron_is_marked {
     my $patron = shift;
 
-    if (!$patron) {
+    if ( !$patron ) {
         return 0;
     }
 
     my $attr = $patron->get_extended_attribute(MARK_ATTR);
-    if (!defined $attr) {
+    if ( !defined $attr ) {
         return 0;
     }
 
@@ -51,10 +55,12 @@ sub patron_is_marked {
 sub user_is_marked {
     my $borrowernumber = shift;
 
-    my $attr = Koha::Patron::Attributes->search({
-        borrowernumber => $borrowernumber,
-        code => MARK_ATTR,
-    });
+    my $attr = Koha::Patron::Attributes->search(
+        {
+            borrowernumber => $borrowernumber,
+            code           => MARK_ATTR,
+        }
+    );
 
     return $attr->count > 0 && $attr->next->attribute;
 }
@@ -62,12 +68,15 @@ sub user_is_marked {
 sub userid_is_marked {
     my $userid = shift;
 
-    my $attr = Koha::Patron::Attributes->search({
-        userid => $userid,
-        code => MARK_ATTR,
-    }, {
-        join => 'borrowernumber',
-    });
+    my $attr = Koha::Patron::Attributes->search(
+        {
+            userid => $userid,
+            code   => MARK_ATTR,
+        },
+        {
+            join => 'borrowernumber',
+        }
+    );
 
     return $attr->count > 0 && $attr->next->attribute;
 }
@@ -95,9 +104,9 @@ sub _consent_valid {
 sub user_is_complete {
     my $borrowernumber = shift;
 
-    my $consent = _consent( $borrowernumber );
+    my $consent = _consent($borrowernumber);
 
-    return _consent_valid( $consent );
+    return _consent_valid($consent);
 }
 
 sub _set_patron_complete {
@@ -106,13 +115,13 @@ sub _set_patron_complete {
     my $consent = $patron->consent( HKR::SAML::CONSENT_TYPE() );
     $consent->set(
         {
-            given_on   => dt_from_string(),
+            given_on => dt_from_string(),
         }
     )->store;
 }
 
 sub _set_password {
-    my $patron = shift;
+    my $patron   = shift;
     my $password = shift;
 
     my $digest = Koha::AuthUtils::hash_password($password);
@@ -122,26 +131,26 @@ sub _set_password {
     # We do not want to call $patron->store and retrieve password from DB
     $patron->password($digest);
     $patron->login_attempts(0);
-    Koha::Object::store( $patron );
+    Koha::Object::store($patron);
 }
 
 sub check_user_completion {
     my $borrowernumber = shift;
 
-    return !user_is_marked( $borrowernumber ) || (user_is_marked( $borrowernumber ) && user_is_complete( $borrowernumber ));
+    return !user_is_marked($borrowernumber) || ( user_is_marked($borrowernumber) && user_is_complete($borrowernumber) );
 }
 
 sub check_and_store_consent {
     my $patron = shift;
-    my $vars = shift;
+    my $vars   = shift;
 
-    if (!patron_is_marked( $patron )) {
+    if ( !patron_is_marked($patron) ) {
         return 1;
     }
 
     my $consent = _consent( $patron->borrowernumber );
 
-    if ( _consent_valid( $consent ) ) {
+    if ( _consent_valid($consent) ) {
         return 1;
     }
 
@@ -150,7 +159,7 @@ sub check_and_store_consent {
 
     if ( length $pw1 >= 4 && $pw1 eq $pw2 ) {
         _set_password( $patron, $pw1 );
-        _set_patron_complete( $patron );
+        _set_patron_complete($patron);
         return 1;
     }
 

@@ -334,7 +334,7 @@ sub check_password {
     return $pwd eq q{} unless $self->{password};
 
     my $ret = 0;
-    ($ret) = checkpw( $self->{userid}, $pwd, undef, undef, 1, 1 ); # userid, query, type, no_set_userenv
+    ($ret) = checkpw( $self->{userid}, $pwd, undef, undef, 1, 1 );    # userid, query, type, no_set_userenv
     return $ret;
 }
 

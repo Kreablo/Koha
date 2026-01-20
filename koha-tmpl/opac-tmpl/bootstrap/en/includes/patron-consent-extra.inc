@@ -1,40 +1,38 @@
 <fieldset class="patron-consent-extra">
-  <legend><h2>Mandatory information</h2></legend>
-  <p>
-    You must select a PIN code for borrowing material using self service terminals.
-  </p>
-  <div class="has-validation">
-    <label for="password">PIN code:</label>
-    <input class="form-control"  type="password" id="password" size="10" name="pce_password" value="" autocomplete="off" />
-    <div id="passwordFeedback" class="invalid-feedback">
-      Please specify PIN code
+    <legend><h2>Mandatory information</h2></legend>
+    <p> You must select a PIN code for borrowing material using self service terminals. </p>
+    <div class="has-validation">
+        <label for="password">PIN code:</label>
+        <input class="form-control" type="password" id="password" size="10" name="pce_password" value="" autocomplete="off" />
+        <div id="passwordFeedback" class="invalid-feedback"> Please specify PIN code </div>
     </div>
-  </div>
-  <div class="has-validation">
-    <label for="password">PIN code repeat:</label>
-    <input class="form-control" type="password" id="password2" size="10" name="pce_password2" value="" autocomplete="off" />
-    <div id="password2Feedback" class="invalid-feedback">
-      Please specify PIN code
+    <div class="has-validation">
+        <label for="password">PIN code repeat:</label>
+        <input class="form-control" type="password" id="password2" size="10" name="pce_password2" value="" autocomplete="off" />
+        <div id="password2Feedback" class="invalid-feedback"> Please specify PIN code </div>
     </div>
-  </div>
 </fieldset>
 <script>
     (() => {
-        'use strict'
+        "use strict";
 
         // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        const forms = document.querySelectorAll('.needs-validation')
+        const forms = document.querySelectorAll(".needs-validation");
 
         // Loop over them and prevent submission
         Array.from(forms).forEach(form => {
-            form.addEventListener('submit', event => {
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                }
+            form.addEventListener(
+                "submit",
+                event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
 
-                form.classList.add('was-validated')
-            }, false)
+                    form.classList.add("was-validated");
+                },
+                false
+            );
         });
 
         const password1 = document.querySelector('.patron-consent-extra input[name="pce_password"]');
@@ -42,8 +40,8 @@
 
         if (password1 && password2) {
             const validatePassword = () => {
-                const feedback1 = document.querySelector('#passwordFeedback');
-                const feedback2 = document.querySelector('#password2Feedback');
+                const feedback1 = document.querySelector("#passwordFeedback");
+                const feedback2 = document.querySelector("#password2Feedback");
 
                 let msg = "";
                 let valid = false;
@@ -67,7 +65,7 @@
                     password2.classList.remove("is-invalid");
                 }
                 if (valid) {
-                    const button = document.querySelector('#saveconsent');
+                    const button = document.querySelector("#saveconsent");
                     if (button) {
                         button.disabled = false;
                     }
@@ -76,6 +74,5 @@
             password1.addEventListener("blur", validatePassword);
             password2.addEventListener("blur", validatePassword);
         }
-
     })();
 </script>

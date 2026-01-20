@@ -42,7 +42,6 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 my $patron = Koha::Patrons->find($borrowernumber)
     or Koha::Exceptions::Patron->throw("Patron id $borrowernumber not found");
 
-
 my $patron_is_marked = HKR::SAML::patron_is_marked($patron);
 
 # Get consent types and values
@@ -54,7 +53,8 @@ foreach my $consent_type ( sort keys %$consent_types ) {
 
 my $needs_extra_consent = 0;
 
-if ( uc $query->request_method eq 'POST' )  {
+if ( uc $query->request_method eq 'POST' ) {
+
     # Handle saves here
     my $needs_redirect;
     foreach my $consent (@consents) {
@@ -88,6 +88,9 @@ if ( uc $query->request_method eq 'POST' )  {
     $needs_extra_consent = 1;
 }
 
-$template->param( patron => $patron, consents => \@consents, consent_types => $consent_types, needs_extra_consent => $needs_extra_consent );
+$template->param(
+    patron              => $patron, consents => \@consents, consent_types => $consent_types,
+    needs_extra_consent => $needs_extra_consent
+);
 
 output_html_with_http_headers $query, $cookie, $template->output, undef, { force_no_caching => 1 };

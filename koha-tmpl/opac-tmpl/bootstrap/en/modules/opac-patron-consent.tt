@@ -53,6 +53,7 @@
                                 </div>
                                 <p>I agree with your processing of my personal data as outlined in the <a target="_blank" href="[% Koha.Preference('PrivacyPolicyURL') | url %]">privacy policy</a>.</p>
                             [% ELSIF consent_type == 'SAML_EXTRA_CONSENT' %]
+
                             [% ELSIF consent_types.$consent_type %]
                                 [% SET consent_title = ( consent_types.$consent_type.title.$lang || consent_types.$consent_type.title.en ) %]
                                 [% SET consent_desc  = ( consent_types.$consent_type.description.$lang || consent_types.$consent_type.description.en ) %]
@@ -82,7 +83,7 @@
                             </fieldset>
                         [% END %]
                         [% IF needs_extra_consent %]
-                          [% INCLUDE 'patron-consent-extra.inc' %]
+                            [% INCLUDE 'patron-consent-extra.inc' %]
                         [% END %]
                         <fieldset class="action">
                             <input id="saveconsent" type="submit" value="Save" class="btn btn-primary" />

@@ -251,15 +251,15 @@ sub get_template_and_user {
         && C4::Context->preference('PrivacyPolicyConsent') eq 'Enforced' )
     {
         my $borrowernumber = getborrowernumber($user);
-        my $consent = Koha::Patron::Consents->search(
+        my $consent        = Koha::Patron::Consents->search(
             {
                 borrowernumber => $borrowernumber,
                 type           => 'GDPR_PROCESSING',
                 given_on       => { '!=', undef },
             }
         )->next;
-        if ( $consent ) {
-            if (!HKR::SAML::check_user_completion( $borrowernumber )) {
+        if ($consent) {
+            if ( !HKR::SAML::check_user_completion($borrowernumber) ) {
                 $consent = 0;
             }
         }
@@ -1066,8 +1066,8 @@ sub checkauth {
         #we initiate a session prior to checking for a username to allow for anonymous sessions...
         if ( !$session or !$sessionID ) {    # if we cleared sessionID, we need a new session
             $session = get_session() or die "Auth ERROR: Cannot get_session()";
-            $session->param( 'lasttime',     time() );
-            $session->param( 'ip',           $session->remote_addr() );
+            $session->param( 'lasttime', time() );
+            $session->param( 'ip',       $session->remote_addr() );
         }
 
         # Save anonymous search history in new session so it can be retrieved
@@ -1467,8 +1467,8 @@ sub checkauth {
             $uri->query_param_delete('login_password');
             $uri->query_param_delete('koha_login_context');
             $uri->query_param_delete('op');
-            if ($query->request_uri() eq '/opac/opac-illrequests.pl' && $query->param('openurl')) {
-                $uri->query_param('op', 'create');
+            if ( $query->request_uri() eq '/opac/opac-illrequests.pl' && $query->param('openurl') ) {
+                $uri->query_param( 'op', 'create' );
             }
             $uri->query_param_delete('csrf_token');
             unless ( $params->{do_not_print} ) {
@@ -2089,11 +2089,11 @@ sub checkpw {
     my $patron;
     my $internal = 0;
     if ( defined $userid && $userid ne '' ) {
+
         # INTERNAL CHECK: users blocked login with
         # password (ie., shibboleth only) is disabled from SIP and
         # ILS-DI.  We rely on $no_set_userenv for this, note above.
-        warn "api_auth: $api_auth userid_is_marked ($userid) " . HKR::SAML::userid_is_marked( $userid );
-        $internal = $api_auth || !HKR::SAML::userid_is_marked( $userid );
+        $internal = $api_auth || !HKR::SAML::userid_is_marked($userid);
     }
     my $check_internal_as_fallback = $internal;
     my $passwd_ok                  = 0;
