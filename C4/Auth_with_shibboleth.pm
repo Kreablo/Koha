@@ -112,7 +112,7 @@ sub checkpw_shib {
     }
     my $borrower = $borrowers->next;
     if ( defined($borrower) ) {
-        if ( $config->{'sync'} ) {
+        if ( $config->{'sync'} && !HKR::SAML::exclude_from_sync( $borrower ) ) {
             _sync( $borrower->borrowernumber, $config, $match );
         }
         return ( 1, $borrower->get_column('cardnumber'), $borrower->get_column('userid'), $borrower );

@@ -15,6 +15,7 @@ our @EXPORT_OK = qw(
     user_is_marked
     check_and_store_consent
     check_user_completion
+    exclude_from_sync
     MARK_ATTR
     CONSENT_TYPE
 );
@@ -174,4 +175,10 @@ sub check_and_store_consent {
     }
 
     return $result;
+}
+
+sub exclude_from_sync {
+    my $patron = shift;
+
+    return $patron->categorycode eq 'LRC';
 }
