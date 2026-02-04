@@ -339,6 +339,9 @@ __END_SRU_PUBLICSERVER__
  <!-- Configuration for Plack -->
  <plack_max_requests>50</plack_max_requests>
  <plack_workers>2</plack_workers>
+ <!-- The parameter plack_backlog is the size of the request backlog queue. -->
+ <!-- The default is (max_requests*workers)/2 -->
+ <!-- <plack_backlog>50</plack_backlog> -->
 
  <!-- Configuration for X-Forwarded-For -->
  <!--
