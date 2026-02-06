@@ -27,6 +27,7 @@ use Readonly qw( Readonly );
 use Koha::Database;
 use Koha::DateUtils qw( dt_from_string );
 use C4::Budgets     qw( GetBudget );
+use Text::Unidecode qw( unidecode );
 
 use Koha::Acquisition::Orders;
 
@@ -702,6 +703,7 @@ sub _interchange_sr_identifier {
 sub encode_text {
     my $string = shift;
     if ($string) {
+        $string = unidecode( $string );
         $string =~ s/[?]/??/g;
         $string =~ s/'/?'/g;
         $string =~ s/:/?:/g;
