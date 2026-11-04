@@ -1,0 +1,100 @@
+---
+"/patrons/{patron_id}/message_preferences":
+  get:
+    x-mojo-to: Patrons::MessagePreferences#list
+    operationId: getPatronMessagePreferences
+    tags:
+      - patrons
+    summary: Get stored message preferences for a patron
+    parameters:
+      - $ref: "../swagger.yaml#/parameters/patron_id_pp"
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: Stored preferences ordered by message type
+        schema:
+          type: array
+          items:
+            $ref: "../swagger.yaml#/definitions/patron_message_preference"
+      "401":
+        description: Authentication required
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "403":
+        description: Access forbidden
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "404":
+        description: Patron not found
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "500":
+        description: Internal server error
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "503":
+        description: Under maintenance
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+    x-koha-authorization:
+      permissions:
+        borrowers: edit_borrowers
+  put:
+    x-mojo-to: Patrons::MessagePreferences#overwrite
+    operationId: overwritePatronMessagePreferences
+    tags:
+      - patrons
+    summary: Replace all stored message preferences for a patron
+    description: >-
+      Replaces the entire list atomically. An empty list removes all individual
+      preferences. Category defaults are not changed. Omitted message types
+      are removed; duplicate message type IDs are rejected.
+    parameters:
+      - $ref: "../swagger.yaml#/parameters/patron_id_pp"
+      - name: body
+        in: body
+        required: true
+        description: Complete replacement list of message preferences
+        schema:
+          type: array
+          items:
+            $ref: "../swagger.yaml#/definitions/patron_message_preference"
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: Saved preferences ordered by message type
+        schema:
+          type: array
+          items:
+            $ref: "../swagger.yaml#/definitions/patron_message_preference"
+      "400":
+        description: Invalid preference or duplicate message type
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "401":
+        description: Authentication required
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "403":
+        description: Access forbidden
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "404":
+        description: Patron not found
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "500":
+        description: Internal server error
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "503":
+        description: Under maintenance
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+    x-koha-authorization:
+      permissions:
+        borrowers: edit_borrowers
