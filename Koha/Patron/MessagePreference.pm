@@ -495,6 +495,37 @@ sub _validate_message_transport_types {
     }
 }
 
+=head3 to_api
+
+    my $preference = $preference->to_api;
+
+Returns the API representation, including the selected message transport types.
+
+=cut
+
+sub to_api {
+    my ( $self, $params ) = @_;
+
+    my $preference = $self->SUPER::to_api($params);
+    $preference->{message_transport_types} = [ sort keys %{ $self->message_transport_types } ];
+
+    return $preference;
+}
+
+=head3 to_api_mapping
+
+Returns the mapping for representing a message preference on the API.
+
+=cut
+
+sub to_api_mapping {
+    return {
+        borrower_message_preference_id => undef,
+        borrowernumber                 => undef,
+        categorycode                   => undef,
+    };
+}
+
 =head3 type
 
 =cut

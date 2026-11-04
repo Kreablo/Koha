@@ -962,13 +962,71 @@ sub merge_with {
 
 =head3 messaging_preferences
 
-    my $patron = Koha::Patrons->find($id);
-    $patron->messaging_preferences();
+    my $preferences = $patron->messaging_preferences;
+    my $preferences = $patron->messaging_preferences(\@preferences);
+
+Returns the patron's stored message preferences. If an array reference is
+provided, replaces all individual preferences in a transaction. An empty array
+removes all individual preferences. Category defaults are not changed.
+
+Each preference contains C<message_attribute_id>, C<days_in_advance>,
+C<wants_digest> and C<message_transport_types>. A message type may occur only
+once. Validation errors leave the previous preferences unchanged.
 
 =cut
 
 sub messaging_preferences {
-    my ($self) = @_;
+    my ( $self, $preferences ) = @_;
+
+    if ( defined $preferences ) {
+        Koha::Exceptions::BadParameter->throw( error => 'Message preferences must be an array reference' )
+            unless ref($preferences) eq 'ARRAY';
+
+        my %seen;
+        foreach my $preference ( @{$preferences} ) {
+            Koha::Exceptions::BadParameter->throw( error => 'Each message_attribute_id may occur only once' )
+                if $seen{ $preference->{message_attribute_id} }++;
+        }
+
+        my $schema = $self->_result->result_source->schema;
+        $schema->txn_do(
+            sub {
+                # Serialize replacements for this patron, even when no preferences exist.
+                my $patron =
+                    Koha::Patrons->search( { borrowernumber => $self->borrowernumber }, { for => 'update' } )->next;
+                Koha::Exceptions::ObjectNotFound->throw( error => 'Patron not found' ) unless $patron;
+
+                $patron->messaging_preferences->delete;
+
+                foreach my $preference ( @{$preferences} ) {
+                    my $wants_digest = $preference->{wants_digest} ? 1 : 0;
+
+                    foreach my $type ( @{ $preference->{message_transport_types} } ) {
+                        my $transport = Koha::Patron::MessagePreference::Transports->find(
+                            {
+                                message_attribute_id   => $preference->{message_attribute_id},
+                                message_transport_type => $type,
+                                is_digest              => $wants_digest,
+                            }
+                        );
+                        Koha::Exceptions::BadParameter->throw(
+                            error => 'Transport is unavailable for this message type and digest setting' )
+                            unless $transport;
+                    }
+
+                    Koha::Patron::MessagePreference->new(
+                        {
+                            borrowernumber          => $patron->borrowernumber,
+                            message_attribute_id    => $preference->{message_attribute_id},
+                            days_in_advance         => $preference->{days_in_advance},
+                            wants_digest            => $wants_digest,
+                            message_transport_types => $preference->{message_transport_types},
+                        }
+                    )->store;
+                }
+            }
+        );
+    }
 
     return Koha::Patron::MessagePreferences->search(
         {
