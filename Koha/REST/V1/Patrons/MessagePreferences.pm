@@ -68,13 +68,23 @@ sub overwrite {
     my $c = shift->openapi->valid_input or return;
 
     my $patron = Koha::Patrons->find( $c->param('patron_id') );
+    my $json   = $c->req->json;
 
     return $c->render_resource_not_found("Patron")
         unless $patron;
 
+    foreach my $item (@$json) {
+        my $attr = Koha::Patron::MessagePreference::Attributes->find(
+            {
+                message_name => $item->{'message_name'},
+            }
+        );
+        $item->{'message_attribute_id'} = $attr->message_attribute_id;
+    }
+
     return try {
         my $preferences =
-            $patron->messaging_preferences( $c->req->json )->search( undef, { order_by => 'message_attribute_id' } );
+            $patron->messaging_preferences($json)->search( undef, { order_by => 'message_attribute_id' } );
 
         return $c->render(
             status  => 200,

@@ -2,15 +2,16 @@
 type: object
 additionalProperties: false
 required:
-  - message_attribute_id
+  - message_name
   - days_in_advance
   - wants_digest
   - message_transport_types
 properties:
-  message_attribute_id:
-    description: Message type ID from message_attributes
-    type: integer
-    minimum: 1
+  message_name:
+    description: Message name from message_attributes
+    type: string
+    minLength: 1
+    maxLength: 40
   days_in_advance:
     description: Advance notice days, or null when not applicable
     type:

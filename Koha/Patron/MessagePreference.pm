@@ -126,12 +126,12 @@ sub new_from_default {
 
     my $default = Koha::Patron::MessagePreferences->find(
         {
-            categorycode         => $params->{'categorycode'},
-            message_attribute_id => $params->{'message_attribute_id'},
+            categorycode => $params->{'categorycode'},
+            message_name => $params->{'message_name'},
         }
     );
     Koha::Exceptions::ObjectNotFound->throw(
-        error => 'Default messaging preference for given categorycode and' . ' message_attribute_id cannot be found.',
+        error => 'Default messaging preference for given categorycode and' . ' message_name cannot be found.',
     ) unless $default;
     $default = $default->unblessed;
 
@@ -507,7 +507,9 @@ sub to_api {
     my ( $self, $params ) = @_;
 
     my $preference = $self->SUPER::to_api($params);
+    my $attr       = Koha::Patron::MessagePreference::Attributes->find( $self->message_attribute_id );
     $preference->{message_transport_types} = [ sort keys %{ $self->message_transport_types } ];
+    $preference->{message_name}            = $attr->message_name;
 
     return $preference;
 }
@@ -523,6 +525,7 @@ sub to_api_mapping {
         borrower_message_preference_id => undef,
         borrowernumber                 => undef,
         categorycode                   => undef,
+        message_attribute_id           => undef,
     };
 }
 

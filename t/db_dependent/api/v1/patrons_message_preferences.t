@@ -41,6 +41,15 @@ my $t       = Test::Mojo->new('Koha::REST::V1');
 t::lib::Mocks::mock_preference( 'RESTBasicAuth',       1 );
 t::lib::Mocks::mock_preference( 'IndependentBranches', 0 );
 
+sub as_api_item {
+    my ($item) = @_;
+    my $sansid = ();
+    foreach my $k ( keys %$item ) {
+        $sansid->{$k} = $item->{$k} unless $k eq 'message_attribute_id';
+    }
+    $sansid;
+}
+
 subtest 'Authorization' => sub {
     $schema->storage->txn_begin;
     my $fixture = fixture();
@@ -65,7 +74,8 @@ subtest 'list()' => sub {
     $t->get_ok($url)->status_is(200)->json_is( [] );
 
     $patron->messaging_preferences( [ $second, $item ] );
-    my @expected = sort { $a->{message_attribute_id} <=> $b->{message_attribute_id} } ( $item, $second );
+    my @expected =
+        map { as_api_item $_; } sort { $a->{message_attribute_id} <=> $b->{message_attribute_id} } ( $item, $second );
     $t->get_ok($url)->status_is(200)->json_is( \@expected );
     $t->get_ok( $fixture->{missing} )->status_is(404);
 
@@ -79,23 +89,26 @@ subtest 'overwrite()' => sub {
     my $patron  = $fixture->{patron};
     my $url     = $fixture->{url};
     my $item    = $fixture->{item};
+    my $api_itm = as_api_item $item;
     my $second  = $fixture->{second};
+    my $api_snd = as_api_item $second;
 
-    $t->put_ok( $url => json => [$item] )->status_is(200)->json_is( [$item] );
-    $t->get_ok($url)->status_is(200)->json_is( [$item] );
+    $t->put_ok( $url => json => [$api_itm] )->status_is(200)->json_is( [$api_itm] );
+    $t->get_ok($url)->status_is(200)->json_is( [$api_itm] );
 
-    my @expected = sort { $a->{message_attribute_id} <=> $b->{message_attribute_id} } ( $item, $second );
-    $t->put_ok( $url => json => [ $second, $item ] )->status_is(200)->json_is( \@expected );
-    $t->put_ok( $url => json => [$item] )->status_is(200)->json_is( [$item] );
+    my @expected =
+        map { as_api_item $_; } sort { $a->{message_attribute_id} <=> $b->{message_attribute_id} } ( $item, $second );
+    $t->put_ok( $url => json => [ $api_snd, $api_itm ] )->status_is(200)->json_is( \@expected );
+    $t->put_ok( $url => json => [$api_itm] )->status_is(200)->json_is( [$api_itm] );
     is( $patron->messaging_preferences->count, 1, 'Omitted message types are removed' );
 
-    $t->put_ok( $url => json => [$item] )->status_is(200)->json_is( [$item] );
+    $t->put_ok( $url => json => [$api_itm] )->status_is(200)->json_is( [$api_itm] );
     is( $patron->messaging_preferences->count, 1, 'Repeated PUT does not duplicate preferences' );
 
-    my $digest = { %$item, wants_digest => true };
+    my $digest = { %$api_itm, wants_digest => true };
     $t->put_ok( $url => json => [$digest] )->status_is(200)->json_is( [$digest] );
 
-    my $no_transports = { %$item, message_transport_types => [] };
+    my $no_transports = { %$api_itm, message_transport_types => [] };
     $t->put_ok( $url => json => [$no_transports] )->status_is(200)->json_is( [$no_transports] );
     my $stored = $patron->messaging_preferences->next;
     is(
@@ -120,21 +133,22 @@ subtest 'Validation' => sub {
     my $fixture = fixture();
     my $url     = $fixture->{url};
     my $item    = $fixture->{item};
-    my $second  = $fixture->{second};
+    my $api_itm = as_api_item $item;
+    my $second  = as_api_item $fixture->{second};
 
     $fixture->{patron}->messaging_preferences( [$item] );
 
-    $t->put_ok( $url => json => [ $item, $item ] )->status_is(400);
-    $t->put_ok( $url => json => [ { %$second, wants_digest            => true } ] )->status_is(400);
-    $t->put_ok( $url => json => [ { %$item,   days_in_advance         => 31 } ] )->status_is(400);
-    $t->put_ok( $url => json => [ { %$item,   message_transport_types => ['invalid'] } ] )->status_is(400);
-    $t->put_ok( $url => json => [ { %$item,   message_transport_types => [ 'email', 'email' ] } ] )->status_is(400);
-    $t->put_ok( $url => json => [ { %$item,   borrowernumber          => $fixture->{other}->id } ] )->status_is(400);
+    $t->put_ok( $url => json => [ $api_itm, $api_itm ] )->status_is(400);
+    $t->put_ok( $url => json => [ { %$second,  wants_digest            => true } ] )->status_is(400);
+    $t->put_ok( $url => json => [ { %$api_itm, days_in_advance         => 31 } ] )->status_is(400);
+    $t->put_ok( $url => json => [ { %$api_itm, message_transport_types => ['invalid'] } ] )->status_is(400);
+    $t->put_ok( $url => json => [ { %$api_itm, message_transport_types => [ 'email', 'email' ] } ] )->status_is(400);
+    $t->put_ok( $url => json => [ { %$api_itm, borrowernumber          => $fixture->{other}->id } ] )->status_is(400);
 
-    my %incomplete = %$item;
+    my %incomplete = %$api_itm;
     delete $incomplete{wants_digest};
     $t->put_ok( $url => json => [ \%incomplete ] )->status_is(400);
-    $t->get_ok($url)->status_is(200)->json_is( [$item] );
+    $t->get_ok($url)->status_is(200)->json_is( [$api_itm] );
 
     $schema->storage->txn_rollback;
     done_testing;
@@ -145,14 +159,16 @@ subtest 'Rollback' => sub {
     my $fixture = fixture();
     my $url     = $fixture->{url};
     my $item    = $fixture->{item};
+    my $api_itm = as_api_item $item;
+    my $api_snd = as_api_item $fixture->{second};
 
     $fixture->{patron}->messaging_preferences( [$item] );
 
     # The second preference fails after the first replacement has been stored.
-    my $changed = { %$item, days_in_advance => 4 };
-    my $invalid = { %{ $fixture->{second} }, days_in_advance => 1 };
+    my $changed = { %$api_itm, days_in_advance => 4 };
+    my $invalid = { %$api_snd, days_in_advance => 1 };
     $t->put_ok( $url => json => [ $changed, $invalid ] )->status_is(400);
-    $t->get_ok($url)->status_is(200)->json_is( [$item] );
+    $t->get_ok($url)->status_is(200)->json_is( [$api_itm] );
 
     $schema->storage->txn_rollback;
     done_testing;
@@ -163,15 +179,16 @@ subtest 'messaging_preferences() and to_api()' => sub {
     my $fixture = fixture();
     my $patron  = $fixture->{patron};
     my $item    = $fixture->{item};
+    my $api_itm = as_api_item $item;
     my $input   = [$item];
     my $before  = dclone($input);
 
     isa_ok( $patron->messaging_preferences, 'Koha::Patron::MessagePreferences' );
     my $preferences = $patron->messaging_preferences($input);
     isa_ok( $preferences, 'Koha::Patron::MessagePreferences' );
-    is_deeply( $input,                                 $before, 'Setter does not modify its input' );
-    is_deeply( $preferences->next->to_api,             $item,   'Model supplies the complete API representation' );
-    is_deeply( $patron->messaging_preferences->to_api, [$item], 'Getter remains compatible' );
+    is_deeply( $input,                                 $before,    'Setter does not modify its input' );
+    is_deeply( $preferences->next->to_api,             $api_itm,   'Model supplies the complete API representation' );
+    is_deeply( $patron->messaging_preferences->to_api, [$api_itm], 'Getter remains compatible' );
 
     throws_ok {
         $patron->messaging_preferences( [ $item, $item ] );
@@ -184,8 +201,8 @@ subtest 'messaging_preferences() and to_api()' => sub {
     }
     'Koha::Exceptions::Patron::MessagePreference::DaysInAdvanceNotAvailable',
         'Model rejects days when the message type does not support them';
-    is_deeply( $patron->messaging_preferences->to_api, [$item], 'Model rolls back failed replacement' );
 
+    is_deeply( $patron->messaging_preferences->to_api, [$api_itm], 'Model rolls back failed replacement' );
     throws_ok {
         $patron->messaging_preferences( {} );
     }
@@ -236,11 +253,15 @@ sub fixture {
 
     my $item = {
         message_attribute_id    => 0 + $attrs[0]->id,
+        message_name            => $attrs[0]->message_name,
         days_in_advance         => 3,
         wants_digest            => false,
         message_transport_types => ['email'],
     };
-    my $second  = { %$item, message_attribute_id => 0 + $attrs[1]->id, days_in_advance => undef };
+    my $second = {
+        %$item, message_attribute_id => 0 + $attrs[1]->id, message_name => ${ attrs [1]->message_name },
+        days_in_advance => undef
+    };
     my $default = Koha::Patron::MessagePreference->new(
         {
             categorycode            => $patron->categorycode,
