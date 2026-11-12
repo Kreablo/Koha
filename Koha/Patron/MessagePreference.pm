@@ -126,8 +126,8 @@ sub new_from_default {
 
     my $default = Koha::Patron::MessagePreferences->find(
         {
-            categorycode => $params->{'categorycode'},
-            message_name => $params->{'message_name'},
+            categorycode         => $params->{'categorycode'},
+            message_attribute_id => $params->{'message_attribute_id'},
         }
     );
     Koha::Exceptions::ObjectNotFound->throw(
